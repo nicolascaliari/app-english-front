@@ -12,6 +12,7 @@ export interface Category {
   slug: string;
   color?: string;
   icon?: string;
+  parentId?: string | null;
   createdAt: string;
 }
 
@@ -69,15 +70,24 @@ export interface CreateCategoryPayload {
   icon?: string;
 }
 
-export interface ImportCategoryPayload {
+export interface CreateSubcategoryPayload {
   name: string;
   slug: string;
   color?: string;
   icon?: string;
 }
 
+export interface ImportCategoryPayload {
+  name: string;
+  slug: string;
+  color?: string;
+  icon?: string;
+  parent?: string;
+}
+
 export interface ImportFlashcardPayload {
   category: string;
+  subcategory?: string;
   front: string;
   back: string;
   example?: string;

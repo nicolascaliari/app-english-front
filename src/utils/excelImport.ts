@@ -6,10 +6,12 @@ export interface ParsedCategory {
   slug: string;
   color?: string;
   icon?: string;
+  parent?: string;
 }
 
 export interface ParsedFlashcard {
   category: string;
+  subcategory?: string;
   front: string;
   back: string;
   example?: string;
@@ -33,12 +35,17 @@ const CATEGORY_COLUMNS: Record<string, keyof ParsedCategory> = {
   icono: 'icon',
   icon: 'icon',
   color: 'color',
+  padre: 'parent',
+  categoriapadre: 'parent',
+  parent: 'parent',
 };
 
 const FLASHCARD_COLUMNS: Record<string, keyof ParsedFlashcard | 'difficulty'> = {
   categoria: 'category',
   category: 'category',
   cat: 'category',
+  subcategoria: 'subcategory',
+  subcategory: 'subcategory',
   ingles: 'front',
   english: 'front',
   front: 'front',
@@ -125,6 +132,7 @@ function parseCategorySheet(sheet: XLSX.WorkSheet): ParsedCategory[] {
       slug: slug || slugify(name),
       icon: colIndex.icon != null ? cellStr(row[colIndex.icon]) || undefined : undefined,
       color: colIndex.color != null ? cellStr(row[colIndex.color]) || undefined : undefined,
+      parent: colIndex.parent != null ? cellStr(row[colIndex.parent]) || undefined : undefined,
     });
   }
   return result;
@@ -157,6 +165,10 @@ function parseFlashcardSheet(sheet: XLSX.WorkSheet): ParsedFlashcard[] {
 
     result.push({
       category,
+      subcategory:
+        colIndex.subcategory != null
+          ? cellStr(row[colIndex.subcategory]) || undefined
+          : undefined,
       front,
       back,
       example:
@@ -192,17 +204,54 @@ export function downloadImportTemplate(): void {
   const wb = XLSX.utils.book_new();
 
   const categoriesData = [
-    ['nombre', 'slug', 'icono', 'color'],
-    ['Cocina', 'cocina', '🍳', '#ff6b6b'],
-    ['Viajes', 'viajes', '✈️', '#4ecdc4'],
+    ['nombre', 'slug', 'icono', 'color', 'padre'],
+    ['Cocina', 'cocina', '🍳', '#ff6b6b', ''],
+    ['Viajes', 'viajes', '✈️', '#4ecdc4', ''],
+    ['Phrasal Verbs', 'phrasal-verbs', '🔤', '#6c63ff', ''],
+    ['get', 'get', '🏃', '#6c63ff', 'phrasal-verbs'],
+    ['come', 'come', '🚶', '#6c63ff', 'phrasal-verbs'],
   ];
   const categoriesSheet = XLSX.utils.aoa_to_sheet(categoriesData);
   XLSX.utils.book_append_sheet(wb, categoriesSheet, 'categorias');
 
   const flashcardsData = [
-    ['categoria', 'ingles', 'espanol', 'ejemplo', 'pronunciacion', 'dificultad'],
-    ['cocina', 'knife', 'cuchillo', 'Pass me the knife.', '/naɪf/', 'easy'],
-    ['viajes', 'luggage', 'equipaje', 'Where is my luggage?', '/ˈlʌɡ.ɪdʒ/', 'medium'],
+    [
+      'categoria',
+      'subcategoria',
+      'ingles',
+      'espanol',
+      'ejemplo',
+      'pronunciacion',
+      'dificultad',
+    ],
+    ['cocina', '', 'knife', 'cuchillo', 'Pass me the knife.', '/naɪf/', 'easy'],
+    [
+      'viajes',
+      '',
+      'luggage',
+      'equipaje',
+      'Where is my luggage?',
+      '/ˈlʌɡ.ɪdʒ/',
+      'medium',
+    ],
+    [
+      'phrasal-verbs',
+      'get',
+      'get up',
+      'levantarse',
+      'I get up at 7am.',
+      '/ɡet ʌp/',
+      'medium',
+    ],
+    [
+      'phrasal-verbs',
+      'come',
+      'come back',
+      'volver',
+      'Come back soon!',
+      '/kʌm bæk/',
+      'medium',
+    ],
   ];
   const flashcardsSheet = XLSX.utils.aoa_to_sheet(flashcardsData);
   XLSX.utils.book_append_sheet(wb, flashcardsSheet, 'palabras');

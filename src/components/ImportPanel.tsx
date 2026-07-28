@@ -161,6 +161,7 @@ export function ImportPanel() {
                     <th>Nombre</th>
                     <th>Slug</th>
                     <th>Ícono</th>
+                    <th>Padre</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -169,6 +170,7 @@ export function ImportPanel() {
                       <td>{c.name}</td>
                       <td>{c.slug}</td>
                       <td>{c.icon ?? '—'}</td>
+                      <td>{c.parent ?? '—'}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -187,6 +189,7 @@ export function ImportPanel() {
                 <thead>
                   <tr>
                     <th>Categoría</th>
+                    <th>Subcategoría</th>
                     <th>Inglés</th>
                     <th>Español</th>
                   </tr>
@@ -195,6 +198,7 @@ export function ImportPanel() {
                   {parsed.flashcards.slice(0, 5).map((f, i) => (
                     <tr key={`${f.category}-${f.front}-${i}`}>
                       <td>{f.category}</td>
+                      <td>{f.subcategory ?? '—'}</td>
                       <td>{f.front}</td>
                       <td>{f.back}</td>
                     </tr>
@@ -228,15 +232,20 @@ export function ImportPanel() {
         <div className="import-format-body">
           <p>
             <strong>Hoja "categorias":</strong> nombre, slug (opcional), icono,
-            color
+            color, padre (opcional)
           </p>
           <p>
-            <strong>Hoja "palabras":</strong> categoria (nombre o slug), ingles,
-            espanol, ejemplo, pronunciacion, dificultad (easy/medium/hard)
+            <strong>Hoja "palabras":</strong> categoria (nombre o slug),
+            subcategoria (opcional), ingles, espanol, ejemplo, pronunciacion,
+            dificultad (easy/medium/hard)
           </p>
           <p>
-            Las categorías duplicadas (mismo slug) se omiten. Las palabras
-            requieren que la categoría exista o se importe en el mismo archivo.
+            Las categorías duplicadas (mismo slug dentro del mismo padre) se
+            omiten. Si completás "padre" en la hoja de categorías, esa fila se
+            crea como subcategoría (ej: categoría "get" con padre
+            "phrasal-verbs"). Las palabras requieren que la categoría (y
+            subcategoría, si se indica) exista o se importe en el mismo
+            archivo.
           </p>
         </div>
       </details>

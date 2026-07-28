@@ -2,6 +2,7 @@ import type {
   Category,
   CreateCategoryPayload,
   CreateFlashcardPayload,
+  CreateSubcategoryPayload,
   DueReview,
   Flashcard,
   ImportPayload,
@@ -37,8 +38,23 @@ export const api = {
       body: JSON.stringify(data),
     }),
 
+  getSubcategories: (slug: string) =>
+    request<Category[]>(`/categories/${slug}/subcategories`),
+
+  getSubcategory: (slug: string, subSlug: string) =>
+    request<Category>(`/categories/${slug}/subcategories/${subSlug}`),
+
+  createSubcategory: (slug: string, data: CreateSubcategoryPayload) =>
+    request<Category>(`/categories/${slug}/subcategories`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
   getFlashcards: (slug: string) =>
     request<Flashcard[]>(`/categories/${slug}/flashcards`),
+
+  getSubcategoryFlashcards: (slug: string, subSlug: string) =>
+    request<Flashcard[]>(`/categories/${slug}/subcategories/${subSlug}/flashcards`),
 
   createFlashcard: (data: CreateFlashcardPayload) =>
     request<Flashcard>('/flashcards', {

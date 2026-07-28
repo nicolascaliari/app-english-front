@@ -14,14 +14,32 @@ function slugify(text: string) {
     .replace(/^-|-$/g, '');
 }
 
+interface CategoryNode {
+  root: Category;
+  subs: Category[];
+}
+
+function firstLeafId(tree: CategoryNode[]): string {
+  for (const node of tree) {
+    if (node.subs.length === 0) return node.root._id;
+    if (node.subs[0]) return node.subs[0]._id;
+  }
+  return '';
+}
+
 export function NewCardPage() {
   const navigate = useNavigate();
   const location = useLocation();
-  const preselectedCategoryId = (location.state as { categoryId?: string })
-    ?.categoryId;
+  const locationState = location.state as
+    | { categoryId?: string; parentSlug?: string }
+    | undefined;
+  const preselectedCategoryId = locationState?.categoryId;
+  const preselectedParentSlug = locationState?.parentSlug;
 
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [mode, setMode] = useState<'card' | 'category' | 'import'>('card');
+  const [tree, setTree] = useState<CategoryNode[]>([]);
+  const [mode, setMode] = useState<'card' | 'category' | 'import'>(
+    preselectedParentSlug ? 'category' : 'card',
+  );
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
@@ -37,13 +55,20 @@ export function NewCardPage() {
   const [catSlug, setCatSlug] = useState('');
   const [catIcon, setCatIcon] = useState('');
   const [catColor, setCatColor] = useState('#6c63ff');
+  const [catParentSlug, setCatParentSlug] = useState(preselectedParentSlug ?? '');
 
   useEffect(() => {
     api
       .getCategories()
-      .then((cats) => {
-        setCategories(cats);
-        setCategoryId((prev) => prev || (cats.length > 0 ? cats[0]._id : ''));
+      .then(async (roots) => {
+        const withSubs = await Promise.all(
+          roots.map(async (root) => ({
+            root,
+            subs: await api.getSubcategories(root.slug).catch(() => []),
+          })),
+        );
+        setTree(withSubs);
+        setCategoryId((prev) => prev || firstLeafId(withSubs));
       })
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
@@ -75,18 +100,34 @@ export function NewCardPage() {
     setSaving(true);
     setError('');
     try {
-      const cat = await api.createCategory({
+      const payload = {
         name: catName.trim(),
         slug: catSlug.trim() || slugify(catName),
         icon: catIcon.trim() || undefined,
         color: catColor,
-      });
-      setCategories((prev) => [...prev, cat]);
-      setCategoryId(cat._id);
+      };
+
+      if (catParentSlug) {
+        const sub = await api.createSubcategory(catParentSlug, payload);
+        setTree((prev) =>
+          prev.map((node) =>
+            node.root.slug === catParentSlug
+              ? { ...node, subs: [...node.subs, sub] }
+              : node,
+          ),
+        );
+        setCategoryId(sub._id);
+      } else {
+        const cat = await api.createCategory(payload);
+        setTree((prev) => [...prev, { root: cat, subs: [] }]);
+        setCategoryId(cat._id);
+      }
+
       setMode('card');
       setCatName('');
       setCatSlug('');
       setCatIcon('');
+      setCatParentSlug('');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Error al guardar');
     } finally {
@@ -95,6 +136,8 @@ export function NewCardPage() {
   };
 
   if (loading) return <LoadingSpinner />;
+
+  const hasAnyLeaf = tree.length > 0;
 
   return (
     <div>
@@ -138,14 +181,24 @@ export function NewCardPage() {
                 onChange={(e) => setCategoryId(e.target.value)}
                 required
               >
-                {categories.length === 0 && (
+                {!hasAnyLeaf && (
                   <option value="">Sin categorías — creá una primero</option>
                 )}
-                {categories.map((cat) => (
-                  <option key={cat._id} value={cat._id}>
-                    {cat.icon} {cat.name}
-                  </option>
-                ))}
+                {tree.map((node) =>
+                  node.subs.length === 0 ? (
+                    <option key={node.root._id} value={node.root._id}>
+                      {node.root.icon} {node.root.name}
+                    </option>
+                  ) : (
+                    <optgroup key={node.root._id} label={`${node.root.icon ?? ''} ${node.root.name}`.trim()}>
+                      {node.subs.map((sub) => (
+                        <option key={sub._id} value={sub._id}>
+                          {sub.icon ?? node.root.icon} {sub.name}
+                        </option>
+                      ))}
+                    </optgroup>
+                  ),
+                )}
               </select>
             </label>
 
@@ -202,13 +255,32 @@ export function NewCardPage() {
             <button
               type="submit"
               className="btn btn-primary"
-              disabled={saving || categories.length === 0}
+              disabled={saving || !categoryId}
             >
               {saving ? 'Guardando...' : 'Guardar carta'}
             </button>
           </form>
         ) : (
           <form className="form" onSubmit={handleCreateCategory}>
+            <label>
+              Categoría padre (opcional)
+              <select
+                value={catParentSlug}
+                onChange={(e) => setCatParentSlug(e.target.value)}
+              >
+                <option value="">Ninguna (categoría principal)</option>
+                {tree.map((node) => (
+                  <option key={node.root._id} value={node.root.slug}>
+                    {node.root.icon} {node.root.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <p className="field-hint">
+              Elegí una categoría padre para crear una subcategoría dentro de
+              ella (ej: "Phrasal Verbs" → "get").
+            </p>
+
             <label>
               Nombre
               <input
@@ -217,7 +289,7 @@ export function NewCardPage() {
                   setCatName(e.target.value);
                   setCatSlug(slugify(e.target.value));
                 }}
-                placeholder="e.g. Cocina"
+                placeholder={catParentSlug ? 'e.g. get' : 'e.g. Phrasal Verbs'}
                 required
               />
             </label>
@@ -227,7 +299,7 @@ export function NewCardPage() {
               <input
                 value={catSlug}
                 onChange={(e) => setCatSlug(e.target.value)}
-                placeholder="e.g. cocina"
+                placeholder="e.g. get"
                 required
               />
             </label>
@@ -237,7 +309,7 @@ export function NewCardPage() {
               <input
                 value={catIcon}
                 onChange={(e) => setCatIcon(e.target.value)}
-                placeholder="e.g. 🍳"
+                placeholder="e.g. 🏃"
               />
             </label>
 
@@ -251,7 +323,11 @@ export function NewCardPage() {
             </label>
 
             <button type="submit" className="btn btn-primary" disabled={saving}>
-              {saving ? 'Guardando...' : 'Crear categoría'}
+              {saving
+                ? 'Guardando...'
+                : catParentSlug
+                  ? 'Crear subcategoría'
+                  : 'Crear categoría'}
             </button>
           </form>
         )}

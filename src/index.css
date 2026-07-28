@@ -228,6 +228,22 @@ a {
   transform: translateX(-3px);
 }
 
+.breadcrumb {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  margin: -0.5rem 0 0.9rem;
+}
+
+.breadcrumb a {
+  color: var(--text-muted);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.breadcrumb a:hover {
+  color: var(--text);
+}
+
 /* ── Loading ── */
 
 .loading-screen {
@@ -420,6 +436,17 @@ a {
 @keyframes staggerIn {
   from { opacity: 0; transform: translateX(-12px); }
   to { opacity: 1; transform: translateX(0); }
+}
+
+.section-title {
+  font-size: 1.05rem;
+  font-weight: 700;
+  margin: 1.5rem 0 0.75rem;
+  color: var(--text-muted);
+}
+
+.add-subcategory-link {
+  margin-top: 1.25rem;
 }
 
 .category-card {
@@ -862,6 +889,67 @@ a {
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
 }
 
+.word-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.flashcard--compact .word-row {
+  gap: 0.35rem;
+}
+
+.speak-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 2.1rem;
+  height: 2.1rem;
+  border-radius: 50%;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(255, 255, 255, 0.1);
+  color: #ffffff;
+  font-size: 1.05rem;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.15s var(--ease-out), border-color 0.2s;
+}
+
+.speak-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.speak-btn:active {
+  transform: scale(0.92);
+}
+
+.speak-btn--active {
+  animation: speakPulse 0.9s ease-in-out infinite;
+  border-color: var(--accent);
+  background: var(--accent-glow);
+}
+
+@keyframes speakPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.12); }
+}
+
+.flashcard--compact .speak-btn {
+  width: 1.6rem;
+  height: 1.6rem;
+  font-size: 0.8rem;
+}
+
+.speak-btn--inline {
+  width: 1.6rem;
+  height: 1.6rem;
+  font-size: 0.8rem;
+  margin-left: 0.4rem;
+  vertical-align: middle;
+}
+
 .flashcard--compact h2 {
   font-size: 1.15rem;
   line-height: 1.25;
@@ -1088,6 +1176,12 @@ a {
   height: 48px;
   padding: 0.3rem;
   cursor: pointer;
+}
+
+.field-hint {
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-top: -0.5rem;
 }
 
 /* ── Import panel ── */

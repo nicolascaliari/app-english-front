@@ -13,6 +13,7 @@ export default function App() {
         <Route element={<Layout />}>
           <Route index element={<HomePage />} />
           <Route path="category/:slug" element={<CategoryPage />} />
+          <Route path="category/:slug/:subSlug" element={<CategoryPage />} />
           <Route path="review" element={<ReviewPage />} />
           <Route path="practice" element={<PracticePage />} />
           <Route path="new" element={<NewCardPage />} />

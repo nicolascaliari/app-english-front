@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react';
+import { type MouseEvent, useEffect, useState } from 'react';
 import type { Difficulty, Flashcard } from '../types';
 import { DIFFICULTY_LABELS } from '../types';
+import { isSpeechSupported, speakEnglish } from '../utils/speech';
 
 interface Props {
   card: Flashcard;
@@ -25,7 +26,9 @@ export function FlashcardView({
 }: Props) {
   const [flipped, setFlipped] = useState(false);
   const [exiting, setExiting] = useState(false);
+  const [speakingText, setSpeakingText] = useState<string | null>(null);
   const difficulty = card.difficulty ?? 'medium';
+  const speechSupported = isSpeechSupported();
 
   useEffect(() => {
     setFlipped(false);
@@ -36,6 +39,14 @@ export function FlashcardView({
     if (!onResult) return;
     setExiting(true);
     window.setTimeout(() => onResult(correct), 280);
+  };
+
+  const handleSpeak = (e: MouseEvent<HTMLButtonElement>, text: string) => {
+    e.stopPropagation();
+    speakEnglish(text, {
+      onStart: () => setSpeakingText(text),
+      onEnd: () => setSpeakingText(null),
+    });
   };
 
   return (
@@ -60,10 +71,17 @@ export function FlashcardView({
           {DIFFICULTY_LABELS[difficulty]}
         </span>
       )}
-      <button
-        type="button"
+      <div
         className={`flashcard${compact ? ' flashcard--compact' : ''} ${flipped ? 'flipped' : ''}`}
+        role="button"
+        tabIndex={0}
         onClick={() => setFlipped((f) => !f)}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            setFlipped((f) => !f);
+          }
+        }}
       >
         <div className="flashcard-inner">
           <div className="flashcard-front">
@@ -71,7 +89,20 @@ export function FlashcardView({
               <span className={`difficulty-dot difficulty-${difficulty}`} />
             )}
             <p className="label">English</p>
-            <h2>{card.front}</h2>
+            <div className="word-row">
+              <h2>{card.front}</h2>
+              {speechSupported && (
+                <button
+                  type="button"
+                  className={`speak-btn${speakingText === card.front ? ' speak-btn--active' : ''}`}
+                  onClick={(e) => handleSpeak(e, card.front)}
+                  aria-label="Escuchar pronunciación en inglés americano"
+                  title="Escuchar (inglés americano)"
+                >
+                  🔊
+                </button>
+              )}
+            </div>
             {card.pronunciation && (
               <p className="pronunciation">{card.pronunciation}</p>
             )}
@@ -80,10 +111,25 @@ export function FlashcardView({
           <div className="flashcard-back">
             <p className="label">Español</p>
             <h2>{card.back}</h2>
-            {card.example && <p className="example">&ldquo;{card.example}&rdquo;</p>}
+            {card.example && (
+              <p className="example">
+                &ldquo;{card.example}&rdquo;
+                {speechSupported && (
+                  <button
+                    type="button"
+                    className={`speak-btn speak-btn--inline${speakingText === card.example ? ' speak-btn--active' : ''}`}
+                    onClick={(e) => handleSpeak(e, card.example!)}
+                    aria-label="Escuchar ejemplo en inglés americano"
+                    title="Escuchar ejemplo (inglés americano)"
+                  >
+                    🔊
+                  </button>
+                )}
+              </p>
+            )}
           </div>
         </div>
-      </button>
+      </div>
 
       {showDifficultyPicker && flipped && onDifficultyChange && (
         <div className="difficulty-picker difficulty-picker--enter">
