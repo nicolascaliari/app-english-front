@@ -7,6 +7,8 @@ import { PracticePage } from './pages/PracticePage';
 import { ReviewPage } from './pages/ReviewPage';
 
 export default function App() {
+
+  
   return (
     <BrowserRouter>
       <Routes>
