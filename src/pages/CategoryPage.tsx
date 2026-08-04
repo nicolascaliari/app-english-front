@@ -1,8 +1,10 @@
-import { useEffect, useState, type CSSProperties } from 'react';
+import { useEffect, useMemo, useState, type CSSProperties } from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { api } from '../api/client';
+import { CardFilters } from '../components/CardFilters';
 import { FlashcardView } from '../components/FlashcardView';
 import { LoadingSpinner } from '../components/LoadingSpinner';
+import { SearchBar } from '../components/SearchBar';
 import type { Category, Difficulty, Flashcard } from '../types';
 
 export function CategoryPage() {
@@ -13,6 +15,9 @@ export function CategoryPage() {
   const [cards, setCards] = useState<Flashcard[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [subQuery, setSubQuery] = useState('');
+  const [cardQuery, setCardQuery] = useState('');
+  const [difficultyFilter, setDifficultyFilter] = useState<Difficulty | null>(null);
 
   useEffect(() => {
     if (!slug) return;
@@ -49,6 +54,30 @@ export function CategoryPage() {
         .finally(() => setLoading(false));
     }
   }, [slug, subSlug]);
+
+  useEffect(() => {
+    setSubQuery('');
+    setCardQuery('');
+    setDifficultyFilter(null);
+  }, [slug, subSlug]);
+
+  const filteredSubcategories = useMemo(() => {
+    const q = subQuery.trim().toLowerCase();
+    if (!q) return subcategories;
+    return subcategories.filter((s) => s.name.toLowerCase().includes(q));
+  }, [subcategories, subQuery]);
+
+  const filteredCards = useMemo(() => {
+    const q = cardQuery.trim().toLowerCase();
+    return cards.filter((card) => {
+      const matchesQuery =
+        !q ||
+        [card.front, card.back, card.example, card.pronunciation, ...card.tags]
+          .some((field) => field?.toLowerCase().includes(q));
+      const matchesDifficulty = !difficultyFilter || card.difficulty === difficultyFilter;
+      return matchesQuery && matchesDifficulty;
+    });
+  }, [cards, cardQuery, difficultyFilter]);
 
   const handleDelete = async (id: string) => {
     if (!confirm('¿Eliminar esta carta?')) return;
@@ -88,30 +117,54 @@ export function CategoryPage() {
 
       {hasSubcategories && (
         <>
-          <ul className="category-list">
-            {subcategories.map((sub, i) => (
-              <li key={sub._id} style={{ '--i': i } as CSSProperties}>
-                <Link
-                  to={`/category/${category.slug}/${sub.slug}`}
-                  className="category-card"
-                  style={
-                    (sub.color ?? category.color)
-                      ? ({ '--cat-color': sub.color ?? category.color } as CSSProperties)
-                      : undefined
-                  }
-                >
-                  <span className="category-icon">{sub.icon ?? category.icon ?? '📁'}</span>
-                  <span className="category-name">{sub.name}</span>
-                  <span className="category-arrow">→</span>
-                </Link>
-              </li>
-            ))}
-          </ul>
+          <SearchBar
+            value={subQuery}
+            onChange={setSubQuery}
+            placeholder="Buscar subcategorías..."
+          />
+
+          {filteredSubcategories.length === 0 ? (
+            <div className="empty empty--enter">
+              <span className="empty-icon">🔍</span>
+              <p>No se encontraron subcategorías para "{subQuery}".</p>
+            </div>
+          ) : (
+            <ul className="category-list">
+              {filteredSubcategories.map((sub, i) => (
+                <li key={sub._id} style={{ '--i': i } as CSSProperties}>
+                  <Link
+                    to={`/category/${category.slug}/${sub.slug}`}
+                    className="category-card"
+                    style={
+                      (sub.color ?? category.color)
+                        ? ({ '--cat-color': sub.color ?? category.color } as CSSProperties)
+                        : undefined
+                    }
+                  >
+                    <span className="category-icon">{sub.icon ?? category.icon ?? '📁'}</span>
+                    <span className="category-name">{sub.name}</span>
+                    <span className="category-arrow">→</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
 
           {cards.length > 0 && (
             <h2 className="section-title">Cartas en esta categoría</h2>
           )}
         </>
+      )}
+
+      {cards.length > 0 && (
+        <CardFilters
+          query={cardQuery}
+          onQueryChange={setCardQuery}
+          difficulty={difficultyFilter}
+          onDifficultyChange={setDifficultyFilter}
+          total={cards.length}
+          filtered={filteredCards.length}
+        />
       )}
 
       {cards.length === 0 ? (
@@ -128,9 +181,14 @@ export function CategoryPage() {
             </Link>
           </div>
         )
+      ) : filteredCards.length === 0 ? (
+        <div className="empty empty--enter">
+          <span className="empty-icon">🔍</span>
+          <p>No se encontraron cartas con esos filtros.</p>
+        </div>
       ) : (
         <ul className="flashcard-grid">
-          {cards.map((card, i) => (
+          {filteredCards.map((card, i) => (
             <li key={card._id} style={{ '--i': i } as CSSProperties}>
               <FlashcardView
                 card={card}

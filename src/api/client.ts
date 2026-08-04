@@ -5,6 +5,9 @@ import type {
   CreateSubcategoryPayload,
   DueReview,
   Flashcard,
+  GenerateResult,
+  GrammarExercisesRequest,
+  GrammarExercisesResult,
   ImportPayload,
   ImportResult,
   Review,
@@ -21,7 +24,12 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
 
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
-    throw new Error(body.message ?? `Request failed: ${res.status}`);
+    const message = body.message;
+    throw new Error(
+      Array.isArray(message)
+        ? message.join(', ')
+        : (message ?? `Request failed: ${res.status}`),
+    );
   }
 
   return res.json();
@@ -84,6 +92,18 @@ export const api = {
 
   importData: (data: ImportPayload) =>
     request<ImportResult>('/import', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
+  generateWithAi: (prompt: string) =>
+    request<GenerateResult>('/ai/generate', {
+      method: 'POST',
+      body: JSON.stringify({ prompt }),
+    }),
+
+  generateGrammarExercises: (data: GrammarExercisesRequest) =>
+    request<GrammarExercisesResult>('/ai/grammar-exercises', {
       method: 'POST',
       body: JSON.stringify(data),
     }),

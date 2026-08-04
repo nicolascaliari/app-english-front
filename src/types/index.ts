@@ -104,3 +104,37 @@ export interface ImportResult {
   categories: { created: number; skipped: number };
   flashcards: { created: number; skipped: number; errors: string[] };
 }
+
+export interface GenerateResult {
+  categories: ImportCategoryPayload[];
+  flashcards: ImportFlashcardPayload[];
+}
+
+export type GrammarExerciseType = 'fill_blank' | 'multiple_choice';
+export type GrammarLevel = 'beginner' | 'intermediate' | 'advanced';
+
+export const GRAMMAR_LEVEL_LABELS: Record<GrammarLevel, string> = {
+  beginner: 'Principiante',
+  intermediate: 'Intermedio',
+  advanced: 'Avanzado',
+};
+
+export interface GrammarExercise {
+  id: string;
+  type: GrammarExerciseType;
+  prompt: string;
+  options: string[] | null;
+  correctAnswer: string;
+  explanation: string;
+}
+
+export interface GrammarExercisesRequest {
+  topic: string;
+  count?: number;
+  level?: GrammarLevel;
+}
+
+export interface GrammarExercisesResult {
+  topic: string;
+  exercises: GrammarExercise[];
+}

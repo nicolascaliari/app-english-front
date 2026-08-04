@@ -1,6 +1,7 @@
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { Layout } from './components/Layout';
 import { CategoryPage } from './pages/CategoryPage';
+import { GrammarPracticePage } from './pages/GrammarPracticePage';
 import { HomePage } from './pages/HomePage';
 import { NewCardPage } from './pages/NewCardPage';
 import { PracticePage } from './pages/PracticePage';
@@ -18,6 +19,7 @@ export default function App() {
           <Route path="category/:slug/:subSlug" element={<CategoryPage />} />
           <Route path="review" element={<ReviewPage />} />
           <Route path="practice" element={<PracticePage />} />
+          <Route path="grammar" element={<GrammarPracticePage />} />
           <Route path="new" element={<NewCardPage />} />
         </Route>
       </Routes>

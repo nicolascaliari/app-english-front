@@ -14,6 +14,9 @@ export function Layout() {
           <NavLink to="/practice" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
             Repasar
           </NavLink>
+          <NavLink to="/grammar" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
+            Gramática
+          </NavLink>
           <NavLink to="/new" className={({ isActive }) => (isActive ? 'nav-link nav-link--cta active' : 'nav-link nav-link--cta')}>
             + Nueva
           </NavLink>

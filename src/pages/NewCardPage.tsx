@@ -2,6 +2,7 @@ import { type FormEvent, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { api } from '../api/client';
 import { LoadingSpinner } from '../components/LoadingSpinner';
+import { AiGeneratePanel } from '../components/AiGeneratePanel';
 import { ImportPanel } from '../components/ImportPanel';
 import type { Category, Difficulty } from '../types';
 
@@ -37,7 +38,7 @@ export function NewCardPage() {
   const preselectedParentSlug = locationState?.parentSlug;
 
   const [tree, setTree] = useState<CategoryNode[]>([]);
-  const [mode, setMode] = useState<'card' | 'category' | 'import'>(
+  const [mode, setMode] = useState<'card' | 'category' | 'import' | 'ai'>(
     preselectedParentSlug ? 'category' : 'card',
   );
   const [loading, setLoading] = useState(true);
@@ -165,6 +166,13 @@ export function NewCardPage() {
         >
           Importar Excel
         </button>
+        <button
+          type="button"
+          className={mode === 'ai' ? 'tab active' : 'tab'}
+          onClick={() => setMode('ai')}
+        >
+          Generar con IA
+        </button>
       </div>
 
       {error && <p className="status error">{error}</p>}
@@ -172,6 +180,8 @@ export function NewCardPage() {
       <div key={mode} className="form-panel">
         {mode === 'import' ? (
           <ImportPanel />
+        ) : mode === 'ai' ? (
+          <AiGeneratePanel />
         ) : mode === 'card' ? (
           <form className="form" onSubmit={handleCreateCard}>
             <label>
