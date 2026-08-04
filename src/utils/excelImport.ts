@@ -1,5 +1,6 @@
 import * as XLSX from 'xlsx';
 import type { Difficulty } from '../types';
+import { categoryIcon, isBrokenIcon } from './categoryIcon';
 
 export interface ParsedCategory {
   name: string;
@@ -127,10 +128,19 @@ function parseCategorySheet(sheet: XLSX.WorkSheet): ParsedCategory[] {
     const slug =
       colIndex.slug != null ? cellStr(row[colIndex.slug]) : slugify(name);
 
+    const resolvedSlug = slug || slugify(name);
+    const rawIcon =
+      colIndex.icon != null ? cellStr(row[colIndex.icon]) || undefined : undefined;
+    const icon = rawIcon
+      ? isBrokenIcon(rawIcon)
+        ? categoryIcon(rawIcon, resolvedSlug)
+        : rawIcon
+      : categoryIcon(undefined, resolvedSlug);
+
     result.push({
       name,
-      slug: slug || slugify(name),
-      icon: colIndex.icon != null ? cellStr(row[colIndex.icon]) || undefined : undefined,
+      slug: resolvedSlug,
+      icon,
       color: colIndex.color != null ? cellStr(row[colIndex.color]) || undefined : undefined,
       parent: colIndex.parent != null ? cellStr(row[colIndex.parent]) || undefined : undefined,
     });

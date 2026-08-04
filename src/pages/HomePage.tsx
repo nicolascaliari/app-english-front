@@ -4,6 +4,7 @@ import { api } from '../api/client';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import { SearchBar } from '../components/SearchBar';
 import type { Category } from '../types';
+import { categoryIcon } from '../utils/categoryIcon';
 
 export function HomePage() {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -98,7 +99,7 @@ export function HomePage() {
                       cat.color ? { '--cat-color': cat.color } as CSSProperties : undefined
                     }
                   >
-                    <span className="category-icon">{cat.icon ?? '📁'}</span>
+                    <span className="category-icon">{categoryIcon(cat.icon, cat.slug)}</span>
                     <span className="category-name">{cat.name}</span>
                     <span className="category-arrow">→</span>
                   </Link>

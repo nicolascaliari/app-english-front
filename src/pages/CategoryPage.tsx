@@ -6,6 +6,7 @@ import { FlashcardView } from '../components/FlashcardView';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import { SearchBar } from '../components/SearchBar';
 import type { Category, Difficulty, Flashcard } from '../types';
+import { categoryIcon } from '../utils/categoryIcon';
 
 export function CategoryPage() {
   const { slug, subSlug } = useParams<{ slug: string; subSlug?: string }>();
@@ -111,7 +112,9 @@ export function CategoryPage() {
       )}
 
       <h1 className="page-title page-title--with-icon">
-        <span className="page-title-icon">{current.icon ?? category.icon}</span>
+        <span className="page-title-icon">
+          {categoryIcon(current.icon ?? category.icon, current.slug ?? category.slug)}
+        </span>
         {current.name}
       </h1>
 
@@ -141,7 +144,9 @@ export function CategoryPage() {
                         : undefined
                     }
                   >
-                    <span className="category-icon">{sub.icon ?? category.icon ?? '📁'}</span>
+                    <span className="category-icon">
+                      {categoryIcon(sub.icon ?? category.icon, sub.slug)}
+                    </span>
                     <span className="category-name">{sub.name}</span>
                     <span className="category-arrow">→</span>
                   </Link>
