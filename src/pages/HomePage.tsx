@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState, type CSSProperties } from 'react';
 import { Link } from 'react-router-dom';
+import { useAuth } from '../auth/AuthContext';
 import { api } from '../api/client';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import { SearchBar } from '../components/SearchBar';
@@ -7,6 +8,7 @@ import type { Category } from '../types';
 import { categoryIcon } from '../utils/categoryIcon';
 
 export function HomePage() {
+  const { user, loading: authLoading } = useAuth();
   const [categories, setCategories] = useState<Category[]>([]);
   const [dueCount, setDueCount] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -20,6 +22,14 @@ export function HomePage() {
   }, [categories, query]);
 
   useEffect(() => {
+    if (authLoading || !user) {
+      setCategories([]);
+      setDueCount(0);
+      return;
+    }
+
+    setLoading(true);
+    setError('');
     Promise.all([api.getCategories(), api.getDueReviews()])
       .then(([cats, due]) => {
         setCategories(cats);
@@ -27,7 +37,7 @@ export function HomePage() {
       })
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
-  }, []);
+  }, [authLoading, user?.id]);
 
   if (loading) return <LoadingSpinner />;
   if (error) return <p className="status error">{error}</p>;

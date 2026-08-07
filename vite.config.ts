@@ -27,16 +27,8 @@ export default defineConfig({
         ],
       },
       workbox: {
-        runtimeCaching: [
-          {
-            urlPattern: /^https?:\/\/.*\/api\/.*/i,
-            handler: 'NetworkFirst',
-            options: {
-              cacheName: 'api-cache',
-              expiration: { maxEntries: 50, maxAgeSeconds: 86400 },
-            },
-          },
-        ],
+        // Las rutas /api requieren JWT; no cachear respuestas (evita listas vacías obsoletas).
+        runtimeCaching: [],
       },
     }),
   ],

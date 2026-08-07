@@ -1,7 +1,16 @@
-import { Link, NavLink, Outlet } from 'react-router-dom';
+import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
+import { useAuth } from '../auth/AuthContext';
 import { AnimatedPage } from './AnimatedPage';
 
 export function Layout() {
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    await logout();
+    navigate('/login', { replace: true });
+  };
+
   return (
     <div className="app">
       <div className="app-bg" aria-hidden="true" />
@@ -31,6 +40,16 @@ export function Layout() {
             </span>
             <span className="nav-cta-label">Nueva</span>
           </NavLink>
+          {user && (
+            <button
+              type="button"
+              className="nav-link nav-link--logout"
+              onClick={handleLogout}
+              title={`Salir (${user.name})`}
+            >
+              Salir
+            </button>
+          )}
         </nav>
       </header>
       <main className="main">

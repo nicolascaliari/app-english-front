@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState, type CSSProperties } from 'react';
 import { Link, useParams } from 'react-router-dom';
+import { useAuth } from '../auth/AuthContext';
 import { api } from '../api/client';
 import { CardFilters } from '../components/CardFilters';
 import { FlashcardView } from '../components/FlashcardView';
@@ -10,6 +11,7 @@ import { categoryIcon } from '../utils/categoryIcon';
 
 export function CategoryPage() {
   const { slug, subSlug } = useParams<{ slug: string; subSlug?: string }>();
+  const { user, loading: authLoading } = useAuth();
   const [category, setCategory] = useState<Category | null>(null);
   const [subcategory, setSubcategory] = useState<Category | null>(null);
   const [subcategories, setSubcategories] = useState<Category[]>([]);
@@ -21,7 +23,7 @@ export function CategoryPage() {
   const [difficultyFilter, setDifficultyFilter] = useState<Difficulty | null>(null);
 
   useEffect(() => {
-    if (!slug) return;
+    if (!slug || authLoading || !user) return;
     setLoading(true);
     setError('');
 
@@ -54,7 +56,7 @@ export function CategoryPage() {
         .catch((e) => setError(e.message))
         .finally(() => setLoading(false));
     }
-  }, [slug, subSlug]);
+  }, [slug, subSlug, authLoading, user]);
 
   useEffect(() => {
     setSubQuery('');

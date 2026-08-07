@@ -1,4 +1,6 @@
 import type {
+  AuthResponse,
+  AuthUser,
   Category,
   CreateCategoryPayload,
   CreateFlashcardPayload,
@@ -10,17 +12,92 @@ import type {
   GrammarExercisesResult,
   ImportPayload,
   ImportResult,
+  LoginPayload,
+  RegisterPayload,
   Review,
   UpdateFlashcardPayload,
 } from '../types';
+import { authStorage } from '../auth/authStorage';
 
 const API_URL = import.meta.env.VITE_API_URL ?? '/api';
 
-async function request<T>(path: string, options?: RequestInit): Promise<T> {
+export class AuthError extends Error {
+  constructor(message = 'Sesión expirada') {
+    super(message);
+    this.name = 'AuthError';
+  }
+}
+
+let refreshPromise: Promise<boolean> | null = null;
+
+async function tryRefresh(): Promise<boolean> {
+  const refreshToken = authStorage.getRefreshToken();
+  if (!refreshToken) return false;
+
+  if (!refreshPromise) {
+    refreshPromise = (async () => {
+      try {
+        const res = await fetch(`${API_URL}/auth/refresh`, {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${refreshToken}`,
+            'Content-Type': 'application/json',
+          },
+        });
+        if (!res.ok) return false;
+        const data = (await res.json()) as Pick<AuthResponse, 'accessToken' | 'refreshToken'>;
+        authStorage.setTokens(data.accessToken, data.refreshToken);
+        return true;
+      } catch {
+        return false;
+      } finally {
+        refreshPromise = null;
+      }
+    })();
+  }
+
+  return refreshPromise;
+}
+
+type RequestOptions = RequestInit & {
+  skipAuth?: boolean;
+  _retried?: boolean;
+};
+
+async function request<T>(path: string, options?: RequestOptions): Promise<T> {
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+    ...(options?.headers as Record<string, string> | undefined),
+  };
+
+  if (!options?.skipAuth) {
+    const token = authStorage.getAccessToken();
+    if (token) {
+      headers.Authorization = `Bearer ${token}`;
+    }
+  }
+
   const res = await fetch(`${API_URL}${path}`, {
-    headers: { 'Content-Type': 'application/json', ...options?.headers },
     ...options,
+    headers,
+    cache: 'no-store',
   });
+
+  if (
+    res.status === 401 &&
+    !options?.skipAuth &&
+    !options?._retried &&
+    !path.startsWith('/auth/login') &&
+    !path.startsWith('/auth/register') &&
+    !path.startsWith('/auth/refresh')
+  ) {
+    const refreshed = await tryRefresh();
+    if (refreshed) {
+      return request<T>(path, { ...options, _retried: true });
+    }
+    authStorage.clear();
+    throw new AuthError();
+  }
 
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
@@ -36,6 +113,33 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
 }
 
 export const api = {
+  login: (data: LoginPayload) =>
+    request<AuthResponse>('/auth/login', {
+      method: 'POST',
+      body: JSON.stringify(data),
+      skipAuth: true,
+    }),
+
+  register: (data: RegisterPayload) =>
+    request<AuthResponse>('/auth/register', {
+      method: 'POST',
+      body: JSON.stringify(data),
+      skipAuth: true,
+    }),
+
+  logout: () =>
+    request<{ loggedOut: true }>('/auth/logout', { method: 'POST' }),
+
+  getMe: async (): Promise<AuthUser> => {
+    const raw = await request<AuthUser & { _id?: string }>('/auth/me');
+    return {
+      id: raw.id ?? raw._id ?? '',
+      email: raw.email,
+      name: raw.name,
+      role: raw.role,
+    };
+  },
+
   getCategories: () => request<Category[]>('/categories'),
 
   getCategory: (slug: string) => request<Category>(`/categories/${slug}`),
