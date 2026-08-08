@@ -7,7 +7,7 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import { api, AuthError } from '../api/client';
+import { api, AuthError, onAuthFailure } from '../api/client';
 import type { AuthUser, LoginPayload, RegisterPayload } from '../types';
 import { authStorage, type StoredUser } from './authStorage';
 
@@ -56,6 +56,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(null);
       })
       .finally(() => setLoading(false));
+  }, []);
+
+  useEffect(() => {
+    return onAuthFailure(() => {
+      setUser(null);
+    });
   }, []);
 
   const login = useCallback(async (payload: LoginPayload) => {

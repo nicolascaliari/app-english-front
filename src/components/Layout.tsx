@@ -21,36 +21,39 @@ export function Layout() {
           </span>
           <span className="logo-text">Flashcards</span>
         </Link>
-        <nav aria-label="Principal">
-          <NavLink to="/practice" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
-            Repasar
-          </NavLink>
-          <NavLink to="/grammar" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
-            Gramática
-          </NavLink>
-          <NavLink
-            to="/new"
-            className={({ isActive }) =>
-              isActive ? 'nav-link nav-link--cta active' : 'nav-link nav-link--cta'
-            }
-            aria-label="Nueva carta"
-          >
-            <span className="nav-cta-plus" aria-hidden="true">
-              +
-            </span>
-            <span className="nav-cta-label">Nueva</span>
-          </NavLink>
+        <div className="header-actions">
+          <nav aria-label="Principal">
+            <NavLink to="/practice" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
+              Repasar
+            </NavLink>
+            <NavLink to="/grammar" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
+              Gramática
+            </NavLink>
+            <NavLink
+              to="/new"
+              className={({ isActive }) =>
+                isActive ? 'nav-link nav-link--cta active' : 'nav-link nav-link--cta'
+              }
+              aria-label="Nueva carta"
+            >
+              <span className="nav-cta-plus" aria-hidden="true">
+                +
+              </span>
+              <span className="nav-cta-label">Nueva</span>
+            </NavLink>
+          </nav>
           {user && (
             <button
               type="button"
-              className="nav-link nav-link--logout"
+              className="header-logout"
               onClick={handleLogout}
-              title={`Salir (${user.name})`}
+              title={`Cerrar sesión (${user.name})`}
+              aria-label={`Cerrar sesión (${user.name})`}
             >
-              Salir
+              Cerrar sesión
             </button>
           )}
-        </nav>
+        </div>
       </header>
       <main className="main">
         <AnimatedPage>

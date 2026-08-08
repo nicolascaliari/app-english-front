@@ -28,6 +28,25 @@ export class AuthError extends Error {
   }
 }
 
+type AuthFailureListener = () => void;
+const authFailureListeners = new Set<AuthFailureListener>();
+
+/** Subscribe to mid-session auth failures (expired token / failed refresh). */
+export function onAuthFailure(listener: AuthFailureListener): () => void {
+  authFailureListeners.add(listener);
+  return () => {
+    authFailureListeners.delete(listener);
+  };
+}
+
+function handleAuthFailure(): never {
+  authStorage.clear();
+  for (const listener of authFailureListeners) {
+    listener();
+  }
+  throw new AuthError();
+}
+
 let refreshPromise: Promise<boolean> | null = null;
 
 async function tryRefresh(): Promise<boolean> {
@@ -86,17 +105,17 @@ async function request<T>(path: string, options?: RequestOptions): Promise<T> {
   if (
     res.status === 401 &&
     !options?.skipAuth &&
-    !options?._retried &&
     !path.startsWith('/auth/login') &&
     !path.startsWith('/auth/register') &&
     !path.startsWith('/auth/refresh')
   ) {
-    const refreshed = await tryRefresh();
-    if (refreshed) {
-      return request<T>(path, { ...options, _retried: true });
+    if (!options?._retried) {
+      const refreshed = await tryRefresh();
+      if (refreshed) {
+        return request<T>(path, { ...options, _retried: true });
+      }
     }
-    authStorage.clear();
-    throw new AuthError();
+    handleAuthFailure();
   }
 
   if (!res.ok) {
