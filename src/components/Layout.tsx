@@ -1,9 +1,11 @@
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
+import { useI18n } from '../i18n/I18nProvider';
 import { AnimatedPage } from './AnimatedPage';
 
 export function Layout() {
   const { user, logout } = useAuth();
+  const { t } = useI18n();
   const navigate = useNavigate();
 
   const handleLogout = async () => {
@@ -19,27 +21,30 @@ export function Layout() {
           <span className="logo-mark" aria-hidden="true">
             🃏
           </span>
-          <span className="logo-text">Flashcards</span>
+          <span className="logo-text">{t('brand.name')}</span>
         </Link>
         <div className="header-actions">
-          <nav aria-label="Principal">
+          <nav aria-label={t('nav.aria')}>
             <NavLink to="/practice" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
-              Repasar
+              {t('nav.review')}
             </NavLink>
             <NavLink to="/grammar" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
-              Gramática
+              {t('nav.grammar')}
             </NavLink>
             <NavLink
               to="/new"
               className={({ isActive }) =>
                 isActive ? 'nav-link nav-link--cta active' : 'nav-link nav-link--cta'
               }
-              aria-label="Nueva carta"
+              aria-label={t('nav.newAria')}
             >
               <span className="nav-cta-plus" aria-hidden="true">
                 +
               </span>
-              <span className="nav-cta-label">Nueva</span>
+              <span className="nav-cta-label">{t('nav.new')}</span>
+            </NavLink>
+            <NavLink to="/settings" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
+              {t('nav.settings')}
             </NavLink>
           </nav>
           {user && (
@@ -47,10 +52,10 @@ export function Layout() {
               type="button"
               className="header-logout"
               onClick={handleLogout}
-              title={`Cerrar sesión (${user.name})`}
-              aria-label={`Cerrar sesión (${user.name})`}
+              title={`${t('nav.logout')} (${user.name})`}
+              aria-label={`${t('nav.logout')} (${user.name})`}
             >
-              Cerrar sesión
+              {t('nav.logout')}
             </button>
           )}
         </div>

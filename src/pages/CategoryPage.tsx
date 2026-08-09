@@ -6,12 +6,14 @@ import { CardFilters } from '../components/CardFilters';
 import { FlashcardView } from '../components/FlashcardView';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import { SearchBar } from '../components/SearchBar';
+import { useI18n } from '../i18n/I18nProvider';
 import type { Category, Difficulty, Flashcard } from '../types';
 import { categoryIcon } from '../utils/categoryIcon';
 
 export function CategoryPage() {
   const { slug, subSlug } = useParams<{ slug: string; subSlug?: string }>();
   const { user, loading: authLoading } = useAuth();
+  const { t } = useI18n();
   const [category, setCategory] = useState<Category | null>(null);
   const [subcategory, setSubcategory] = useState<Category | null>(null);
   const [subcategories, setSubcategories] = useState<Category[]>([]);
@@ -83,7 +85,7 @@ export function CategoryPage() {
   }, [cards, cardQuery, difficultyFilter]);
 
   const handleDelete = async (id: string) => {
-    if (!confirm('¿Eliminar esta carta?')) return;
+    if (!confirm(t('category.deleteConfirm'))) return;
     await api.deleteFlashcard(id);
     setCards((prev) => prev.filter((c) => c._id !== id));
   };
@@ -104,12 +106,13 @@ export function CategoryPage() {
   return (
     <div>
       <Link to={subcategory ? `/category/${category.slug}` : '/'} className="back-link">
-        ← Volver
+        {t('common.back')}
       </Link>
 
       {subcategory && (
         <p className="breadcrumb">
-          <Link to="/">Categorías</Link> / <Link to={`/category/${category.slug}`}>{category.name}</Link>
+          <Link to="/">{t('category.breadcrumb')}</Link> /{' '}
+          <Link to={`/category/${category.slug}`}>{category.name}</Link>
         </p>
       )}
 
@@ -125,13 +128,13 @@ export function CategoryPage() {
           <SearchBar
             value={subQuery}
             onChange={setSubQuery}
-            placeholder="Buscar subcategorías..."
+            placeholder={t('category.searchSubs')}
           />
 
           {filteredSubcategories.length === 0 ? (
             <div className="empty empty--enter">
               <span className="empty-icon">🔍</span>
-              <p>No se encontraron subcategorías para "{subQuery}".</p>
+              <p>{t('category.noSubs', { query: subQuery })}</p>
             </div>
           ) : (
             <ul className="category-list">
@@ -158,7 +161,7 @@ export function CategoryPage() {
           )}
 
           {cards.length > 0 && (
-            <h2 className="section-title">Cartas en esta categoría</h2>
+            <h2 className="section-title">{t('category.cardsSection')}</h2>
           )}
         </>
       )}
@@ -178,20 +181,20 @@ export function CategoryPage() {
         hasSubcategories ? null : (
           <div className="empty empty--enter">
             <span className="empty-icon">🃏</span>
-            <p>No hay cartas en esta categoría.</p>
+            <p>{t('category.empty')}</p>
             <Link
               to="/new"
               state={{ categoryId: currentId }}
               className="btn btn-primary"
             >
-              Agregar carta
+              {t('category.addCard')}
             </Link>
           </div>
         )
       ) : filteredCards.length === 0 ? (
         <div className="empty empty--enter">
           <span className="empty-icon">🔍</span>
-          <p>No se encontraron cartas con esos filtros.</p>
+          <p>{t('category.noFilterResults')}</p>
         </div>
       ) : (
         <ul className="flashcard-grid">
@@ -215,7 +218,7 @@ export function CategoryPage() {
           state={{ parentSlug: category.slug }}
           className="btn btn-secondary add-subcategory-link"
         >
-          + Agregar subcategoría
+          {t('category.addSub')}
         </Link>
       )}
     </div>

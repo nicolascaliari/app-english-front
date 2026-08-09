@@ -1,14 +1,24 @@
 import { type ChangeEvent, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../api/client';
+import { useAuth } from '../auth/AuthContext';
+import { useI18n } from '../i18n/I18nProvider';
 import {
   downloadImportTemplate,
   parseExcelFile,
   type ParsedExcel,
 } from '../utils/excelImport';
+import {
+  DEFAULT_NATIVE_LANGUAGE,
+  DEFAULT_TARGET_LANGUAGE,
+} from '../utils/languages';
 
 export function ImportPanel() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const { t, languageName } = useI18n();
+  const targetLabel = languageName(user?.targetLanguage ?? DEFAULT_TARGET_LANGUAGE);
+  const nativeLabel = languageName(user?.nativeLanguage ?? DEFAULT_NATIVE_LANGUAGE);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [parsed, setParsed] = useState<ParsedExcel | null>(null);
   const [fileName, setFileName] = useState('');
@@ -37,13 +47,10 @@ export function ImportPanel() {
       setImportFlashcards(data.flashcards.length > 0);
 
       if (data.categories.length === 0 && data.flashcards.length === 0) {
-        setError(
-          `No se encontraron datos. Hojas detectadas: ${data.sheetNames.join(', ')}. ` +
-            'Usá hojas llamadas "categorias" y/o "palabras".',
-        );
+        setError(t('import.noData'));
       }
     } catch {
-      setError('No se pudo leer el archivo Excel.');
+      setError(t('import.readError'));
       setParsed(null);
     }
   };
@@ -65,23 +72,17 @@ export function ImportPanel() {
       }
 
       if (!payload.categories?.length && !payload.flashcards?.length) {
-        setError('Seleccioná al menos un tipo de dato para importar.');
+        setError(t('import.selectSomething'));
         return;
       }
 
       const res = await api.importData(payload);
-      const parts: string[] = [];
-      if (payload.categories?.length) {
-        parts.push(
-          `${res.categories.created} categoría(s) creada(s), ${res.categories.skipped} omitida(s)`,
-        );
-      }
-      if (payload.flashcards?.length) {
-        parts.push(
-          `${res.flashcards.created} carta(s) creada(s), ${res.flashcards.skipped} omitida(s)`,
-        );
-      }
-      setResult(parts.join('. ') + '.');
+      setResult(
+        t('import.result', {
+          cats: res.categories.created,
+          cards: res.flashcards.created,
+        }),
+      );
 
       if (res.flashcards.errors.length > 0) {
         setError(res.flashcards.errors.slice(0, 5).join('\n'));
@@ -89,7 +90,7 @@ export function ImportPanel() {
         setTimeout(() => navigate('/'), 2000);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al importar');
+      setError(err instanceof Error ? err.message : t('import.error'));
     } finally {
       setImporting(false);
     }
@@ -97,17 +98,14 @@ export function ImportPanel() {
 
   return (
     <div className="import-panel">
-      <p className="import-hint">
-        Subí un Excel con hojas <strong>categorias</strong> y/o{' '}
-        <strong>palabras</strong>. Podés importar una, otra, o ambas.
-      </p>
+      <p className="import-hint">{t('import.hint')}</p>
 
       <button
         type="button"
         className="btn btn-secondary import-template-btn"
         onClick={downloadImportTemplate}
       >
-        Descargar plantilla
+        {t('import.downloadTemplate')}
       </button>
 
       <div className="import-dropzone">
@@ -123,13 +121,13 @@ export function ImportPanel() {
           className="btn btn-secondary"
           onClick={() => fileInputRef.current?.click()}
         >
-          {fileName || 'Elegir archivo Excel'}
+          {fileName || t('import.chooseFile')}
         </button>
       </div>
 
       {parsed && (hasCategories || hasFlashcards) && (
         <div className="import-preview">
-          <p className="import-preview-title">Vista previa</p>
+          <p className="import-preview-title">{t('import.preview')}</p>
 
           {hasCategories && (
             <label className="import-checkbox">
@@ -138,7 +136,7 @@ export function ImportPanel() {
                 checked={importCategories}
                 onChange={(e) => setImportCategories(e.target.checked)}
               />
-              Categorías ({parsed.categories.length})
+              {t('import.categoriesN', { n: parsed.categories.length })}
             </label>
           )}
 
@@ -149,7 +147,7 @@ export function ImportPanel() {
                 checked={importFlashcards}
                 onChange={(e) => setImportFlashcards(e.target.checked)}
               />
-              Palabras ({parsed.flashcards.length})
+              {t('import.wordsN', { n: parsed.flashcards.length })}
             </label>
           )}
 
@@ -158,10 +156,10 @@ export function ImportPanel() {
               <table className="import-table">
                 <thead>
                   <tr>
-                    <th>Nombre</th>
-                    <th>Slug</th>
-                    <th>Ícono</th>
-                    <th>Padre</th>
+                    <th>{t('import.name')}</th>
+                    <th>{t('import.slug')}</th>
+                    <th>{t('import.icon')}</th>
+                    <th>{t('import.parent')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -177,7 +175,7 @@ export function ImportPanel() {
               </table>
               {parsed.categories.length > 5 && (
                 <p className="import-more">
-                  +{parsed.categories.length - 5} más...
+                  {t('import.more', { n: parsed.categories.length - 5 })}
                 </p>
               )}
             </div>
@@ -188,10 +186,10 @@ export function ImportPanel() {
               <table className="import-table">
                 <thead>
                   <tr>
-                    <th>Categoría</th>
-                    <th>Subcategoría</th>
-                    <th>Inglés</th>
-                    <th>Español</th>
+                    <th>{t('import.category')}</th>
+                    <th>{t('import.subcategory')}</th>
+                    <th>{targetLabel}</th>
+                    <th>{nativeLabel}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -207,7 +205,7 @@ export function ImportPanel() {
               </table>
               {parsed.flashcards.length > 5 && (
                 <p className="import-more">
-                  +{parsed.flashcards.length - 5} más...
+                  {t('import.more', { n: parsed.flashcards.length - 5 })}
                 </p>
               )}
             </div>
@@ -219,7 +217,7 @@ export function ImportPanel() {
             disabled={importing}
             onClick={handleImport}
           >
-            {importing ? 'Importando...' : 'Importar'}
+            {importing ? t('import.importing') : t('import.import')}
           </button>
         </div>
       )}
@@ -228,25 +226,16 @@ export function ImportPanel() {
       {error && <p className="status error">{error}</p>}
 
       <details className="import-format-help">
-        <summary>Formato del Excel</summary>
+        <summary>{t('import.formatTitle')}</summary>
         <div className="import-format-body">
+          <p>{t('import.formatCats')}</p>
           <p>
-            <strong>Hoja "categorias":</strong> nombre, slug (opcional), icono,
-            color, padre (opcional)
+            {t('import.formatWords', {
+              target: targetLabel,
+              native: nativeLabel,
+            })}
           </p>
-          <p>
-            <strong>Hoja "palabras":</strong> categoria (nombre o slug),
-            subcategoria (opcional), ingles, espanol, ejemplo, pronunciacion,
-            dificultad (easy/medium/hard)
-          </p>
-          <p>
-            Las categorías duplicadas (mismo slug dentro del mismo padre) se
-            omiten. Si completás "padre" en la hoja de categorías, esa fila se
-            crea como subcategoría (ej: categoría "get" con padre
-            "phrasal-verbs"). Las palabras requieren que la categoría (y
-            subcategoría, si se indica) exista o se importe en el mismo
-            archivo.
-          </p>
+          <p>{t('import.formatRules')}</p>
         </div>
       </details>
     </div>

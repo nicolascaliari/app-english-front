@@ -1,3 +1,7 @@
+import type { AppLanguage } from '../utils/languages';
+
+export type { AppLanguage };
+
 export type Difficulty = 'easy' | 'medium' | 'hard';
 
 export const DIFFICULTY_LABELS: Record<Difficulty, string> = {
@@ -11,6 +15,8 @@ export interface AuthUser {
   email: string;
   name: string;
   role: string;
+  nativeLanguage: AppLanguage;
+  targetLanguage: AppLanguage;
 }
 
 export interface AuthResponse {
@@ -28,6 +34,14 @@ export interface RegisterPayload {
   email: string;
   password: string;
   name: string;
+  nativeLanguage: AppLanguage;
+  targetLanguage: AppLanguage;
+}
+
+export interface UpdateProfilePayload {
+  name?: string;
+  nativeLanguage?: AppLanguage;
+  targetLanguage?: AppLanguage;
 }
 
 export interface Category {

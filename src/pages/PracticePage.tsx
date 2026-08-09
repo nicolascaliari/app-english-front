@@ -4,9 +4,11 @@ import { api } from '../api/client';
 import { FlashcardView } from '../components/FlashcardView';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import { ReviewProgress } from '../components/ReviewProgress';
+import { useI18n } from '../i18n/I18nProvider';
 import type { Difficulty, Flashcard } from '../types';
 
 export function PracticePage() {
+  const { t } = useI18n();
   const [queue, setQueue] = useState<Flashcard[]>([]);
   const [index, setIndex] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -39,7 +41,7 @@ export function PracticePage() {
         prev.map((c) => (c._id === updated._id ? updated : c)),
       );
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Error al guardar');
+      setError(e instanceof Error ? e.message : t('new.saveError'));
     } finally {
       setUpdating(false);
     }
@@ -62,15 +64,15 @@ export function PracticePage() {
         <span className="empty-icon">🎉</span>
         <p>
           {queue.length === 0 && index === 0
-            ? 'No hay cartas media o difícil para repasar.'
-            : 'Terminaste el repaso.'}
+            ? t('practice.empty')
+            : t('practice.done')}
         </p>
         <div className="empty-actions">
           <button type="button" className="btn btn-primary" onClick={loadPractice}>
-            Repasar otras 10
+            {t('practice.again')}
           </button>
           <Link to="/" className="btn btn-secondary">
-            Volver al inicio
+            {t('common.backHome')}
           </Link>
         </div>
       </div>
@@ -82,7 +84,7 @@ export function PracticePage() {
       <ReviewProgress
         current={index + 1}
         total={queue.length}
-        label="media / difícil"
+        label={t('practice.label')}
       />
       <FlashcardView
         key={current._id}
@@ -97,7 +99,7 @@ export function PracticePage() {
           onClick={handleNext}
           disabled={updating}
         >
-          Siguiente →
+          {t('practice.next')}
         </button>
       </div>
     </div>

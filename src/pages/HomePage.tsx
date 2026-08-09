@@ -4,11 +4,13 @@ import { useAuth } from '../auth/AuthContext';
 import { api } from '../api/client';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import { SearchBar } from '../components/SearchBar';
+import { useI18n } from '../i18n/I18nProvider';
 import type { Category } from '../types';
 import { categoryIcon } from '../utils/categoryIcon';
 
 export function HomePage() {
   const { user, loading: authLoading } = useAuth();
+  const { t } = useI18n();
   const [categories, setCategories] = useState<Category[]>([]);
   const [dueCount, setDueCount] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -47,8 +49,8 @@ export function HomePage() {
       <Link to="/grammar" className="banner banner--grammar">
         <span className="banner-icon">✏️</span>
         <span className="banner-content">
-          <span className="banner-title">Práctica de gramática</span>
-          <span className="banner-sub">Ejercicios generados con IA</span>
+          <span className="banner-title">{t('home.grammarTitle')}</span>
+          <span className="banner-sub">{t('home.grammarSub')}</span>
         </span>
         <span className="banner-arrow">→</span>
       </Link>
@@ -56,8 +58,8 @@ export function HomePage() {
       <Link to="/practice" className="banner banner--practice">
         <span className="banner-icon">🔄</span>
         <span className="banner-content">
-          <span className="banner-title">Repaso rápido</span>
-          <span className="banner-sub">10 cartas media / difícil</span>
+          <span className="banner-title">{t('home.practiceTitle')}</span>
+          <span className="banner-sub">{t('home.practiceSub')}</span>
         </span>
         <span className="banner-arrow">→</span>
       </Link>
@@ -67,22 +69,24 @@ export function HomePage() {
           <span className="banner-icon">📚</span>
           <span className="banner-content">
             <span className="banner-title">
-              {dueCount} carta{dueCount !== 1 ? 's' : ''} pendientes
+              {t(dueCount === 1 ? 'home.dueOne' : 'home.dueOther', {
+                count: dueCount,
+              })}
             </span>
-            <span className="banner-sub">Repetición espaciada (SM-2)</span>
+            <span className="banner-sub">{t('home.dueSub')}</span>
           </span>
           <span className="banner-badge">{dueCount}</span>
         </Link>
       )}
 
-      <h1 className="page-title">Categorías</h1>
+      <h1 className="page-title">{t('home.categories')}</h1>
 
       {categories.length === 0 ? (
         <div className="empty empty--enter">
           <span className="empty-icon">📭</span>
-          <p>No hay categorías todavía.</p>
+          <p>{t('home.empty')}</p>
           <Link to="/new" className="btn btn-primary">
-            Crear tu primera carta
+            {t('home.createFirst')}
           </Link>
         </div>
       ) : (
@@ -90,13 +94,13 @@ export function HomePage() {
           <SearchBar
             value={query}
             onChange={setQuery}
-            placeholder="Buscar categorías..."
+            placeholder={t('home.searchCategories')}
           />
 
           {filteredCategories.length === 0 ? (
             <div className="empty empty--enter">
               <span className="empty-icon">🔍</span>
-              <p>No se encontraron categorías para "{query}".</p>
+              <p>{t('home.noResults', { query })}</p>
             </div>
           ) : (
             <ul className="category-list">

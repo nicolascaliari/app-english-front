@@ -4,20 +4,19 @@ import { api } from '../api/client';
 import { GrammarExerciseCard } from '../components/GrammarExerciseCard';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import { ReviewProgress } from '../components/ReviewProgress';
+import { useI18n } from '../i18n/I18nProvider';
 import type { GrammarExercise, GrammarExercisesResult, GrammarLevel } from '../types';
-import { GRAMMAR_LEVEL_LABELS } from '../types';
 
-const EXAMPLE_TOPICS = [
-  'Present perfect vs past simple',
-  'Condicionales tipo 1 y 2',
-  'Voz pasiva',
-  'Phrasal verbs con "get"',
-  'Preposiciones de tiempo (in, on, at)',
-];
+const LEVEL_KEYS: Record<GrammarLevel, 'grammar.levelBeginner' | 'grammar.levelIntermediate' | 'grammar.levelAdvanced'> = {
+  beginner: 'grammar.levelBeginner',
+  intermediate: 'grammar.levelIntermediate',
+  advanced: 'grammar.levelAdvanced',
+};
 
 type Phase = 'setup' | 'session' | 'results';
 
 export function GrammarPracticePage() {
+  const { t } = useI18n();
   const [phase, setPhase] = useState<Phase>('setup');
   const [topic, setTopic] = useState('');
   const [level, setLevel] = useState<GrammarLevel>('intermediate');
@@ -30,13 +29,21 @@ export function GrammarPracticePage() {
   const [score, setScore] = useState(0);
   const [answered, setAnswered] = useState(false);
 
+  const exampleTopics = [
+    t('grammar.ex1'),
+    t('grammar.ex2'),
+    t('grammar.ex3'),
+    t('grammar.ex4'),
+    t('grammar.ex5'),
+  ];
+
   const current: GrammarExercise | undefined = session?.exercises[index];
 
   const handleGenerate = async (e: FormEvent) => {
     e.preventDefault();
     const trimmed = topic.trim();
     if (trimmed.length < 3) {
-      setError('Escribí un tema de al menos 3 caracteres.');
+      setError(t('grammar.minTopic'));
       return;
     }
 
@@ -55,7 +62,7 @@ export function GrammarPracticePage() {
       setAnswered(false);
       setPhase('session');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al generar ejercicios');
+      setError(err instanceof Error ? err.message : t('grammar.error'));
     } finally {
       setGenerating(false);
     }
@@ -90,31 +97,29 @@ export function GrammarPracticePage() {
   if (phase === 'setup') {
     return (
       <div>
-        <Link to="/" className="back-link">← Volver</Link>
+        <Link to="/" className="back-link">{t('common.back')}</Link>
         <h1 className="page-title page-title--with-icon">
           <span className="page-title-icon">✏️</span>
-          Práctica de gramática
+          {t('grammar.title')}
         </h1>
-        <p className="grammar-intro">
-          Elegí un tema y la IA generará ejercicios personalizados para practicar.
-        </p>
+        <p className="grammar-intro">{t('grammar.intro')}</p>
 
         <form className="form grammar-setup-form" onSubmit={handleGenerate}>
           <label>
-            Tema
+            {t('grammar.topic')}
             <input
               type="text"
               value={topic}
               onChange={(e) => setTopic(e.target.value)}
-              placeholder="Ej: present perfect, condicionales, voz pasiva..."
+              placeholder={t('grammar.topicPlaceholder')}
               disabled={generating}
             />
           </label>
 
           <div className="grammar-examples">
-            <span className="grammar-examples-label">Ejemplos:</span>
+            <span className="grammar-examples-label">{t('grammar.examples')}</span>
             <div className="grammar-examples-list">
-              {EXAMPLE_TOPICS.map((example) => (
+              {exampleTopics.map((example) => (
                 <button
                   key={example}
                   type="button"
@@ -129,29 +134,31 @@ export function GrammarPracticePage() {
           </div>
 
           <label>
-            Nivel
+            {t('grammar.level')}
             <select
               value={level}
               onChange={(e) => setLevel(e.target.value as GrammarLevel)}
               disabled={generating}
             >
-              {(Object.entries(GRAMMAR_LEVEL_LABELS) as [GrammarLevel, string][]).map(
-                ([value, label]) => (
-                  <option key={value} value={value}>{label}</option>
-                ),
-              )}
+              {(Object.keys(LEVEL_KEYS) as GrammarLevel[]).map((value) => (
+                <option key={value} value={value}>
+                  {t(LEVEL_KEYS[value])}
+                </option>
+              ))}
             </select>
           </label>
 
           <label>
-            Cantidad de ejercicios
+            {t('grammar.count')}
             <select
               value={count}
               onChange={(e) => setCount(Number(e.target.value))}
               disabled={generating}
             >
               {[3, 5, 7, 10, 12].map((n) => (
-                <option key={n} value={n}>{n} ejercicios</option>
+                <option key={n} value={n}>
+                  {t('grammar.nExercises', { n })}
+                </option>
               ))}
             </select>
           </label>
@@ -159,7 +166,7 @@ export function GrammarPracticePage() {
           {error && <p className="status error">{error}</p>}
 
           <button type="submit" className="btn btn-primary btn--wide" disabled={generating}>
-            {generating ? 'Generando ejercicios...' : 'Generar ejercicios'}
+            {generating ? t('grammar.generating') : t('grammar.generate')}
           </button>
         </form>
       </div>
@@ -176,14 +183,18 @@ export function GrammarPracticePage() {
       <div className="empty empty--celebrate">
         <span className="empty-icon">{pct >= 70 ? '🎉' : '📖'}</span>
         <p className="grammar-results-title">
-          {score} de {total} correctas ({pct}%)
+          {t('grammar.results', { score, total, pct })}
         </p>
-        <p className="grammar-results-topic">Tema: {session.topic}</p>
+        <p className="grammar-results-topic">
+          {t('grammar.topicLabel', { topic: session.topic })}
+        </p>
         <div className="empty-actions">
           <button type="button" className="btn btn-primary" onClick={handleNewSession}>
-            Nueva sesión
+            {t('grammar.newSession')}
           </button>
-          <Link to="/" className="btn btn-secondary">Volver al inicio</Link>
+          <Link to="/" className="btn btn-secondary">
+            {t('common.backHome')}
+          </Link>
         </div>
       </div>
     );
@@ -208,7 +219,9 @@ export function GrammarPracticePage() {
       {answered && (
         <div className="review-actions review-actions--enter" style={{ marginTop: '1rem' }}>
           <button type="button" className="btn btn-primary btn--wide" onClick={handleNext}>
-            {index + 1 < session.exercises.length ? 'Siguiente →' : 'Ver resultados'}
+            {index + 1 < session.exercises.length
+              ? t('grammar.next')
+              : t('grammar.seeResults')}
           </button>
         </div>
       )}

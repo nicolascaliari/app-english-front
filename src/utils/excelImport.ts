@@ -228,8 +228,8 @@ export function downloadImportTemplate(): void {
     [
       'categoria',
       'subcategoria',
-      'ingles',
-      'espanol',
+      'front',
+      'back',
       'ejemplo',
       'pronunciacion',
       'dificultad',

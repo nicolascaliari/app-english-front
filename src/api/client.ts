@@ -16,7 +16,13 @@ import type {
   RegisterPayload,
   Review,
   UpdateFlashcardPayload,
+  UpdateProfilePayload,
 } from '../types';
+import {
+  DEFAULT_NATIVE_LANGUAGE,
+  DEFAULT_TARGET_LANGUAGE,
+  normalizeAppLanguage,
+} from '../utils/languages';
 import { authStorage } from '../auth/authStorage';
 
 const API_URL = import.meta.env.VITE_API_URL ?? '/api';
@@ -156,6 +162,35 @@ export const api = {
       email: raw.email,
       name: raw.name,
       role: raw.role,
+      nativeLanguage: normalizeAppLanguage(
+        raw.nativeLanguage,
+        DEFAULT_NATIVE_LANGUAGE,
+      ),
+      targetLanguage: normalizeAppLanguage(
+        raw.targetLanguage,
+        DEFAULT_TARGET_LANGUAGE,
+      ),
+    };
+  },
+
+  updateProfile: async (data: UpdateProfilePayload): Promise<AuthUser> => {
+    const raw = await request<AuthUser & { _id?: string }>('/users/me', {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    });
+    return {
+      id: raw.id ?? raw._id ?? '',
+      email: raw.email,
+      name: raw.name,
+      role: raw.role,
+      nativeLanguage: normalizeAppLanguage(
+        raw.nativeLanguage,
+        DEFAULT_NATIVE_LANGUAGE,
+      ),
+      targetLanguage: normalizeAppLanguage(
+        raw.targetLanguage,
+        DEFAULT_TARGET_LANGUAGE,
+      ),
     };
   },
 

@@ -1,4 +1,5 @@
-import { DIFFICULTY_LABELS, type Difficulty } from '../types';
+import { useI18n } from '../i18n/I18nProvider';
+import type { Difficulty } from '../types';
 import { SearchBar } from './SearchBar';
 
 interface CardFiltersProps {
@@ -20,11 +21,16 @@ export function CardFilters({
   total,
   filtered,
 }: CardFiltersProps) {
+  const { t } = useI18n();
   const hasFilters = query || difficulty;
 
   return (
     <div className="card-filters">
-      <SearchBar value={query} onChange={onQueryChange} placeholder="Buscar cartas..." />
+      <SearchBar
+        value={query}
+        onChange={onQueryChange}
+        placeholder={t('filters.searchCards')}
+      />
 
       <div className="filter-pills">
         {DIFFICULTIES.map((d) => (
@@ -34,14 +40,14 @@ export function CardFilters({
             className={`filter-pill filter-pill--${d}${difficulty === d ? ' active' : ''}`}
             onClick={() => onDifficultyChange(difficulty === d ? null : d)}
           >
-            {DIFFICULTY_LABELS[d]}
+            {t(`difficulty.${d}`)}
           </button>
         ))}
       </div>
 
       {hasFilters && (
         <p className="filter-count">
-          {filtered} de {total} carta{total !== 1 ? 's' : ''}
+          {t('filters.count', { filtered, total })}
         </p>
       )}
     </div>

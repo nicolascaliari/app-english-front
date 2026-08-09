@@ -14,12 +14,14 @@ if (isSpeechSupported()) {
   window.speechSynthesis.onvoiceschanged = refreshVoices;
 }
 
-function pickAmericanVoice(): SpeechSynthesisVoice | undefined {
+function pickVoice(locale: string): SpeechSynthesisVoice | undefined {
   if (cachedVoices.length === 0) refreshVoices();
+  const normalized = locale.toLowerCase().replace('_', '-');
+  const prefix = normalized.split('-')[0];
+
   return (
-    cachedVoices.find((v) => v.lang === 'en-US') ??
-    cachedVoices.find((v) => v.lang?.toLowerCase().replace('_', '-') === 'en-us') ??
-    cachedVoices.find((v) => v.lang?.toLowerCase().startsWith('en'))
+    cachedVoices.find((v) => v.lang?.toLowerCase().replace('_', '-') === normalized) ??
+    cachedVoices.find((v) => v.lang?.toLowerCase().startsWith(prefix))
   );
 }
 
@@ -30,20 +32,19 @@ interface SpeakOptions {
 }
 
 /**
- * Speaks the given text using American English (en-US), preferring a
- * matching system voice when one is available.
+ * Speaks text using the given BCP-47 locale, preferring a matching system voice.
  */
-export function speakEnglish(text: string, options: SpeakOptions = {}): void {
+export function speak(text: string, locale: string, options: SpeakOptions = {}): void {
   if (!isSpeechSupported() || !text.trim()) return;
 
   const synth = window.speechSynthesis;
   synth.cancel();
 
   const utterance = new SpeechSynthesisUtterance(text.trim());
-  utterance.lang = 'en-US';
+  utterance.lang = locale;
   utterance.rate = options.rate ?? 0.9;
 
-  const voice = pickAmericanVoice();
+  const voice = pickVoice(locale);
   if (voice) utterance.voice = voice;
 
   if (options.onStart) utterance.onstart = options.onStart;
@@ -52,4 +53,9 @@ export function speakEnglish(text: string, options: SpeakOptions = {}): void {
   utterance.onerror = stop;
 
   synth.speak(utterance);
+}
+
+/** @deprecated Prefer `speak(text, locale)`. Kept for compatibility. */
+export function speakEnglish(text: string, options: SpeakOptions = {}): void {
+  speak(text, 'en-US', options);
 }

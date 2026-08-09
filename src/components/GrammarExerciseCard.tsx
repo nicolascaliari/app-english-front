@@ -1,4 +1,5 @@
 import { useState, type FormEvent } from 'react';
+import { useI18n } from '../i18n/I18nProvider';
 import type { GrammarExercise } from '../types';
 
 interface Props {
@@ -11,6 +12,7 @@ function normalizeAnswer(value: string): string {
 }
 
 export function GrammarExerciseCard({ exercise, onAnswer }: Props) {
+  const { t } = useI18n();
   const [input, setInput] = useState('');
   const [selected, setSelected] = useState<string | null>(null);
   const [revealed, setRevealed] = useState(false);
@@ -38,7 +40,7 @@ export function GrammarExerciseCard({ exercise, onAnswer }: Props) {
   return (
     <div className={`grammar-exercise${revealed ? (isCorrect ? ' grammar-exercise--correct' : ' grammar-exercise--wrong') : ''}`}>
       <span className="grammar-exercise-type">
-        {exercise.type === 'fill_blank' ? 'Completar' : 'Opción múltiple'}
+        {exercise.type === 'fill_blank' ? t('grammar.typeFill') : t('grammar.typeMc')}
       </span>
 
       <p className="grammar-exercise-prompt">{exercise.prompt}</p>
@@ -50,13 +52,13 @@ export function GrammarExerciseCard({ exercise, onAnswer }: Props) {
             className="grammar-exercise-input"
             value={input}
             onChange={(e) => setInput(e.target.value)}
-            placeholder="Tu respuesta..."
+            placeholder={t('grammar.answerPlaceholder')}
             disabled={revealed}
             autoFocus
           />
           {!revealed && (
             <button type="submit" className="btn btn-primary" disabled={!input.trim()}>
-              Verificar
+              {t('grammar.verify')}
             </button>
           )}
         </form>
@@ -92,7 +94,9 @@ export function GrammarExerciseCard({ exercise, onAnswer }: Props) {
       {revealed && (
         <div className="grammar-feedback">
           <p className={`grammar-feedback-result${isCorrect ? ' grammar-feedback-result--correct' : ' grammar-feedback-result--wrong'}`}>
-            {isCorrect ? '✓ Correcto' : `✗ Incorrecto — respuesta: ${exercise.correctAnswer}`}
+            {isCorrect
+              ? t('grammar.correct')
+              : t('grammar.incorrect', { answer: exercise.correctAnswer })}
           </p>
           <p className="grammar-feedback-explanation">{exercise.explanation}</p>
         </div>

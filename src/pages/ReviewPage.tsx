@@ -4,9 +4,11 @@ import { api } from '../api/client';
 import { FlashcardView } from '../components/FlashcardView';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import { ReviewProgress } from '../components/ReviewProgress';
+import { useI18n } from '../i18n/I18nProvider';
 import type { Difficulty, DueReview } from '../types';
 
 export function ReviewPage() {
+  const { t } = useI18n();
   const [queue, setQueue] = useState<DueReview[]>([]);
   const [index, setIndex] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -34,7 +36,7 @@ export function ReviewPage() {
         setQueue([]);
       }
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Error al guardar');
+      setError(e instanceof Error ? e.message : t('new.saveError'));
     } finally {
       setSubmitting(false);
     }
@@ -53,7 +55,7 @@ export function ReviewPage() {
         ),
       );
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Error al guardar');
+      setError(e instanceof Error ? e.message : t('new.saveError'));
     } finally {
       setSubmitting(false);
     }
@@ -66,9 +68,9 @@ export function ReviewPage() {
     return (
       <div className="empty empty--celebrate">
         <span className="empty-icon">🎉</span>
-        <p>No hay cartas para repasar hoy.</p>
+        <p>{t('review.empty')}</p>
         <Link to="/" className="btn btn-primary">
-          Volver al inicio
+          {t('common.backHome')}
         </Link>
       </div>
     );
@@ -76,7 +78,7 @@ export function ReviewPage() {
 
   return (
     <div>
-      <ReviewProgress current={index + 1} total={queue.length} label="SM-2" />
+      <ReviewProgress current={index + 1} total={queue.length} label={t('review.label')} />
       <FlashcardView
         key={current.flashcard._id}
         card={current.flashcard}

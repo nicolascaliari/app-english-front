@@ -1,7 +1,13 @@
 import { type MouseEvent, useEffect, useState } from 'react';
+import { useAuth } from '../auth/AuthContext';
+import { useI18n } from '../i18n/I18nProvider';
 import type { Difficulty, Flashcard } from '../types';
-import { DIFFICULTY_LABELS } from '../types';
-import { isSpeechSupported, speakEnglish } from '../utils/speech';
+import {
+  APP_LANGUAGE_LOCALE,
+  DEFAULT_NATIVE_LANGUAGE,
+  DEFAULT_TARGET_LANGUAGE,
+} from '../utils/languages';
+import { isSpeechSupported, speak } from '../utils/speech';
 
 interface Props {
   card: Flashcard;
@@ -24,11 +30,19 @@ export function FlashcardView({
   compact = false,
   onDelete,
 }: Props) {
+  const { user } = useAuth();
+  const { t, languageName } = useI18n();
   const [flipped, setFlipped] = useState(false);
   const [exiting, setExiting] = useState(false);
   const [speakingText, setSpeakingText] = useState<string | null>(null);
   const difficulty = card.difficulty ?? 'medium';
   const speechSupported = isSpeechSupported();
+
+  const targetLanguage = user?.targetLanguage ?? DEFAULT_TARGET_LANGUAGE;
+  const nativeLanguage = user?.nativeLanguage ?? DEFAULT_NATIVE_LANGUAGE;
+  const targetLabel = languageName(targetLanguage);
+  const nativeLabel = languageName(nativeLanguage);
+  const targetLocale = APP_LANGUAGE_LOCALE[targetLanguage];
 
   useEffect(() => {
     setFlipped(false);
@@ -43,7 +57,7 @@ export function FlashcardView({
 
   const handleSpeak = (e: MouseEvent<HTMLButtonElement>, text: string) => {
     e.stopPropagation();
-    speakEnglish(text, {
+    speak(text, targetLocale, {
       onStart: () => setSpeakingText(text),
       onEnd: () => setSpeakingText(null),
     });
@@ -61,14 +75,14 @@ export function FlashcardView({
             e.stopPropagation();
             onDelete();
           }}
-          aria-label="Eliminar carta"
+          aria-label={t('flashcard.delete')}
         >
           ✕
         </button>
       )}
       {!compact && (
         <span className={`difficulty-badge difficulty-${difficulty}`}>
-          {DIFFICULTY_LABELS[difficulty]}
+          {t(`difficulty.${difficulty}`)}
         </span>
       )}
       <div
@@ -88,7 +102,7 @@ export function FlashcardView({
             {compact && (
               <span className={`difficulty-dot difficulty-${difficulty}`} />
             )}
-            <p className="label">English</p>
+            <p className="label">{targetLabel}</p>
             <div className="word-row">
               <h2>{card.front}</h2>
               {speechSupported && (
@@ -96,8 +110,8 @@ export function FlashcardView({
                   type="button"
                   className={`speak-btn${speakingText === card.front ? ' speak-btn--active' : ''}`}
                   onClick={(e) => handleSpeak(e, card.front)}
-                  aria-label="Escuchar pronunciación en inglés americano"
-                  title="Escuchar (inglés americano)"
+                  aria-label={t('flashcard.listenPronunciation', { lang: targetLabel })}
+                  title={t('flashcard.listen', { lang: targetLabel })}
                 >
                   🔊
                 </button>
@@ -106,10 +120,10 @@ export function FlashcardView({
             {card.pronunciation && (
               <p className="pronunciation">{card.pronunciation}</p>
             )}
-            <p className="hint">Tocá para voltear</p>
+            <p className="hint">{t('flashcard.tapToFlip')}</p>
           </div>
           <div className="flashcard-back">
-            <p className="label">Español</p>
+            <p className="label">{nativeLabel}</p>
             <h2>{card.back}</h2>
             {card.example && (
               <p className="example">
@@ -119,8 +133,8 @@ export function FlashcardView({
                     type="button"
                     className={`speak-btn speak-btn--inline${speakingText === card.example ? ' speak-btn--active' : ''}`}
                     onClick={(e) => handleSpeak(e, card.example!)}
-                    aria-label="Escuchar ejemplo en inglés americano"
-                    title="Escuchar ejemplo (inglés americano)"
+                    aria-label={t('flashcard.listenExample', { lang: targetLabel })}
+                    title={t('flashcard.listenExample', { lang: targetLabel })}
                   >
                     🔊
                   </button>
@@ -133,7 +147,7 @@ export function FlashcardView({
 
       {showDifficultyPicker && flipped && onDifficultyChange && (
         <div className="difficulty-picker difficulty-picker--enter">
-          <p className="difficulty-picker-label">Dificultad:</p>
+          <p className="difficulty-picker-label">{t('flashcard.difficulty')}</p>
           <div className="difficulty-picker-buttons">
             {DIFFICULTIES.map((d) => (
               <button
@@ -142,7 +156,7 @@ export function FlashcardView({
                 className={`btn btn-difficulty btn-difficulty-${d}${difficulty === d ? ' active' : ''}`}
                 onClick={() => onDifficultyChange(d)}
               >
-                {DIFFICULTY_LABELS[d]}
+                {t(`difficulty.${d}`)}
               </button>
             ))}
           </div>
@@ -156,14 +170,14 @@ export function FlashcardView({
             className="btn btn-wrong"
             onClick={() => handleResult(false)}
           >
-            No la sabía
+            {t('flashcard.wrong')}
           </button>
           <button
             type="button"
             className="btn btn-correct"
             onClick={() => handleResult(true)}
           >
-            La sabía
+            {t('flashcard.correct')}
           </button>
         </div>
       )}

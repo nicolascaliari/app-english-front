@@ -1,10 +1,16 @@
 import { type FormEvent, useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { api } from '../api/client';
+import { useAuth } from '../auth/AuthContext';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import { AiGeneratePanel } from '../components/AiGeneratePanel';
 import { ImportPanel } from '../components/ImportPanel';
+import { useI18n } from '../i18n/I18nProvider';
 import type { Category, Difficulty } from '../types';
+import {
+  DEFAULT_NATIVE_LANGUAGE,
+  DEFAULT_TARGET_LANGUAGE,
+} from '../utils/languages';
 
 function slugify(text: string) {
   return text
@@ -31,6 +37,10 @@ function firstLeafId(tree: CategoryNode[]): string {
 export function NewCardPage() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user } = useAuth();
+  const { t, languageName } = useI18n();
+  const targetLabel = languageName(user?.targetLanguage ?? DEFAULT_TARGET_LANGUAGE);
+  const nativeLabel = languageName(user?.nativeLanguage ?? DEFAULT_NATIVE_LANGUAGE);
   const locationState = location.state as
     | { categoryId?: string; parentSlug?: string }
     | undefined;
@@ -90,7 +100,7 @@ export function NewCardPage() {
       });
       navigate('/');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al guardar');
+      setError(err instanceof Error ? err.message : t('new.saveError'));
     } finally {
       setSaving(false);
     }
@@ -130,7 +140,7 @@ export function NewCardPage() {
       setCatIcon('');
       setCatParentSlug('');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al guardar');
+      setError(err instanceof Error ? err.message : t('new.saveError'));
     } finally {
       setSaving(false);
     }
@@ -142,7 +152,7 @@ export function NewCardPage() {
 
   return (
     <div>
-      <h1 className="page-title">Crear</h1>
+      <h1 className="page-title">{t('new.title')}</h1>
 
       <div className="tabs">
         <button
@@ -150,28 +160,28 @@ export function NewCardPage() {
           className={mode === 'card' ? 'tab active' : 'tab'}
           onClick={() => setMode('card')}
         >
-          Nueva carta
+          {t('new.tabCard')}
         </button>
         <button
           type="button"
           className={mode === 'category' ? 'tab active' : 'tab'}
           onClick={() => setMode('category')}
         >
-          Nueva categoría
+          {t('new.tabCategory')}
         </button>
         <button
           type="button"
           className={mode === 'import' ? 'tab active' : 'tab'}
           onClick={() => setMode('import')}
         >
-          Importar Excel
+          {t('new.tabImport')}
         </button>
         <button
           type="button"
           className={mode === 'ai' ? 'tab active' : 'tab'}
           onClick={() => setMode('ai')}
         >
-          Generar con IA
+          {t('new.tabAi')}
         </button>
       </div>
 
@@ -185,14 +195,14 @@ export function NewCardPage() {
         ) : mode === 'card' ? (
           <form className="form" onSubmit={handleCreateCard}>
             <label>
-              Categoría
+              {t('new.category')}
               <select
                 value={categoryId}
                 onChange={(e) => setCategoryId(e.target.value)}
                 required
               >
                 {!hasAnyLeaf && (
-                  <option value="">Sin categorías — creá una primero</option>
+                  <option value="">{t('new.noCategories')}</option>
                 )}
                 {tree.map((node) =>
                   node.subs.length === 0 ? (
@@ -213,52 +223,52 @@ export function NewCardPage() {
             </label>
 
             <label>
-              Inglés (frente)
+              {t('new.front', { lang: targetLabel })}
               <input
                 value={front}
                 onChange={(e) => setFront(e.target.value)}
-                placeholder="e.g. nevertheless"
+                placeholder={t('new.frontPlaceholder')}
                 required
               />
             </label>
 
             <label>
-              Español (dorso)
+              {t('new.back', { lang: nativeLabel })}
               <input
                 value={back}
                 onChange={(e) => setBack(e.target.value)}
-                placeholder="e.g. sin embargo"
+                placeholder={t('new.backPlaceholder')}
                 required
               />
             </label>
 
             <label>
-              Ejemplo (opcional)
+              {t('new.example')}
               <input
                 value={example}
                 onChange={(e) => setExample(e.target.value)}
-                placeholder='e.g. Nevertheless, we continued.'
+                placeholder={t('new.examplePlaceholder')}
               />
             </label>
 
             <label>
-              Pronunciación (opcional)
+              {t('new.pronunciation')}
               <input
                 value={pronunciation}
                 onChange={(e) => setPronunciation(e.target.value)}
-                placeholder="e.g. /ˌnev.ə.ðəˈles/"
+                placeholder={t('new.pronunciationPlaceholder')}
               />
             </label>
 
             <label>
-              Dificultad
+              {t('common.difficulty')}
               <select
                 value={difficulty}
                 onChange={(e) => setDifficulty(e.target.value as Difficulty)}
               >
-                <option value="easy">Fácil</option>
-                <option value="medium">Media</option>
-                <option value="hard">Difícil</option>
+                <option value="easy">{t('difficulty.easy')}</option>
+                <option value="medium">{t('difficulty.medium')}</option>
+                <option value="hard">{t('difficulty.hard')}</option>
               </select>
             </label>
 
@@ -267,18 +277,18 @@ export function NewCardPage() {
               className="btn btn-primary"
               disabled={saving || !categoryId}
             >
-              {saving ? 'Guardando...' : 'Guardar carta'}
+              {saving ? t('common.saving') : t('new.saveCard')}
             </button>
           </form>
         ) : (
           <form className="form" onSubmit={handleCreateCategory}>
             <label>
-              Categoría padre (opcional)
+              {t('new.parentCategory')}
               <select
                 value={catParentSlug}
                 onChange={(e) => setCatParentSlug(e.target.value)}
               >
-                <option value="">Ninguna (categoría principal)</option>
+                <option value="">{t('new.noParent')}</option>
                 {tree.map((node) => (
                   <option key={node.root._id} value={node.root.slug}>
                     {node.root.icon} {node.root.name}
@@ -286,13 +296,10 @@ export function NewCardPage() {
                 ))}
               </select>
             </label>
-            <p className="field-hint">
-              Elegí una categoría padre para crear una subcategoría dentro de
-              ella (ej: "Phrasal Verbs" → "get").
-            </p>
+            <p className="field-hint">{t('new.parentHint')}</p>
 
             <label>
-              Nombre
+              {t('new.catName')}
               <input
                 value={catName}
                 onChange={(e) => {
@@ -305,7 +312,7 @@ export function NewCardPage() {
             </label>
 
             <label>
-              Slug (URL)
+              {t('new.slug')}
               <input
                 value={catSlug}
                 onChange={(e) => setCatSlug(e.target.value)}
@@ -315,7 +322,7 @@ export function NewCardPage() {
             </label>
 
             <label>
-              Ícono (emoji)
+              {t('new.icon')}
               <input
                 value={catIcon}
                 onChange={(e) => setCatIcon(e.target.value)}
@@ -324,7 +331,7 @@ export function NewCardPage() {
             </label>
 
             <label>
-              Color
+              {t('new.color')}
               <input
                 type="color"
                 value={catColor}
@@ -334,10 +341,10 @@ export function NewCardPage() {
 
             <button type="submit" className="btn btn-primary" disabled={saving}>
               {saving
-                ? 'Guardando...'
+                ? t('common.saving')
                 : catParentSlug
-                  ? 'Crear subcategoría'
-                  : 'Crear categoría'}
+                  ? t('new.createSubcategory')
+                  : t('new.createCategory')}
             </button>
           </form>
         )}

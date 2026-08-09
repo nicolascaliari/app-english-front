@@ -1,16 +1,20 @@
 import { type FormEvent, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../api/client';
+import { useAuth } from '../auth/AuthContext';
+import { useI18n } from '../i18n/I18nProvider';
 import type { ImportPayload } from '../types';
-
-const EXAMPLE_PROMPTS = [
-  'Agregá 20 palabras de la cocina, nivel medio, con ejemplo',
-  '10 phrasal verbs con get, difícil, con pronunciación IPA',
-  'Creá la categoría Deportes con 15 palabras fáciles',
-];
+import {
+  DEFAULT_NATIVE_LANGUAGE,
+  DEFAULT_TARGET_LANGUAGE,
+} from '../utils/languages';
 
 export function AiGeneratePanel() {
   const navigate = useNavigate();
+  const { user } = useAuth();
+  const { t, languageName } = useI18n();
+  const targetLabel = languageName(user?.targetLanguage ?? DEFAULT_TARGET_LANGUAGE);
+  const nativeLabel = languageName(user?.nativeLanguage ?? DEFAULT_NATIVE_LANGUAGE);
   const [prompt, setPrompt] = useState('');
   const [generated, setGenerated] = useState<ImportPayload | null>(null);
   const [importCategories, setImportCategories] = useState(true);
@@ -20,6 +24,8 @@ export function AiGeneratePanel() {
   const [error, setError] = useState('');
   const [result, setResult] = useState<string | null>(null);
 
+  const examplePrompts = [t('ai.example1'), t('ai.example2'), t('ai.example3')];
+
   const hasCategories = (generated?.categories?.length ?? 0) > 0;
   const hasFlashcards = (generated?.flashcards?.length ?? 0) > 0;
 
@@ -27,7 +33,7 @@ export function AiGeneratePanel() {
     e.preventDefault();
     const trimmed = prompt.trim();
     if (trimmed.length < 3) {
-      setError('Escribí un pedido de al menos 3 caracteres.');
+      setError(t('ai.minPrompt'));
       return;
     }
 
@@ -43,12 +49,10 @@ export function AiGeneratePanel() {
       setImportFlashcards((data.flashcards?.length ?? 0) > 0);
 
       if (!data.categories?.length && !data.flashcards?.length) {
-        setError(
-          'La IA no generó datos. Probá ser más específico (categoría, cantidad, dificultad).',
-        );
+        setError(t('ai.noData'));
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al generar');
+      setError(err instanceof Error ? err.message : t('ai.error'));
     } finally {
       setGenerating(false);
     }
@@ -71,23 +75,17 @@ export function AiGeneratePanel() {
       }
 
       if (!payload.categories?.length && !payload.flashcards?.length) {
-        setError('Seleccioná al menos un tipo de dato para importar.');
+        setError(t('import.selectSomething'));
         return;
       }
 
       const res = await api.importData(payload);
-      const parts: string[] = [];
-      if (payload.categories?.length) {
-        parts.push(
-          `${res.categories.created} categoría(s) creada(s), ${res.categories.skipped} omitida(s)`,
-        );
-      }
-      if (payload.flashcards?.length) {
-        parts.push(
-          `${res.flashcards.created} carta(s) creada(s), ${res.flashcards.skipped} omitida(s)`,
-        );
-      }
-      setResult(parts.join('. ') + '.');
+      setResult(
+        t('import.result', {
+          cats: res.categories.created,
+          cards: res.flashcards.created,
+        }),
+      );
 
       if (res.flashcards.errors.length > 0) {
         setError(res.flashcards.errors.slice(0, 5).join('\n'));
@@ -95,7 +93,7 @@ export function AiGeneratePanel() {
         setTimeout(() => navigate('/'), 2000);
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Error al importar');
+      setError(err instanceof Error ? err.message : t('import.error'));
     } finally {
       setImporting(false);
     }
@@ -104,25 +102,24 @@ export function AiGeneratePanel() {
   return (
     <div className="import-panel">
       <p className="import-hint">
-        Describí qué querés agregar en lenguaje natural. La IA genera una vista
-        previa y vos confirmás antes de guardar.
+        {t('ai.hint', { target: targetLabel, native: nativeLabel })}
       </p>
 
       <form className="ai-generate-form" onSubmit={handleGenerate}>
         <label>
-          Pedido
+          {t('ai.prompt')}
           <textarea
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
-            placeholder="Ej: Agregá 20 palabras de la categoría casa, nivel medio, con ejemplo y pronunciación"
+            placeholder={t('ai.placeholder')}
             rows={4}
             disabled={generating}
           />
         </label>
 
         <div className="ai-example-prompts">
-          <span className="ai-example-label">Ejemplos:</span>
-          {EXAMPLE_PROMPTS.map((example) => (
+          <span className="ai-example-label">{t('ai.examples')}</span>
+          {examplePrompts.map((example) => (
             <button
               key={example}
               type="button"
@@ -140,13 +137,13 @@ export function AiGeneratePanel() {
           className="btn btn-primary"
           disabled={generating || prompt.trim().length < 3}
         >
-          {generating ? 'Generando...' : 'Generar con IA'}
+          {generating ? t('ai.generating') : t('ai.generate')}
         </button>
       </form>
 
       {generated && (hasCategories || hasFlashcards) && (
         <div className="import-preview">
-          <p className="import-preview-title">Vista previa</p>
+          <p className="import-preview-title">{t('import.preview')}</p>
 
           {hasCategories && (
             <label className="import-checkbox">
@@ -155,7 +152,7 @@ export function AiGeneratePanel() {
                 checked={importCategories}
                 onChange={(e) => setImportCategories(e.target.checked)}
               />
-              Categorías ({generated.categories!.length})
+              {t('import.categoriesN', { n: generated.categories!.length })}
             </label>
           )}
 
@@ -166,7 +163,7 @@ export function AiGeneratePanel() {
                 checked={importFlashcards}
                 onChange={(e) => setImportFlashcards(e.target.checked)}
               />
-              Palabras ({generated.flashcards!.length})
+              {t('import.wordsN', { n: generated.flashcards!.length })}
             </label>
           )}
 
@@ -175,10 +172,10 @@ export function AiGeneratePanel() {
               <table className="import-table">
                 <thead>
                   <tr>
-                    <th>Nombre</th>
-                    <th>Slug</th>
-                    <th>Ícono</th>
-                    <th>Padre</th>
+                    <th>{t('import.name')}</th>
+                    <th>{t('import.slug')}</th>
+                    <th>{t('import.icon')}</th>
+                    <th>{t('import.parent')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -194,7 +191,7 @@ export function AiGeneratePanel() {
               </table>
               {generated.categories!.length > 5 && (
                 <p className="import-more">
-                  +{generated.categories!.length - 5} más...
+                  {t('import.more', { n: generated.categories!.length - 5 })}
                 </p>
               )}
             </div>
@@ -205,11 +202,11 @@ export function AiGeneratePanel() {
               <table className="import-table">
                 <thead>
                   <tr>
-                    <th>Categoría</th>
-                    <th>Subcategoría</th>
-                    <th>Inglés</th>
-                    <th>Español</th>
-                    <th>Dificultad</th>
+                    <th>{t('import.category')}</th>
+                    <th>{t('import.subcategory')}</th>
+                    <th>{targetLabel}</th>
+                    <th>{nativeLabel}</th>
+                    <th>{t('common.difficulty')}</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -226,7 +223,7 @@ export function AiGeneratePanel() {
               </table>
               {generated.flashcards!.length > 5 && (
                 <p className="import-more">
-                  +{generated.flashcards!.length - 5} más...
+                  {t('import.more', { n: generated.flashcards!.length - 5 })}
                 </p>
               )}
             </div>
@@ -238,7 +235,7 @@ export function AiGeneratePanel() {
             disabled={importing}
             onClick={handleImport}
           >
-            {importing ? 'Guardando...' : 'Confirmar e importar'}
+            {importing ? t('common.saving') : t('ai.confirm')}
           </button>
         </div>
       )}
@@ -247,21 +244,11 @@ export function AiGeneratePanel() {
       {error && <p className="status error">{error}</p>}
 
       <details className="import-format-help">
-        <summary>Consejos para mejores resultados</summary>
+        <summary>{t('ai.tipsTitle')}</summary>
         <div className="import-format-body">
-          <p>
-            Indicá la <strong>categoría</strong> (ej: casa, cocina, phrasal
-            verbs), la <strong>cantidad</strong> de palabras y la{' '}
-            <strong>dificultad</strong> (fácil, media, difícil).
-          </p>
-          <p>
-            Podés pedir categorías nuevas, subcategorías, ejemplos en inglés y
-            pronunciación IPA.
-          </p>
-          <p>
-            Siempre revisá la vista previa antes de confirmar. Nada se guarda
-            hasta que apretás &quot;Confirmar e importar&quot;.
-          </p>
+          <p>{t('ai.tip1')}</p>
+          <p>{t('ai.tip2')}</p>
+          <p>{t('ai.tip3')}</p>
         </div>
       </details>
     </div>

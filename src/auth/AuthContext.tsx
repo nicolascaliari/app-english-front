@@ -8,7 +8,17 @@ import {
   type ReactNode,
 } from 'react';
 import { api, AuthError, onAuthFailure } from '../api/client';
-import type { AuthUser, LoginPayload, RegisterPayload } from '../types';
+import type {
+  AuthUser,
+  LoginPayload,
+  RegisterPayload,
+  UpdateProfilePayload,
+} from '../types';
+import {
+  DEFAULT_NATIVE_LANGUAGE,
+  DEFAULT_TARGET_LANGUAGE,
+  normalizeAppLanguage,
+} from '../utils/languages';
 import { authStorage, type StoredUser } from './authStorage';
 
 interface AuthContextValue {
@@ -16,6 +26,7 @@ interface AuthContextValue {
   loading: boolean;
   login: (payload: LoginPayload) => Promise<void>;
   register: (payload: RegisterPayload) => Promise<void>;
+  updateProfile: (payload: UpdateProfilePayload) => Promise<void>;
   logout: () => Promise<void>;
 }
 
@@ -27,6 +38,14 @@ function toStoredUser(user: AuthUser): StoredUser {
     email: user.email,
     name: user.name,
     role: user.role,
+    nativeLanguage: normalizeAppLanguage(
+      user.nativeLanguage,
+      DEFAULT_NATIVE_LANGUAGE,
+    ),
+    targetLanguage: normalizeAppLanguage(
+      user.targetLanguage,
+      DEFAULT_TARGET_LANGUAGE,
+    ),
   };
 }
 
@@ -78,6 +97,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(stored);
   }, []);
 
+  const updateProfile = useCallback(async (payload: UpdateProfilePayload) => {
+    const me = await api.updateProfile(payload);
+    const stored = toStoredUser(me);
+    authStorage.setUser(stored);
+    setUser(stored);
+  }, []);
+
   const logout = useCallback(async () => {
     try {
       await api.logout();
@@ -91,8 +117,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const value = useMemo(
-    () => ({ user, loading, login, register, logout }),
-    [user, loading, login, register, logout],
+    () => ({ user, loading, login, register, updateProfile, logout }),
+    [user, loading, login, register, updateProfile, logout],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
