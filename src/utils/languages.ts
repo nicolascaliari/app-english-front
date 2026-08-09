@@ -1,4 +1,4 @@
-export type AppLanguage = 'en' | 'es' | 'pt' | 'fr' | 'it' | 'de';
+export type AppLanguage = 'en' | 'es' | 'pt' | 'fr' | 'it' | 'de' | 'ru' | 'pl';
 
 export const APP_LANGUAGES: AppLanguage[] = [
   'en',
@@ -7,6 +7,8 @@ export const APP_LANGUAGES: AppLanguage[] = [
   'fr',
   'it',
   'de',
+  'ru',
+  'pl',
 ];
 
 export const APP_LANGUAGE_LABELS: Record<AppLanguage, string> = {
@@ -16,6 +18,8 @@ export const APP_LANGUAGE_LABELS: Record<AppLanguage, string> = {
   fr: 'Francés',
   it: 'Italiano',
   de: 'Alemán',
+  ru: 'Ruso',
+  pl: 'Polaco',
 };
 
 /** BCP-47 tags for Web Speech API. */
@@ -26,6 +30,8 @@ export const APP_LANGUAGE_LOCALE: Record<AppLanguage, string> = {
   fr: 'fr-FR',
   it: 'it-IT',
   de: 'de-DE',
+  ru: 'ru-RU',
+  pl: 'pl-PL',
 };
 
 export const DEFAULT_NATIVE_LANGUAGE: AppLanguage = 'es';

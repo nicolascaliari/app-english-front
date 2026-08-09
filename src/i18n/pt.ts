@@ -47,6 +47,8 @@ export const messagesPt: Messages = {
   'lang.fr': 'Francês',
   'lang.it': 'Italiano',
   'lang.de': 'Alemão',
+  'lang.ru': 'Russo',
+  'lang.pl': 'Polonês',
   'settings.title': 'Configurações',
   'settings.pairHint':
     'Você está aprendendo {target} a partir de {native}. Cartas novas e a IA seguem este par; as cartas já criadas não mudam.',

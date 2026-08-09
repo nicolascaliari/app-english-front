@@ -47,6 +47,8 @@ export const messagesEn: Messages = {
   'lang.fr': 'French',
   'lang.it': 'Italian',
   'lang.de': 'German',
+  'lang.ru': 'Russian',
+  'lang.pl': 'Polish',
   'settings.title': 'Settings',
   'settings.pairHint':
     'You are learning {target} from {native}. New cards and AI follow this pair; existing cards do not change.',

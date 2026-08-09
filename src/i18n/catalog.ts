@@ -4,7 +4,9 @@ import { messagesEn } from './en';
 import { messagesEs } from './es';
 import { messagesFr } from './fr';
 import { messagesIt } from './it';
+import { messagesPl } from './pl';
 import { messagesPt } from './pt';
+import { messagesRu } from './ru';
 
 export const catalog: Catalog = {
   en: messagesEn,
@@ -13,4 +15,6 @@ export const catalog: Catalog = {
   fr: messagesFr,
   it: messagesIt,
   de: messagesDe,
+  ru: messagesRu,
+  pl: messagesPl,
 };

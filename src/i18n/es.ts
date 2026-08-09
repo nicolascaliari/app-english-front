@@ -47,6 +47,8 @@ export const messagesEs: Messages = {
   'lang.fr': 'Francés',
   'lang.it': 'Italiano',
   'lang.de': 'Alemán',
+  'lang.ru': 'Ruso',
+  'lang.pl': 'Polaco',
   'settings.title': 'Configuración',
   'settings.pairHint':
     'Aprendés {target} desde {native}. Las cartas nuevas y la IA siguen este par; las cartas ya creadas no cambian.',

@@ -48,6 +48,8 @@ export const messagesFr: Messages = {
   'lang.fr': 'Français',
   'lang.it': 'Italien',
   'lang.de': 'Allemand',
+  'lang.ru': 'Russe',
+  'lang.pl': 'Polonais',
   'settings.title': 'Paramètres',
   'settings.pairHint':
     'Vous apprenez {target} à partir de {native}. Les nouvelles cartes et l’IA suivent cette paire ; les cartes existantes ne changent pas.',

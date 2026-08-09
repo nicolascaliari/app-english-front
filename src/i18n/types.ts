@@ -47,6 +47,8 @@ export type MessageKey =
   | 'lang.fr'
   | 'lang.it'
   | 'lang.de'
+  | 'lang.ru'
+  | 'lang.pl'
   | 'settings.title'
   | 'settings.pairHint'
   | 'settings.uiLanguage'
