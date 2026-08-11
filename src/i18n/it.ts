@@ -138,7 +138,7 @@ export const messagesIt: Messages = {
   'import.readError': 'Impossibile leggere il file Excel.',
   'import.selectSomething': 'Seleziona almeno un tipo di dato da importare.',
   'import.result':
-    '{cats} categoria/e create, {cards} carta/e create.',
+    '{cats} categoria/e create, {cards} carta/e create, {skipped} saltate.',
   'import.error': "Errore nell'importazione",
   'ai.hint':
     'Descrivi cosa vuoi aggiungere in linguaggio naturale. L’IA genera vocabolario in {target} con traduzione in {native}; confermi prima di salvare.',

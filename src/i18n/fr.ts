@@ -140,7 +140,7 @@ export const messagesFr: Messages = {
   'import.selectSomething':
     'Sélectionnez au moins un type de données à importer.',
   'import.result':
-    '{cats} catégorie(s) créée(s), {cards} carte(s) créée(s).',
+    '{cats} catégorie(s) créée(s), {cards} carte(s) créée(s), {skipped} ignorée(s).',
   'import.error': "Erreur d'importation",
   'ai.hint':
     'Décrivez ce que vous voulez ajouter en langage naturel. L’IA génère du vocabulaire en {target} avec traduction en {native} ; vous confirmez avant d’enregistrer.',

@@ -137,7 +137,7 @@ export const messagesPt: Messages = {
   'import.readError': 'Não foi possível ler o arquivo Excel.',
   'import.selectSomething': 'Selecione pelo menos um tipo de dado para importar.',
   'import.result':
-    '{cats} categoria(s) criada(s), {cards} carta(s) criada(s).',
+    '{cats} categoria(s) criada(s), {cards} carta(s) criada(s), {skipped} omitida(s).',
   'import.error': 'Erro na importação',
   'ai.hint':
     'Descreva o que deseja adicionar em linguagem natural. A IA gera vocabulário em {target} com tradução para {native}; você confirma antes de salvar.',

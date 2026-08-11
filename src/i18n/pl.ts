@@ -137,7 +137,7 @@ export const messagesPl: Messages = {
   'import.readError': 'Nie udało się odczytać pliku Excel.',
   'import.selectSomething': 'Wybierz co najmniej jeden typ danych do importu.',
   'import.result':
-    'Utworzono {cats} kategorii, {cards} fiszek.',
+    'Utworzono {cats} kategorii, {cards} fiszek, pominięto {skipped}.',
   'import.error': 'Błąd importu',
   'ai.hint':
     'Opisz naturalnym językiem, co chcesz dodać. AI generuje słownictwo w {target} z tłumaczeniem na {native}; potwierdzasz przed zapisaniem.',

@@ -140,7 +140,7 @@ export const messagesDe: Messages = {
   'import.selectSomething':
     'Wähle mindestens einen Datentyp zum Importieren aus.',
   'import.result':
-    '{cats} Kategorie(n) erstellt, {cards} Karte(n) erstellt.',
+    '{cats} Kategorie(n) erstellt, {cards} Karte(n) erstellt, {skipped} übersprungen.',
   'import.error': 'Importfehler',
   'ai.hint':
     'Beschreibe in natürlicher Sprache, was du hinzufügen möchtest. Die KI erzeugt Wortschatz auf {target} mit Übersetzung nach {native}; du bestätigst vor dem Speichern.',

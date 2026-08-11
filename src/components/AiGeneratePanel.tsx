@@ -84,6 +84,7 @@ export function AiGeneratePanel() {
         t('import.result', {
           cats: res.categories.created,
           cards: res.flashcards.created,
+          skipped: res.flashcards.skipped,
         }),
       );
 
