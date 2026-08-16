@@ -149,12 +149,17 @@ export interface GenerateResult {
 }
 
 export type GrammarExerciseType = 'fill_blank' | 'multiple_choice';
-export type GrammarLevel = 'beginner' | 'intermediate' | 'advanced';
+export type GrammarLevel = 'beginner' | 'intermediate' | 'advanced' | 'a1' | 'a2' | 'b1' | 'b2' | 'c1';
 
 export const GRAMMAR_LEVEL_LABELS: Record<GrammarLevel, string> = {
   beginner: 'Principiante',
   intermediate: 'Intermedio',
   advanced: 'Avanzado',
+  a1: 'A1 - Principiante',
+  a2: 'A2 - Básico',
+  b1: 'B1 - Intermedio',
+  b2: 'B2 - Intermedio Alto',
+  c1: 'C1 - Avanzado Superior',
 };
 
 export interface GrammarExercise {
