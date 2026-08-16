@@ -114,7 +114,6 @@ export function GrammarPracticePage() {
   const { t } = useI18n();
   const [phase, setPhase] = useState<Phase>('setup');
   const [activeTab, setActiveTab] = useState<GrammarLevel>('a1');
-  const [topic, setTopic] = useState('');
   const [level, setLevel] = useState<GrammarLevel>('a1');
   const [count, setCount] = useState(5);
   const [generating, setGenerating] = useState(false);
@@ -130,7 +129,6 @@ export function GrammarPracticePage() {
   const handleGenerate = async (topicName: string, levelName: GrammarLevel) => {
     setGenerating(true);
     setError('');
-    setTopic(topicName);
     setLevel(levelName);
 
     try {
