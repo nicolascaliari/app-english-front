@@ -950,8 +950,8 @@ a {
 .flashcard-grid {
   list-style: none;
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 0.75rem;
+  grid-template-columns: 1fr;
+  gap: 1rem;
 }
 
 .flashcard-grid li {
@@ -1319,7 +1319,22 @@ a {
 }
 
 .flashcard-front {
+  justify-content: flex-start;
   background: linear-gradient(155deg, #4a5588 0%, #3a4570 45%, #2f3d62 100%);
+}
+
+.flashcard--compact .flashcard-front {
+  justify-content: center;
+}
+
+.flashcard-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 0;
 }
 
 .flashcard-image {
@@ -1445,14 +1460,95 @@ a {
   color: rgba(220, 225, 240, 0.8);
 }
 
-.flashcard--compact .hint {
-  font-size: 0.58rem;
-  bottom: 0.55rem;
-}
-
 .flashcard--compact .pronunciation {
   font-size: 0.82rem;
   color: rgba(220, 225, 240, 0.75);
+}
+
+@media (max-width: 767px) {
+  .flashcard-grid {
+    gap: 1.25rem;
+  }
+
+  .flashcard--compact,
+  .flashcard--compact .flashcard-inner {
+    min-height: 300px;
+  }
+
+  .flashcard--compact .flashcard-front,
+  .flashcard--compact .flashcard-back {
+    padding: 1.75rem 1.25rem;
+  }
+
+  .flashcard--compact .flashcard-image {
+    max-width: 280px;
+    height: 150px;
+    margin-bottom: 0.75rem;
+  }
+
+  .flashcard--compact h2 {
+    font-size: 1.75rem;
+    line-height: 1.3;
+  }
+
+  .flashcard--compact .label {
+    font-size: 0.72rem;
+    margin-bottom: 0.45rem;
+  }
+
+  .flashcard--compact .pronunciation {
+    font-size: 1rem;
+    margin-top: 0.5rem;
+  }
+
+  .flashcard--compact .example {
+    font-size: 0.95rem;
+    margin-top: 0.65rem;
+  }
+
+  .flashcard--compact .speak-btn,
+  .flashcard--compact .speak-btn--inline {
+    width: 2rem;
+    height: 2rem;
+    font-size: 0.95rem;
+  }
+
+  .flashcard-container--compact .btn-difficulty {
+    font-size: 0.85rem;
+    padding: 0.55rem 0.75rem;
+  }
+
+  .flashcard-container--compact .difficulty-picker-buttons {
+    flex-direction: row;
+    gap: 0.5rem;
+  }
+
+  .flashcard:not(.flashcard--compact),
+  .flashcard:not(.flashcard--compact) .flashcard-inner {
+    min-height: min(68vh, 480px);
+  }
+
+  .flashcard:not(.flashcard--compact) .flashcard-front,
+  .flashcard:not(.flashcard--compact) .flashcard-back {
+    padding: 2rem 1.5rem;
+  }
+
+  .flashcard:not(.flashcard--compact) .flashcard-image {
+    max-width: 280px;
+    height: 160px;
+  }
+
+  .flashcard:not(.flashcard--compact) h2 {
+    font-size: 2rem;
+  }
+
+  .review-actions {
+    flex-direction: column;
+  }
+
+  .review-actions .btn {
+    width: 100%;
+  }
 }
 
 .label {
@@ -1481,10 +1577,12 @@ a {
 }
 
 .hint {
-  position: absolute;
-  bottom: 1.1rem;
+  flex-shrink: 0;
+  margin-top: 0.75rem;
   font-size: 0.78rem;
   color: rgba(200, 205, 220, 0.65);
+  text-align: center;
+  line-height: 1.3;
   opacity: 1;
   animation: hintPulse 2.5s ease-in-out infinite;
 }

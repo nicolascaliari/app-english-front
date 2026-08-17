@@ -99,36 +99,40 @@ export function FlashcardView({
       >
         <div className="flashcard-inner">
           <div className="flashcard-front">
-            {compact && (
-              <span className={`difficulty-dot difficulty-${difficulty}`} />
-            )}
-            <p className="label">{targetLabel}</p>
-            {card.imageUrl && (
-              <img
-                src={card.imageUrl}
-                alt={card.front}
-                className="flashcard-image"
-                loading="lazy"
-              />
-            )}
-            <div className="word-row">
-              <h2>{card.front}</h2>
-              {speechSupported && (
-                <button
-                  type="button"
-                  className={`speak-btn${speakingText === card.front ? ' speak-btn--active' : ''}`}
-                  onClick={(e) => handleSpeak(e, card.front)}
-                  aria-label={t('flashcard.listenPronunciation', { lang: targetLabel })}
-                  title={t('flashcard.listen', { lang: targetLabel })}
-                >
-                  🔊
-                </button>
+            <div className="flashcard-body">
+              {compact && (
+                <span className={`difficulty-dot difficulty-${difficulty}`} />
+              )}
+              <p className="label">{targetLabel}</p>
+              {card.imageUrl && (
+                <img
+                  src={card.imageUrl}
+                  alt={card.front}
+                  className="flashcard-image"
+                  loading="lazy"
+                />
+              )}
+              <div className="word-row">
+                <h2>{card.front}</h2>
+                {speechSupported && (
+                  <button
+                    type="button"
+                    className={`speak-btn${speakingText === card.front ? ' speak-btn--active' : ''}`}
+                    onClick={(e) => handleSpeak(e, card.front)}
+                    aria-label={t('flashcard.listenPronunciation', { lang: targetLabel })}
+                    title={t('flashcard.listen', { lang: targetLabel })}
+                  >
+                    🔊
+                  </button>
+                )}
+              </div>
+              {card.pronunciation && (
+                <p className="pronunciation">{card.pronunciation}</p>
               )}
             </div>
-            {card.pronunciation && (
-              <p className="pronunciation">{card.pronunciation}</p>
+            {!compact && (
+              <p className="hint">{t('flashcard.tapToFlip')}</p>
             )}
-            <p className="hint">{t('flashcard.tapToFlip')}</p>
           </div>
           <div className="flashcard-back">
             <p className="label">{nativeLabel}</p>
