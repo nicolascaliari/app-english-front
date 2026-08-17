@@ -69,6 +69,7 @@ export interface Flashcard {
   back: string;
   example?: string;
   pronunciation?: string;
+  imageUrl?: string;
   tags: string[];
   difficulty: Difficulty;
   createdAt: string;
@@ -96,6 +97,7 @@ export interface CreateFlashcardPayload {
   back: string;
   example?: string;
   pronunciation?: string;
+  imageUrl?: string;
   tags?: string[];
   difficulty?: Difficulty;
 }
@@ -138,6 +140,7 @@ export interface ImportFlashcardPayload {
   back: string;
   example?: string;
   pronunciation?: string;
+  imageUrl?: string;
   difficulty?: Difficulty;
 }
 
@@ -149,6 +152,13 @@ export interface ImportPayload {
 export interface ImportResult {
   categories: { created: number; skipped: number };
   flashcards: { created: number; skipped: number; errors: string[] };
+}
+
+export interface BackfillImagesResult {
+  processed: number;
+  updated: number;
+  notFound: number;
+  remaining: number;
 }
 
 export interface GenerateResult {

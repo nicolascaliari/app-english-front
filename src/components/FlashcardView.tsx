@@ -103,6 +103,14 @@ export function FlashcardView({
               <span className={`difficulty-dot difficulty-${difficulty}`} />
             )}
             <p className="label">{targetLabel}</p>
+            {card.imageUrl && (
+              <img
+                src={card.imageUrl}
+                alt={card.front}
+                className="flashcard-image"
+                loading="lazy"
+              />
+            )}
             <div className="word-row">
               <h2>{card.front}</h2>
               {speechSupported && (

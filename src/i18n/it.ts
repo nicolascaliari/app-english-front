@@ -64,6 +64,16 @@ export const messagesIt: Messages = {
   'settings.success': 'Profilo aggiornato.',
   'settings.error': 'Impossibile salvare',
   'settings.save': 'Salva modifiche',
+  'settings.imagesTitle': 'Immagini nelle flashcard',
+  'settings.imagesHint':
+    'Cerca foto su Pexels per le carte senza immagine. Può richiedere alcuni secondi per carta.',
+  'settings.imagesBackfill': 'Aggiungi immagini alle carte esistenti',
+  'settings.imagesBackfilling': 'Ricerca immagini…',
+  'settings.imagesProgress':
+    '{updated} con immagine · {remaining} in sospeso',
+  'settings.imagesBackfillDone':
+    'Fatto: {updated} carte con nuova immagine. {notFound} senza foto disponibile.',
+  'settings.imagesBackfillError': 'Impossibile aggiungere le immagini',
   'home.grammarTitle': 'Pratica di grammatica',
   'home.grammarSub': 'Esercizi generati con IA',
   'home.practiceTitle': 'Ripasso rapido',

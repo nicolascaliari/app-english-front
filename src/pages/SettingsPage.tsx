@@ -1,4 +1,5 @@
 import { type FormEvent, useEffect, useState } from 'react';
+import { api } from '../api/client';
 import { useAuth } from '../auth/AuthContext';
 import { LanguagePairFields } from '../components/LanguagePairFields';
 import { useI18n } from '../i18n/I18nProvider';
@@ -22,6 +23,13 @@ export function SettingsPage() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const [saving, setSaving] = useState(false);
+  const [backfilling, setBackfilling] = useState(false);
+  const [backfillProgress, setBackfillProgress] = useState<{
+    updated: number;
+    remaining: number;
+  } | null>(null);
+  const [backfillResult, setBackfillResult] = useState('');
+  const [backfillError, setBackfillError] = useState('');
 
   useEffect(() => {
     if (!user) return;
@@ -48,6 +56,42 @@ export function SettingsPage() {
       setError(err instanceof Error ? err.message : t('settings.error'));
     } finally {
       setSaving(false);
+    }
+  };
+
+  const handleBackfillImages = async () => {
+    setBackfilling(true);
+    setBackfillError('');
+    setBackfillResult('');
+    setBackfillProgress(null);
+
+    let totalUpdated = 0;
+    let totalNotFound = 0;
+
+    try {
+      while (true) {
+        const result = await api.backfillFlashcardImages(20);
+        totalUpdated += result.updated;
+        totalNotFound += result.notFound;
+        setBackfillProgress({
+          updated: totalUpdated,
+          remaining: result.remaining,
+        });
+        if (result.remaining === 0 || result.processed === 0) break;
+      }
+
+      setBackfillResult(
+        t('settings.imagesBackfillDone', {
+          updated: totalUpdated,
+          notFound: totalNotFound,
+        }),
+      );
+    } catch (err) {
+      setBackfillError(
+        err instanceof Error ? err.message : t('settings.imagesBackfillError'),
+      );
+    } finally {
+      setBackfilling(false);
     }
   };
 
@@ -127,6 +171,34 @@ export function SettingsPage() {
             {saving ? t('common.saving') : t('settings.save')}
           </button>
         </form>
+      </div>
+
+      <div className="form-panel" style={{ marginTop: '1.25rem' }}>
+        <h2 className="section-title">{t('settings.imagesTitle')}</h2>
+        <p className="field-hint">{t('settings.imagesHint')}</p>
+
+        {backfillProgress && backfilling && (
+          <p className="status">
+            {t('settings.imagesProgress', {
+              updated: backfillProgress.updated,
+              remaining: backfillProgress.remaining,
+            })}
+          </p>
+        )}
+        {backfillResult && <p className="status success">{backfillResult}</p>}
+        {backfillError && <p className="status error">{backfillError}</p>}
+
+        <button
+          type="button"
+          className="btn btn-secondary"
+          onClick={handleBackfillImages}
+          disabled={backfilling || saving}
+          style={{ marginTop: '0.75rem' }}
+        >
+          {backfilling
+            ? t('settings.imagesBackfilling')
+            : t('settings.imagesBackfill')}
+        </button>
       </div>
     </div>
   );

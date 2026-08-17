@@ -1,6 +1,7 @@
 import type {
   AuthResponse,
   AuthUser,
+  BackfillImagesResult,
   Category,
   CreateCategoryPayload,
   CreateFlashcardPayload,
@@ -237,6 +238,12 @@ export const api = {
 
   deleteFlashcard: (id: string) =>
     request<{ deleted: boolean }>(`/flashcards/${id}`, { method: 'DELETE' }),
+
+  backfillFlashcardImages: (limit = 30) =>
+    request<BackfillImagesResult>(
+      `/flashcards/backfill-images?limit=${limit}`,
+      { method: 'POST' },
+    ),
 
   getPracticeFlashcards: (limit = 10) =>
     request<Flashcard[]>(`/flashcards/practice?limit=${limit}`),

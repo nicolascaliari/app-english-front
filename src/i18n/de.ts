@@ -64,6 +64,16 @@ export const messagesDe: Messages = {
   'settings.success': 'Profil aktualisiert.',
   'settings.error': 'Speichern fehlgeschlagen',
   'settings.save': 'Änderungen speichern',
+  'settings.imagesTitle': 'Bilder in Karteikarten',
+  'settings.imagesHint':
+    'Sucht Fotos auf Pexels für Karten ohne Bild. Das kann einige Sekunden pro Karte dauern.',
+  'settings.imagesBackfill': 'Bilder zu bestehenden Karten hinzufügen',
+  'settings.imagesBackfilling': 'Bilder werden gesucht…',
+  'settings.imagesProgress':
+    '{updated} mit Bild · {remaining} ausstehend',
+  'settings.imagesBackfillDone':
+    'Fertig: {updated} Karten mit neuem Bild. {notFound} ohne verfügbares Foto.',
+  'settings.imagesBackfillError': 'Bilder konnten nicht hinzugefügt werden',
   'home.grammarTitle': 'Grammatikübung',
   'home.grammarSub': 'KI-generierte Übungen',
   'home.practiceTitle': 'Schnelle Wiederholung',

@@ -63,6 +63,16 @@ export const messagesEn: Messages = {
   'settings.success': 'Profile updated.',
   'settings.error': 'Could not save',
   'settings.save': 'Save changes',
+  'settings.imagesTitle': 'Flashcard images',
+  'settings.imagesHint':
+    'Fetches photos from Pexels for cards that do not have an image yet. This may take a few seconds per card.',
+  'settings.imagesBackfill': 'Add images to existing cards',
+  'settings.imagesBackfilling': 'Fetching images…',
+  'settings.imagesProgress':
+    '{updated} with image · {remaining} remaining',
+  'settings.imagesBackfillDone':
+    'Done: {updated} cards got a new image. {notFound} had no photo available.',
+  'settings.imagesBackfillError': 'Could not add images',
   'home.grammarTitle': 'Grammar practice',
   'home.grammarSub': 'AI-generated exercises',
   'home.practiceTitle': 'Quick review',

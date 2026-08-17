@@ -63,6 +63,16 @@ export const messagesRu: Messages = {
   'settings.success': 'Профиль обновлён.',
   'settings.error': 'Не удалось сохранить',
   'settings.save': 'Сохранить изменения',
+  'settings.imagesTitle': 'Изображения в карточках',
+  'settings.imagesHint':
+    'Ищет фото на Pexels для карточек без изображения. Это может занять несколько секунд на карточку.',
+  'settings.imagesBackfill': 'Добавить изображения к существующим карточкам',
+  'settings.imagesBackfilling': 'Поиск изображений…',
+  'settings.imagesProgress':
+    '{updated} с изображением · {remaining} осталось',
+  'settings.imagesBackfillDone':
+    'Готово: {updated} карточек с новым изображением. {notFound} без доступного фото.',
+  'settings.imagesBackfillError': 'Не удалось добавить изображения',
   'home.grammarTitle': 'Практика грамматики',
   'home.grammarSub': 'Упражнения от ИИ',
   'home.practiceTitle': 'Быстрое повторение',

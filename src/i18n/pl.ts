@@ -63,6 +63,16 @@ export const messagesPl: Messages = {
   'settings.success': 'Profil zaktualizowany.',
   'settings.error': 'Nie udało się zapisać',
   'settings.save': 'Zapisz zmiany',
+  'settings.imagesTitle': 'Obrazy w fiszkach',
+  'settings.imagesHint':
+    'Wyszukuje zdjęcia na Pexels dla kart bez obrazu. Może to potrwać kilka sekund na kartę.',
+  'settings.imagesBackfill': 'Dodaj obrazy do istniejących kart',
+  'settings.imagesBackfilling': 'Wyszukiwanie obrazów…',
+  'settings.imagesProgress':
+    '{updated} z obrazem · {remaining} pozostało',
+  'settings.imagesBackfillDone':
+    'Gotowe: {updated} kart z nowym obrazem. {notFound} bez dostępnego zdjęcia.',
+  'settings.imagesBackfillError': 'Nie udało się dodać obrazów',
   'home.grammarTitle': 'Ćwiczenia gramatyczne',
   'home.grammarSub': 'Ćwiczenia generowane przez AI',
   'home.practiceTitle': 'Szybka powtórka',
