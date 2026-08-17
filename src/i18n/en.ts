@@ -11,6 +11,7 @@ export const messagesEn: Messages = {
   'nav.logout': 'Log out',
   'nav.streak': 'Streak: {count} days',
   'nav.uiLanguageToggle': 'Toggle interface language',
+  'nav.accountAria': 'My account',
   'common.email': 'Email',
   'common.password': 'Password',
   'common.name': 'Name',

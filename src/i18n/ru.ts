@@ -11,6 +11,7 @@ export const messagesRu: Messages = {
   'nav.logout': 'Выйти',
   'nav.streak': 'Серия: {count} дн.',
   'nav.uiLanguageToggle': 'Сменить язык интерфейса',
+  'nav.accountAria': 'Мой аккаунт',
   'common.email': 'Эл. почта',
   'common.password': 'Пароль',
   'common.name': 'Имя',

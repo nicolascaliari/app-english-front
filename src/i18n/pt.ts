@@ -11,6 +11,7 @@ export const messagesPt: Messages = {
   'nav.logout': 'Sair',
   'nav.streak': 'Sequência: {count} dias',
   'nav.uiLanguageToggle': 'Alternar idioma da interface',
+  'nav.accountAria': 'Minha conta',
   'common.email': 'E-mail',
   'common.password': 'Senha',
   'common.name': 'Nome',

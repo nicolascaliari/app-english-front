@@ -13,6 +13,7 @@ export type MessageKey =
   | 'nav.logout'
   | 'nav.streak'
   | 'nav.uiLanguageToggle'
+  | 'nav.accountAria'
   | 'common.email'
   | 'common.password'
   | 'common.name'

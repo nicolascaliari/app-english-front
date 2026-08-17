@@ -11,6 +11,7 @@ export const messagesIt: Messages = {
   'nav.logout': 'Esci',
   'nav.streak': 'Serie: {count} giorni',
   'nav.uiLanguageToggle': "Cambia lingua dell'interfaccia",
+  'nav.accountAria': 'Il mio account',
   'common.email': 'Email',
   'common.password': 'Password',
   'common.name': 'Nome',
