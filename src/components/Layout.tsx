@@ -1,17 +1,26 @@
 import { Link, NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
 import { useI18n } from '../i18n/I18nProvider';
+import { APP_LANGUAGE_FLAGS } from '../utils/languages';
 import { AnimatedPage } from './AnimatedPage';
 
 export function Layout() {
   const { user, logout } = useAuth();
-  const { t } = useI18n();
+  const { t, uiMode, setUiMode } = useI18n();
   const navigate = useNavigate();
 
   const handleLogout = async () => {
     await logout();
     navigate('/login', { replace: true });
   };
+
+  const toggleUiLanguage = () => {
+    setUiMode(uiMode === 'target' ? 'native' : 'target');
+  };
+
+  const targetFlag = user
+    ? APP_LANGUAGE_FLAGS[user.targetLanguage]
+    : APP_LANGUAGE_FLAGS.en;
 
   return (
     <div className="app">
@@ -24,6 +33,31 @@ export function Layout() {
           <span className="logo-text">{t('brand.name')}</span>
         </Link>
         <div className="header-actions">
+          {user && (
+            <div className="header-badges">
+              <button
+                type="button"
+                className="header-lang-toggle"
+                onClick={toggleUiLanguage}
+                title={t('nav.uiLanguageToggle')}
+                aria-label={t('nav.uiLanguageToggle')}
+              >
+                <span className="logo-flag" aria-hidden="true">
+                  {targetFlag}
+                </span>
+              </button>
+              <div
+                className="header-streak"
+                title={t('nav.streak', { count: user.streakCount })}
+                aria-label={t('nav.streak', { count: user.streakCount })}
+              >
+                <span className="streak-icon" aria-hidden="true">
+                  🔥
+                </span>
+                <span className="streak-count">{user.streakCount}</span>
+              </div>
+            </div>
+          )}
           <nav aria-label={t('nav.aria')}>
             <NavLink to="/practice" className={({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')}>
               {t('nav.review')}

@@ -9,6 +9,8 @@ export const messagesFr: Messages = {
   'nav.newAria': 'Nouvelle carte',
   'nav.settings': 'Paramètres',
   'nav.logout': 'Se déconnecter',
+  'nav.streak': 'Série : {count} jours',
+  'nav.uiLanguageToggle': "Changer la langue de l'interface",
   'common.email': 'E-mail',
   'common.password': 'Mot de passe',
   'common.name': 'Nom',

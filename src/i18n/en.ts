@@ -9,6 +9,8 @@ export const messagesEn: Messages = {
   'nav.newAria': 'New card',
   'nav.settings': 'Settings',
   'nav.logout': 'Log out',
+  'nav.streak': 'Streak: {count} days',
+  'nav.uiLanguageToggle': 'Toggle interface language',
   'common.email': 'Email',
   'common.password': 'Password',
   'common.name': 'Name',

@@ -144,6 +144,61 @@ a {
   min-width: 0;
 }
 
+.header-badges {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  flex-shrink: 0;
+}
+
+.header-lang-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04);
+  border-radius: 999px;
+  padding: 0.25rem 0.45rem;
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    border-color 0.2s,
+    transform 0.2s var(--ease-out);
+}
+
+.header-lang-toggle:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+.header-lang-toggle:active {
+  transform: scale(0.95);
+}
+
+.header-streak {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.25rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid rgba(251, 146, 60, 0.25);
+  background: rgba(251, 146, 60, 0.1);
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #fdba74;
+  flex-shrink: 0;
+}
+
+.streak-icon {
+  font-size: 0.95rem;
+  line-height: 1;
+}
+
+.streak-count {
+  min-width: 0.75rem;
+  text-align: center;
+}
+
 .header nav {
   display: flex;
   align-items: center;

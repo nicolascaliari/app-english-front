@@ -4,6 +4,7 @@ import {
   DEFAULT_TARGET_LANGUAGE,
   normalizeAppLanguage,
 } from '../utils/languages';
+import { normalizeDateOnly } from '../utils/date';
 
 export interface StoredUser {
   id: string;
@@ -12,6 +13,8 @@ export interface StoredUser {
   role: string;
   nativeLanguage: AppLanguage;
   targetLanguage: AppLanguage;
+  streakCount: number;
+  lastStreakDate: string | null;
 }
 
 const ACCESS_KEY = 'flashcards_access_token';
@@ -32,6 +35,8 @@ function normalizeStoredUser(raw: Partial<StoredUser> & { id: string }): StoredU
       raw.targetLanguage,
       DEFAULT_TARGET_LANGUAGE,
     ),
+    streakCount: typeof raw.streakCount === 'number' ? raw.streakCount : 0,
+    lastStreakDate: normalizeDateOnly(raw.lastStreakDate),
   };
 }
 

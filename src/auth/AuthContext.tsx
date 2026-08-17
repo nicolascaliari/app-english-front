@@ -27,6 +27,7 @@ interface AuthContextValue {
   login: (payload: LoginPayload) => Promise<void>;
   register: (payload: RegisterPayload) => Promise<void>;
   updateProfile: (payload: UpdateProfilePayload) => Promise<void>;
+  updateStreak: (streakCount: number, lastStreakDate: string) => void;
   logout: () => Promise<void>;
 }
 
@@ -46,6 +47,8 @@ function toStoredUser(user: AuthUser): StoredUser {
       user.targetLanguage,
       DEFAULT_TARGET_LANGUAGE,
     ),
+    streakCount: user.streakCount ?? 0,
+    lastStreakDate: user.lastStreakDate ?? null,
   };
 }
 
@@ -104,6 +107,18 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     setUser(stored);
   }, []);
 
+  const updateStreak = useCallback(
+    (streakCount: number, lastStreakDate: string) => {
+      setUser((prev) => {
+        if (!prev) return prev;
+        const next = { ...prev, streakCount, lastStreakDate };
+        authStorage.setUser(next);
+        return next;
+      });
+    },
+    [],
+  );
+
   const logout = useCallback(async () => {
     try {
       await api.logout();
@@ -117,8 +132,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const value = useMemo(
-    () => ({ user, loading, login, register, updateProfile, logout }),
-    [user, loading, login, register, updateProfile, logout],
+    () => ({ user, loading, login, register, updateProfile, updateStreak, logout }),
+    [user, loading, login, register, updateProfile, updateStreak, logout],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

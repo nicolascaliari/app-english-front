@@ -1,14 +1,18 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../api/client';
 import { FlashcardView } from '../components/FlashcardView';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import { ReviewProgress } from '../components/ReviewProgress';
 import { useI18n } from '../i18n/I18nProvider';
+import { useRecordStreak } from '../hooks/useRecordStreak';
 import type { Difficulty, DueReview } from '../types';
 
 export function ReviewPage() {
   const { t } = useI18n();
+  const recordStreak = useRecordStreak();
+  const sessionStarted = useRef(false);
+  const streakRecorded = useRef(false);
   const [queue, setQueue] = useState<DueReview[]>([]);
   const [index, setIndex] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -24,6 +28,24 @@ export function ReviewPage() {
   }, []);
 
   const current = queue[index];
+
+  useEffect(() => {
+    if (queue.length > 0) {
+      sessionStarted.current = true;
+    }
+  }, [queue.length]);
+
+  useEffect(() => {
+    if (
+      !loading &&
+      sessionStarted.current &&
+      queue.length === 0 &&
+      !streakRecorded.current
+    ) {
+      streakRecorded.current = true;
+      void recordStreak();
+    }
+  }, [loading, queue.length, recordStreak]);
 
   const handleResult = async (correct: boolean) => {
     if (!current || submitting) return;

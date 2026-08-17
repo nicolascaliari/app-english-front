@@ -15,6 +15,7 @@ import type {
   LoginPayload,
   RegisterPayload,
   Review,
+  StreakResult,
   UpdateFlashcardPayload,
   UpdateProfilePayload,
 } from '../types';
@@ -23,6 +24,7 @@ import {
   DEFAULT_TARGET_LANGUAGE,
   normalizeAppLanguage,
 } from '../utils/languages';
+import { normalizeDateOnly } from '../utils/date';
 import { authStorage } from '../auth/authStorage';
 
 const API_URL = import.meta.env.VITE_API_URL ?? '/api';
@@ -137,6 +139,25 @@ async function request<T>(path: string, options?: RequestOptions): Promise<T> {
   return res.json();
 }
 
+function normalizeAuthUser(raw: AuthUser & { _id?: string }): AuthUser {
+  return {
+    id: raw.id ?? raw._id ?? '',
+    email: raw.email,
+    name: raw.name,
+    role: raw.role,
+    nativeLanguage: normalizeAppLanguage(
+      raw.nativeLanguage,
+      DEFAULT_NATIVE_LANGUAGE,
+    ),
+    targetLanguage: normalizeAppLanguage(
+      raw.targetLanguage,
+      DEFAULT_TARGET_LANGUAGE,
+    ),
+    streakCount: typeof raw.streakCount === 'number' ? raw.streakCount : 0,
+    lastStreakDate: normalizeDateOnly(raw.lastStreakDate),
+  };
+}
+
 export const api = {
   login: (data: LoginPayload) =>
     request<AuthResponse>('/auth/login', {
@@ -157,20 +178,7 @@ export const api = {
 
   getMe: async (): Promise<AuthUser> => {
     const raw = await request<AuthUser & { _id?: string }>('/auth/me');
-    return {
-      id: raw.id ?? raw._id ?? '',
-      email: raw.email,
-      name: raw.name,
-      role: raw.role,
-      nativeLanguage: normalizeAppLanguage(
-        raw.nativeLanguage,
-        DEFAULT_NATIVE_LANGUAGE,
-      ),
-      targetLanguage: normalizeAppLanguage(
-        raw.targetLanguage,
-        DEFAULT_TARGET_LANGUAGE,
-      ),
-    };
+    return normalizeAuthUser(raw);
   },
 
   updateProfile: async (data: UpdateProfilePayload): Promise<AuthUser> => {
@@ -178,21 +186,14 @@ export const api = {
       method: 'PATCH',
       body: JSON.stringify(data),
     });
-    return {
-      id: raw.id ?? raw._id ?? '',
-      email: raw.email,
-      name: raw.name,
-      role: raw.role,
-      nativeLanguage: normalizeAppLanguage(
-        raw.nativeLanguage,
-        DEFAULT_NATIVE_LANGUAGE,
-      ),
-      targetLanguage: normalizeAppLanguage(
-        raw.targetLanguage,
-        DEFAULT_TARGET_LANGUAGE,
-      ),
-    };
+    return normalizeAuthUser(raw);
   },
+
+  recordStreak: (data?: { date?: string }) =>
+    request<StreakResult>('/users/me/streak', {
+      method: 'POST',
+      body: JSON.stringify(data ?? {}),
+    }),
 
   getCategories: () => request<Category[]>('/categories'),
 

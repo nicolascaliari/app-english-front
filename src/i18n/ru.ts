@@ -9,6 +9,8 @@ export const messagesRu: Messages = {
   'nav.newAria': 'Новая карточка',
   'nav.settings': 'Настройки',
   'nav.logout': 'Выйти',
+  'nav.streak': 'Серия: {count} дн.',
+  'nav.uiLanguageToggle': 'Сменить язык интерфейса',
   'common.email': 'Эл. почта',
   'common.password': 'Пароль',
   'common.name': 'Имя',

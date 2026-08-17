@@ -9,6 +9,8 @@ export const messagesPl: Messages = {
   'nav.newAria': 'Nowa fiszka',
   'nav.settings': 'Ustawienia',
   'nav.logout': 'Wyloguj',
+  'nav.streak': 'Seria: {count} dni',
+  'nav.uiLanguageToggle': 'Zmień język interfejsu',
   'common.email': 'E-mail',
   'common.password': 'Hasło',
   'common.name': 'Imię',

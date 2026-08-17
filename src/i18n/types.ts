@@ -11,6 +11,8 @@ export type MessageKey =
   | 'nav.newAria'
   | 'nav.settings'
   | 'nav.logout'
+  | 'nav.streak'
+  | 'nav.uiLanguageToggle'
   | 'common.email'
   | 'common.password'
   | 'common.name'

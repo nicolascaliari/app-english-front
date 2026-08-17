@@ -37,6 +37,17 @@ export const APP_LANGUAGE_LOCALE: Record<AppLanguage, string> = {
 export const DEFAULT_NATIVE_LANGUAGE: AppLanguage = 'es';
 export const DEFAULT_TARGET_LANGUAGE: AppLanguage = 'en';
 
+export const APP_LANGUAGE_FLAGS: Record<AppLanguage, string> = {
+  en: '🇺🇸',
+  es: '🇪🇸',
+  pt: '🇧🇷',
+  fr: '🇫🇷',
+  it: '🇮🇹',
+  de: '🇩🇪',
+  ru: '🇷🇺',
+  pl: '🇵🇱',
+};
+
 export function isAppLanguage(value: unknown): value is AppLanguage {
   return (
     typeof value === 'string' &&

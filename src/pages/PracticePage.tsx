@@ -1,14 +1,18 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../api/client';
 import { FlashcardView } from '../components/FlashcardView';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import { ReviewProgress } from '../components/ReviewProgress';
 import { useI18n } from '../i18n/I18nProvider';
+import { useRecordStreak } from '../hooks/useRecordStreak';
 import type { Difficulty, Flashcard } from '../types';
 
 export function PracticePage() {
   const { t } = useI18n();
+  const recordStreak = useRecordStreak();
+  const sessionStarted = useRef(false);
+  const streakRecorded = useRef(false);
   const [queue, setQueue] = useState<Flashcard[]>([]);
   const [index, setIndex] = useState(0);
   const [loading, setLoading] = useState(true);
@@ -16,6 +20,8 @@ export function PracticePage() {
   const [updating, setUpdating] = useState(false);
 
   const loadPractice = () => {
+    sessionStarted.current = false;
+    streakRecorded.current = false;
     setLoading(true);
     setError('');
     setIndex(0);
@@ -31,6 +37,24 @@ export function PracticePage() {
   }, []);
 
   const current = queue[index];
+
+  useEffect(() => {
+    if (queue.length > 0) {
+      sessionStarted.current = true;
+    }
+  }, [queue.length]);
+
+  useEffect(() => {
+    if (
+      !loading &&
+      sessionStarted.current &&
+      queue.length === 0 &&
+      !streakRecorded.current
+    ) {
+      streakRecorded.current = true;
+      void recordStreak();
+    }
+  }, [loading, queue.length, recordStreak]);
 
   const handleDifficultyChange = async (difficulty: Difficulty) => {
     if (!current || updating) return;

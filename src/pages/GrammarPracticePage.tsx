@@ -1,10 +1,11 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../api/client';
 import { GrammarExerciseCard } from '../components/GrammarExerciseCard';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import { ReviewProgress } from '../components/ReviewProgress';
 import { useI18n } from '../i18n/I18nProvider';
+import { useRecordStreak } from '../hooks/useRecordStreak';
 import type { GrammarExercise, GrammarExercisesResult, GrammarLevel } from '../types';
 
 interface GrammarTopic {
@@ -112,6 +113,8 @@ type Phase = 'setup' | 'session' | 'results';
 
 export function GrammarPracticePage() {
   const { t } = useI18n();
+  const recordStreak = useRecordStreak();
+  const streakRecorded = useRef(false);
   const [phase, setPhase] = useState<Phase>('setup');
   const [activeTab, setActiveTab] = useState<GrammarLevel>('a1');
   const [level, setLevel] = useState<GrammarLevel>('a1');
@@ -125,6 +128,13 @@ export function GrammarPracticePage() {
   const [answered, setAnswered] = useState(false);
 
   const current: GrammarExercise | undefined = session?.exercises[index];
+
+  useEffect(() => {
+    if (phase === 'results' && !streakRecorded.current) {
+      streakRecorded.current = true;
+      void recordStreak();
+    }
+  }, [phase, recordStreak]);
 
   const handleGenerate = async (topicName: string, levelName: GrammarLevel) => {
     setGenerating(true);
@@ -167,6 +177,7 @@ export function GrammarPracticePage() {
   };
 
   const handleNewSession = () => {
+    streakRecorded.current = false;
     setPhase('setup');
     setSession(null);
     setIndex(0);

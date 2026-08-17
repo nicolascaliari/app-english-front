@@ -17,6 +17,14 @@ export interface AuthUser {
   role: string;
   nativeLanguage: AppLanguage;
   targetLanguage: AppLanguage;
+  streakCount: number;
+  lastStreakDate: string | null;
+}
+
+export interface StreakResult {
+  streakCount: number;
+  lastStreakDate: string;
+  extended: boolean;
 }
 
 export interface AuthResponse {
