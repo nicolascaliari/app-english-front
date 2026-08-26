@@ -207,7 +207,14 @@ export type MessageKey =
   | 'category.deleteConfirm'
   | 'filters.searchCards'
   | 'filters.count'
-  | 'search.clear';
+  | 'search.clear'
+  | 'flashcard.edit'
+  | 'category.review'
+  | 'category.exitReview'
+  | 'category.reviewDone'
+  | 'category.restartReview'
+  | 'editCard.title'
+  | 'editCard.save';
 
 export type Messages = Record<MessageKey, string>;
 

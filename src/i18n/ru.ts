@@ -227,4 +227,11 @@ export const messagesRu: Messages = {
   'filters.searchCards': 'Поиск карточек…',
   'filters.count': '{filtered} из {total} карточек',
   'search.clear': 'Очистить поиск',
+  'flashcard.edit': 'Edit',
+  'category.review': 'Review words',
+  'category.exitReview': 'Exit review',
+  'category.reviewDone': 'You have reviewed all the cards!',
+  'category.restartReview': 'Review again',
+  'editCard.title': 'Edit card',
+  'editCard.save': 'Save changes',
 };

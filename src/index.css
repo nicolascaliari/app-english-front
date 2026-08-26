@@ -1129,6 +1129,32 @@ a {
   transform: scale(1.1);
 }
 
+.flashcard-edit {
+  position: absolute;
+  top: 0.4rem;
+  right: 2.2rem;
+  z-index: 2;
+  background: rgba(124, 108, 255, 0.15);
+  border: 1px solid rgba(124, 108, 255, 0.3);
+  border-radius: 8px;
+  font-size: 0.75rem;
+  color: var(--accent);
+  cursor: pointer;
+  padding: 0.25rem 0.45rem;
+  opacity: 0;
+  line-height: 1;
+  transition: opacity 0.2s, background 0.2s, transform 0.15s;
+}
+
+.flashcard-container--compact:hover .flashcard-edit {
+  opacity: 1;
+}
+
+.flashcard-edit:hover {
+  background: rgba(124, 108, 255, 0.3);
+  transform: scale(1.1);
+}
+
 /* ── Difficulty ── */
 
 .difficulty-badge {
@@ -2521,4 +2547,96 @@ a {
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* ── Modal overlay ── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background: rgba(15, 15, 26, 0.82);
+  backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  animation: fadeIn 0.25s var(--ease-out);
+}
+
+.modal-content {
+  background: var(--surface-solid);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius);
+  padding: 1.75rem 1.5rem 1.5rem;
+  width: 100%;
+  max-width: 440px;
+  box-shadow: var(--shadow);
+  position: relative;
+  animation: modalEnter 0.3s var(--ease-spring);
+}
+
+.modal-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 1.25rem;
+  color: var(--text);
+}
+
+.modal-close {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0.35rem 0.5rem;
+  line-height: 1;
+  transition: all 0.2s;
+}
+
+.modal-close:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--text);
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+@keyframes modalEnter {
+  from { opacity: 0; transform: scale(0.92) translateY(16px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* ── Review Mode Navigation ── */
+.review-navigation-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+}
+
+.review-navigation-actions .btn {
+  flex: 1;
+}
+
+.review-category-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  transition: all 0.2s var(--ease-out);
+}
+
+.review-category-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 16px var(--accent-glow);
 }

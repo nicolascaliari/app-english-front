@@ -227,4 +227,11 @@ export const messagesEn: Messages = {
   'filters.searchCards': 'Search cards…',
   'filters.count': '{filtered} of {total} cards',
   'search.clear': 'Clear search',
+  'flashcard.edit': 'Edit',
+  'category.review': 'Review words',
+  'category.exitReview': 'Exit review',
+  'category.reviewDone': 'You have reviewed all the cards!',
+  'category.restartReview': 'Review again',
+  'editCard.title': 'Edit card',
+  'editCard.save': 'Save changes',
 };

@@ -17,6 +17,7 @@ interface Props {
   onDifficultyChange?: (difficulty: Difficulty) => void;
   compact?: boolean;
   onDelete?: () => void;
+  onEdit?: () => void;
 }
 
 const DIFFICULTIES: Difficulty[] = ['easy', 'medium', 'hard'];
@@ -29,6 +30,7 @@ export function FlashcardView({
   onDifficultyChange,
   compact = false,
   onDelete,
+  onEdit,
 }: Props) {
   const { user } = useAuth();
   const { t, languageName } = useI18n();
@@ -67,6 +69,19 @@ export function FlashcardView({
     <div
       className={`flashcard-container${compact ? ' flashcard-container--compact' : ''}${exiting ? ' flashcard-container--exit' : ''}`}
     >
+      {onEdit && (
+        <button
+          type="button"
+          className="flashcard-edit"
+          onClick={(e) => {
+            e.stopPropagation();
+            onEdit();
+          }}
+          aria-label={t('flashcard.edit')}
+        >
+          ✎
+        </button>
+      )}
       {onDelete && (
         <button
           type="button"

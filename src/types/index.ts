@@ -109,6 +109,8 @@ export interface UpdateFlashcardPayload {
   example?: string;
   pronunciation?: string;
   tags?: string[];
+  categoryId?: string;
+  imageUrl?: string;
 }
 
 export interface CreateCategoryPayload {

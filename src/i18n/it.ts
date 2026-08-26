@@ -228,4 +228,11 @@ export const messagesIt: Messages = {
   'filters.searchCards': 'Cerca carte…',
   'filters.count': '{filtered} di {total} carte',
   'search.clear': 'Cancella ricerca',
+  'flashcard.edit': 'Edit',
+  'category.review': 'Review words',
+  'category.exitReview': 'Exit review',
+  'category.reviewDone': 'You have reviewed all the cards!',
+  'category.restartReview': 'Review again',
+  'editCard.title': 'Edit card',
+  'editCard.save': 'Save changes',
 };
