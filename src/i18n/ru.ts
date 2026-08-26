@@ -232,6 +232,8 @@ export const messagesRu: Messages = {
   'category.exitReview': 'Exit review',
   'category.reviewDone': 'You have reviewed all the cards!',
   'category.restartReview': 'Review again',
+  'category.prev': 'Назад',
+  'category.next': 'Далее →',
   'editCard.title': 'Edit card',
   'editCard.save': 'Save changes',
 };

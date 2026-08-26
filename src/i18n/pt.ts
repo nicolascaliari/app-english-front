@@ -232,6 +232,8 @@ export const messagesPt: Messages = {
   'category.exitReview': 'Exit review',
   'category.reviewDone': 'You have reviewed all the cards!',
   'category.restartReview': 'Review again',
+  'category.prev': 'Anterior',
+  'category.next': 'Próximo →',
   'editCard.title': 'Edit card',
   'editCard.save': 'Save changes',
 };

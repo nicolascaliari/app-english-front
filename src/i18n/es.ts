@@ -232,6 +232,8 @@ export const messagesEs: Messages = {
   'category.exitReview': 'Salir del repaso',
   'category.reviewDone': '¡Has repasado todas las palabras!',
   'category.restartReview': 'Repasar de nuevo',
+  'category.prev': 'Anterior',
+  'category.next': 'Siguiente →',
   'editCard.title': 'Editar carta',
   'editCard.save': 'Guardar cambios',
 };

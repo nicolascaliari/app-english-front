@@ -213,6 +213,8 @@ export type MessageKey =
   | 'category.exitReview'
   | 'category.reviewDone'
   | 'category.restartReview'
+  | 'category.prev'
+  | 'category.next'
   | 'editCard.title'
   | 'editCard.save';
 
