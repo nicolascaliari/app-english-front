@@ -1,12 +1,14 @@
 import { type FormEvent, useEffect, useState } from 'react';
 import { api } from '../api/client';
+import { useAuth } from '../auth/AuthContext';
 import { useI18n } from '../i18n/I18nProvider';
 import type { LookupEntry, LookupResult } from '../types';
 import {
+  cachedCategoryTree,
   categoryLabel,
   firstLeafId,
   isLeaf,
-  loadCategoryTree,
+  refreshCategoryTree,
   resolveCategoryId,
   type CategoryNode,
 } from '../utils/categoryTree';
@@ -31,6 +33,18 @@ function saveLastCategory(id: string): void {
   }
 }
 
+/** The entry's suggested category, else the last one used, else the first leaf. */
+function pickCategory(tree: CategoryNode[], entry: LookupEntry): string {
+  const last = readLastCategory();
+  const fallback = isLeaf(tree, last) ? last : firstLeafId(tree);
+  return resolveCategoryId(
+    tree,
+    entry.suggestedCategory,
+    entry.suggestedSubcategory,
+    fallback,
+  );
+}
+
 interface Props {
   entry: LookupEntry;
   kind?: LookupResult['kind'];
@@ -39,36 +53,42 @@ interface Props {
 /** Saves a looked-up word or phrase as a flashcard in a category the user picks. */
 export function AddToDeckForm({ entry, kind }: Props) {
   const { t } = useI18n();
-  const [tree, setTree] = useState<CategoryNode[] | null>(null);
-  const [categoryId, setCategoryId] = useState('');
+  const { user } = useAuth();
+  const ownerId = user?.id ?? '';
+  // The reader preloads the tree, so it is usually cached already; the
+  // refresh below still runs to pick up categories created since.
+  const [tree, setTree] = useState<CategoryNode[] | null>(() =>
+    cachedCategoryTree(ownerId),
+  );
+  const [categoryId, setCategoryId] = useState(() => {
+    const cached = cachedCategoryTree(ownerId);
+    return cached ? pickCategory(cached, entry) : '';
+  });
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
   useEffect(() => {
     let cancelled = false;
-    loadCategoryTree()
+    refreshCategoryTree(ownerId)
       .then((loaded) => {
         if (cancelled) return;
         setTree(loaded);
-        const last = readLastCategory();
-        const fallback = isLeaf(loaded, last) ? last : firstLeafId(loaded);
-        setCategoryId(
-          resolveCategoryId(
-            loaded,
-            entry.suggestedCategory,
-            entry.suggestedSubcategory,
-            fallback,
-          ),
+        // Keep the user's pick if it still exists.
+        setCategoryId((current) =>
+          current && isLeaf(loaded, current) ? current : pickCategory(loaded, entry),
         );
       })
       .catch((err: unknown) => {
-        if (!cancelled) setError(err instanceof Error ? err.message : t('new.saveError'));
+        // A failed background refresh is harmless when a cached tree is shown.
+        if (!cancelled && !cachedCategoryTree(ownerId)) {
+          setError(err instanceof Error ? err.message : t('new.saveError'));
+        }
       });
     return () => {
       cancelled = true;
     };
-  }, [entry, t]);
+  }, [entry, ownerId, t]);
 
   const handleSave = async (e: FormEvent) => {
     e.preventDefault();

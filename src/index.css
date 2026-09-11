@@ -2876,17 +2876,22 @@ a {
 
 /* ── Bottom tab bar ── */
 
+/* The links fill the whole bar, safe-area strip included: taps that landed on
+   the bar's own padding or gaps (where a thumb often hits, above the home
+   indicator) used to do nothing. */
 .tabbar {
   flex-shrink: 0;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 0.15rem;
-  padding: 0.4rem 0.6rem calc(0.45rem + var(--safe-bottom));
+  padding: 0 0.45rem;
   background: rgba(12, 12, 22, 0.88);
   backdrop-filter: blur(18px) saturate(1.4);
   -webkit-backdrop-filter: blur(18px) saturate(1.4);
   border-top: 1px solid rgba(255, 255, 255, 0.08);
   z-index: 120;
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 .tabbar-link {
@@ -2896,12 +2901,18 @@ a {
   justify-content: center;
   gap: 0.2rem;
   min-width: 0;
-  padding: 0.25rem 0.15rem 0.15rem;
+  min-height: 3.25rem;
+  padding: 0.4rem 0.15rem calc(0.45rem + var(--safe-bottom));
   color: var(--text-muted);
   text-decoration: none;
   font-size: 0.62rem;
   font-weight: 600;
   letter-spacing: 0.01em;
+  /* iOS turns a slightly long press on a link into a preview, drag or text
+     selection and drops the tap; none of those make sense here. */
+  -webkit-touch-callout: none;
+  -webkit-user-drag: none;
+  touch-action: manipulation;
 }
 
 .tabbar-icon {
@@ -2916,7 +2927,14 @@ a {
     color 0.2s,
     background 0.2s,
     border-color 0.2s,
-    box-shadow 0.2s;
+    box-shadow 0.2s,
+    transform 0.12s;
+}
+
+/* Instant feedback on touch, before the next page has rendered. */
+.tabbar-link:active .tabbar-icon {
+  transform: scale(0.88);
+  background: rgba(255, 255, 255, 0.08);
 }
 
 .tabbar-icon svg {

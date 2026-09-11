@@ -14,6 +14,7 @@ import { useAuth } from '../auth/AuthContext';
 import { useI18n } from '../i18n/I18nProvider';
 import type { LookupResult } from '../types';
 import { getCachedLookup, setCachedLookup } from '../utils/lookupCache';
+import { refreshCategoryTree } from '../utils/categoryTree';
 import {
   DEFAULT_NATIVE_LANGUAGE,
   DEFAULT_TARGET_LANGUAGE,
@@ -147,6 +148,13 @@ export function ReadingReaderPage() {
 
   const nativeLanguage = user?.nativeLanguage ?? DEFAULT_NATIVE_LANGUAGE;
   const targetLanguage = user?.targetLanguage ?? DEFAULT_TARGET_LANGUAGE;
+  const userId = user?.id;
+
+  // Preload the category picker behind "add to flashcards" so it opens
+  // instantly. Errors are ignored here; the form shows its own.
+  useEffect(() => {
+    if (userId) refreshCategoryTree(userId).catch(() => undefined);
+  }, [userId]);
 
   const lookupSelection = useCallback(
     async (sel: WordSelection) => {

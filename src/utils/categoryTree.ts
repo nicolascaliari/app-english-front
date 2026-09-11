@@ -17,6 +17,29 @@ export async function loadCategoryTree(): Promise<CategoryNode[]> {
   );
 }
 
+// In-memory cache per user, so a picker can render at once (the reader
+// preloads it) while callers refresh it in the background to pick up changes.
+let cache: { ownerId: string; tree: CategoryNode[] } | null = null;
+const inFlight = new Map<string, Promise<CategoryNode[]>>();
+
+export function cachedCategoryTree(ownerId: string): CategoryNode[] | null {
+  return ownerId && cache?.ownerId === ownerId ? cache.tree : null;
+}
+
+/** Fetches the tree and caches it, joining a fetch that is already running. */
+export function refreshCategoryTree(ownerId: string): Promise<CategoryNode[]> {
+  const pending = inFlight.get(ownerId);
+  if (pending) return pending;
+  const request = loadCategoryTree()
+    .then((tree) => {
+      cache = { ownerId, tree };
+      return tree;
+    })
+    .finally(() => inFlight.delete(ownerId));
+  inFlight.set(ownerId, request);
+  return request;
+}
+
 /**
  * Cards can only go into leaves — roots without subcategories, or
  * subcategories; the backend rejects a card on a category that has children.
