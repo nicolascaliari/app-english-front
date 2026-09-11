@@ -20,6 +20,7 @@ import {
 } from '../utils/languages';
 import {
   getReadingBook,
+  describeError,
   getReadingBookFile,
   loadEpubConstructor,
   saveReadingLocations,
@@ -126,6 +127,7 @@ export function ReadingReaderPage() {
   const [meta, setMeta] = useState<ReadingBookMeta | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [errorDetail, setErrorDetail] = useState('');
   const [location, setLocation] = useState<Location | null>(null);
   const [bookPages, setBookPages] = useState(0);
   const [selectedWord, setSelectedWord] = useState<string | null>(null);
@@ -269,8 +271,12 @@ export function ReadingReaderPage() {
           current.resize(node.clientWidth, node.clientHeight);
         });
         resizeObserver.observe(el);
-      } catch {
-        if (!cancelled) setError(t('reading.readError'));
+      } catch (err) {
+        console.error('[reading] could not open book', err);
+        if (!cancelled) {
+          setError(t('reading.readError'));
+          setErrorDetail(describeError(err));
+        }
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -386,6 +392,7 @@ export function ReadingReaderPage() {
         <p className="status error">
           {error}{' '}
           <Link to="/reading">{t('reading.title')}</Link>
+          {errorDetail && <small className="status-detail">{errorDetail}</small>}
         </p>
       )}
 

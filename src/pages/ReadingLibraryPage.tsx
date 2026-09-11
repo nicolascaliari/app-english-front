@@ -4,6 +4,7 @@ import { LoadingSpinner } from '../components/LoadingSpinner';
 import { useI18n } from '../i18n/I18nProvider';
 import {
   deleteReadingBook,
+  describeError,
   importEpubFile,
   ImportEpubError,
   listReadingBooks,
@@ -17,6 +18,7 @@ export function ReadingLibraryPage() {
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
+  const [errorDetail, setErrorDetail] = useState('');
 
   const refresh = async () => {
     const rows = await listReadingBooks();
@@ -30,8 +32,11 @@ export function ReadingLibraryPage() {
       .then((rows) => {
         if (!cancelled) setBooks(rows);
       })
-      .catch(() => {
-        if (!cancelled) setError(t('reading.readError'));
+      .catch((err: unknown) => {
+        console.error('[reading] could not list books', err);
+        if (cancelled) return;
+        setError(t('reading.readError'));
+        setErrorDetail(describeError(err));
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
@@ -48,10 +53,12 @@ export function ReadingLibraryPage() {
 
     setUploading(true);
     setError('');
+    setErrorDetail('');
     try {
       await importEpubFile(file);
       await refresh();
     } catch (err) {
+      setErrorDetail(describeError(err));
       if (err instanceof ImportEpubError) {
         const key =
           err.code === 'invalidFile'
@@ -101,7 +108,12 @@ export function ReadingLibraryPage() {
         {uploading ? t('reading.uploading') : t('reading.upload')}
       </button>
 
-      {error && <p className="status error">{error}</p>}
+      {error && (
+        <p className="status error">
+          {error}
+          {errorDetail && <small className="status-detail">{errorDetail}</small>}
+        </p>
+      )}
 
       {books.length === 0 ? (
         <div className="empty empty--enter">

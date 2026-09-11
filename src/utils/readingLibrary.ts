@@ -168,11 +168,26 @@ export type ImportEpubErrorCode = 'invalidFile' | 'tooLarge' | 'readError';
 
 export class ImportEpubError extends Error {
   code: ImportEpubErrorCode;
-  constructor(code: ImportEpubErrorCode) {
+  detail?: string;
+  constructor(code: ImportEpubErrorCode, detail?: string) {
     super(code);
     this.name = 'ImportEpubError';
     this.code = code;
+    this.detail = detail;
   }
+}
+
+/** Short technical reason for a failure, shown under the friendly message. */
+export function describeError(err: unknown): string {
+  if (err instanceof ImportEpubError) return err.detail ?? err.code;
+  if (err instanceof Error) return `${err.name}: ${err.message}`;
+  return String(err);
+}
+
+// crypto.randomUUID needs Safari 15.4+ and a secure (https) context.
+function newBookId(): string {
+  if (typeof crypto.randomUUID === 'function') return crypto.randomUUID();
+  return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
 }
 
 export async function loadEpubConstructor(): Promise<
@@ -225,7 +240,7 @@ export async function importEpubFile(file: File): Promise<ReadingBookMeta> {
     }
 
     const meta: ReadingBookMeta = {
-      id: crypto.randomUUID(),
+      id: newBookId(),
       title,
       author,
       addedAt: Date.now(),
@@ -251,7 +266,8 @@ export async function importEpubFile(file: File): Promise<ReadingBookMeta> {
     return meta;
   } catch (err) {
     if (err instanceof ImportEpubError) throw err;
-    throw new ImportEpubError('readError');
+    console.error('[reading] EPUB import failed', err);
+    throw new ImportEpubError('readError', describeError(err));
   } finally {
     book.destroy();
   }
