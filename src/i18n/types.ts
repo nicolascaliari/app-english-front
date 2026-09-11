@@ -262,6 +262,8 @@ export type MessageKey =
   | 'reading.extendPrev'
   | 'reading.extendNext'
   | 'reading.shrink'
+  | 'reading.addToDeck'
+  | 'reading.saveCard'
   | 'review.empty'
   | 'review.label'
   | 'category.breadcrumb'

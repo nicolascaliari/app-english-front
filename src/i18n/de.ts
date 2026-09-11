@@ -290,6 +290,8 @@ export const messagesDe: Messages = {
   'reading.extendPrev': '+ Vorheriges',
   'reading.extendNext': 'Nächstes +',
   'reading.shrink': 'Letztes entfernen',
+  'reading.addToDeck': '+ Zu Karteikarten hinzufügen',
+  'reading.saveCard': 'Karte speichern',
   'review.empty': 'Heute keine Karten zum Wiederholen.',
   'review.label': 'SM-2',
   'category.breadcrumb': 'Kategorien',

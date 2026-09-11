@@ -285,6 +285,8 @@ export const messagesPl: Messages = {
   'reading.extendPrev': '+ Poprzednie',
   'reading.extendNext': 'Następne +',
   'reading.shrink': 'Usuń ostatnie',
+  'reading.addToDeck': '+ Dodaj do fiszek',
+  'reading.saveCard': 'Zapisz fiszkę',
   'review.empty': 'Brak fiszek do powtórki na dziś.',
   'review.label': 'SM-2',
   'category.breadcrumb': 'Kategorie',

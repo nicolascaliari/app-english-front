@@ -289,6 +289,8 @@ export const messagesFr: Messages = {
   'reading.extendPrev': '+ Précédent',
   'reading.extendNext': 'Suivant +',
   'reading.shrink': 'Retirer le dernier',
+  'reading.addToDeck': '+ Ajouter aux flashcards',
+  'reading.saveCard': 'Enregistrer la carte',
   'review.empty': "Aucune carte à réviser aujourd'hui.",
   'review.label': 'SM-2',
   'category.breadcrumb': 'Catégories',

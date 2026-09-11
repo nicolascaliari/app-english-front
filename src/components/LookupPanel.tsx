@@ -1,48 +1,25 @@
-import { type FormEvent, type MouseEvent, useEffect, useMemo, useState } from 'react';
+import { type FormEvent, type MouseEvent, useEffect, useState } from 'react';
 import { useAuth } from '../auth/AuthContext';
 import { api } from '../api/client';
 import { useI18n } from '../i18n/I18nProvider';
-import type { Category, Difficulty, LookupEntry, LookupResult } from '../types';
+import type { Difficulty, LookupEntry, LookupResult } from '../types';
 import {
   APP_LANGUAGE_LOCALE,
   DEFAULT_NATIVE_LANGUAGE,
   DEFAULT_TARGET_LANGUAGE,
 } from '../utils/languages';
 import { isSpeechSupported, speak } from '../utils/speech';
-
-export interface CategoryNode {
-  root: Category;
-  subs: Category[];
-}
+import {
+  categoryLabel,
+  firstLeafId,
+  resolveCategoryId,
+  type CategoryNode,
+} from '../utils/categoryTree';
+import { CategorySelect } from './CategorySelect';
 
 interface Props {
   tree: CategoryNode[];
   defaultCategoryId: string;
-}
-
-function firstLeafId(tree: CategoryNode[]): string {
-  for (const node of tree) {
-    if (node.subs.length === 0) return node.root._id;
-    if (node.subs[0]) return node.subs[0]._id;
-  }
-  return '';
-}
-
-function resolveCategoryId(
-  tree: CategoryNode[],
-  categorySlug?: string,
-  subcategorySlug?: string,
-  fallback = '',
-): string {
-  if (!categorySlug) return fallback;
-  const node = tree.find((item) => item.root.slug === categorySlug);
-  if (!node) return fallback;
-  if (subcategorySlug) {
-    const sub = node.subs.find((item) => item.slug === subcategorySlug);
-    if (sub) return sub._id;
-  }
-  if (node.subs.length === 0) return node.root._id;
-  return node.subs[0]?._id ?? node.root._id;
 }
 
 export function LookupPanel({ tree, defaultCategoryId }: Props) {
@@ -70,7 +47,6 @@ export function LookupPanel({ tree, defaultCategoryId }: Props) {
   const targetLabel = languageName(targetLanguage);
   const nativeLabel = languageName(nativeLanguage);
   const targetLocale = APP_LANGUAGE_LOCALE[targetLanguage];
-  const hasAnyLeaf = tree.length > 0;
   const selected = result?.entries[selectedIndex];
 
   useEffect(() => {
@@ -136,14 +112,7 @@ export function LookupPanel({ tree, defaultCategoryId }: Props) {
     });
   };
 
-  const selectedCategoryName = useMemo(() => {
-    for (const node of tree) {
-      if (node.root._id === categoryId) return node.root.name;
-      const sub = node.subs.find((item) => item._id === categoryId);
-      if (sub) return `${node.root.name} / ${sub.name}`;
-    }
-    return '';
-  }, [tree, categoryId]);
+  const selectedCategoryName = categoryLabel(tree, categoryId);
 
   const handleAdd = async (e: FormEvent) => {
     e.preventDefault();
@@ -283,33 +252,7 @@ export function LookupPanel({ tree, defaultCategoryId }: Props) {
 
             <label>
               {t('new.category')}
-              <select
-                value={categoryId}
-                onChange={(e) => setCategoryId(e.target.value)}
-                required
-              >
-                {!hasAnyLeaf && (
-                  <option value="">{t('new.noCategories')}</option>
-                )}
-                {tree.map((node) =>
-                  node.subs.length === 0 ? (
-                    <option key={node.root._id} value={node.root._id}>
-                      {node.root.icon} {node.root.name}
-                    </option>
-                  ) : (
-                    <optgroup
-                      key={node.root._id}
-                      label={`${node.root.icon ?? ''} ${node.root.name}`.trim()}
-                    >
-                      {node.subs.map((sub) => (
-                        <option key={sub._id} value={sub._id}>
-                          {sub.icon ?? node.root.icon} {sub.name}
-                        </option>
-                      ))}
-                    </optgroup>
-                  ),
-                )}
-              </select>
+              <CategorySelect tree={tree} value={categoryId} onChange={setCategoryId} />
             </label>
 
             {selected?.suggestedCategory && (

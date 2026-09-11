@@ -2,6 +2,7 @@ import { useEffect, useState, type MouseEvent } from 'react';
 import { useI18n } from '../i18n/I18nProvider';
 import type { LookupEntry, LookupResult } from '../types';
 import { isSpeechSupported, speak } from '../utils/speech';
+import { AddToDeckForm } from './AddToDeckForm';
 
 interface Props {
   word: string;
@@ -35,10 +36,12 @@ export function WordLookupSheet({
   const { t } = useI18n();
   const [senseIndex, setSenseIndex] = useState(0);
   const [speakingText, setSpeakingText] = useState<string | null>(null);
+  const [adding, setAdding] = useState(false);
   const speechSupported = isSpeechSupported();
 
   useEffect(() => {
     setSenseIndex(0);
+    setAdding(false);
   }, [word, result]);
 
   const entries = result?.entries ?? [];
@@ -164,6 +167,23 @@ export function WordLookupSheet({
             )}
           </div>
         )}
+
+        {selected && !loading &&
+          (adding ? (
+            <AddToDeckForm
+              key={`${selected.front}-${selected.back}-${senseIndex}`}
+              entry={selected}
+              kind={result?.kind}
+            />
+          ) : (
+            <button
+              type="button"
+              className="btn btn-primary word-sheet-add-btn"
+              onClick={() => setAdding(true)}
+            >
+              {t('reading.addToDeck')}
+            </button>
+          ))}
 
         <button type="button" className="btn btn-secondary word-sheet-close" onClick={onClose}>
           {t('reading.close')}

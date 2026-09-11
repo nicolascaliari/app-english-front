@@ -3581,6 +3581,20 @@ body.category-reviewing .flashcard.flashcard--immersive .flashcard-inner {
   cursor: default;
 }
 
+.word-sheet-add-btn {
+  width: 100%;
+  margin-bottom: 0.6rem;
+}
+
+.word-sheet-add {
+  gap: 0.6rem;
+  margin-bottom: 0.9rem;
+}
+
+.word-sheet-add-done {
+  margin-bottom: 0.9rem;
+}
+
 .word-sheet-senses {
   display: flex;
   flex-wrap: wrap;

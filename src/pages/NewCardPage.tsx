@@ -5,13 +5,18 @@ import { useAuth } from '../auth/AuthContext';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import { AiGeneratePanel } from '../components/AiGeneratePanel';
 import { ImportPanel } from '../components/ImportPanel';
-import { LookupPanel, type CategoryNode } from '../components/LookupPanel';
+import { LookupPanel } from '../components/LookupPanel';
 import { useI18n } from '../i18n/I18nProvider';
 import type { Difficulty } from '../types';
 import {
   DEFAULT_NATIVE_LANGUAGE,
   DEFAULT_TARGET_LANGUAGE,
 } from '../utils/languages';
+import {
+  firstLeafId,
+  loadCategoryTree,
+  type CategoryNode,
+} from '../utils/categoryTree';
 
 function slugify(text: string) {
   return text
@@ -20,14 +25,6 @@ function slugify(text: string) {
     .replace(/[\u0300-\u036f]/g, '')
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-|-$/g, '');
-}
-
-function firstLeafId(tree: CategoryNode[]): string {
-  for (const node of tree) {
-    if (node.subs.length === 0) return node.root._id;
-    if (node.subs[0]) return node.subs[0]._id;
-  }
-  return '';
 }
 
 export function NewCardPage() {
@@ -66,15 +63,8 @@ export function NewCardPage() {
   const [catParentSlug, setCatParentSlug] = useState(preselectedParentSlug ?? '');
 
   useEffect(() => {
-    api
-      .getCategories()
-      .then(async (roots) => {
-        const withSubs = await Promise.all(
-          roots.map(async (root) => ({
-            root,
-            subs: await api.getSubcategories(root.slug).catch(() => []),
-          })),
-        );
+    loadCategoryTree()
+      .then((withSubs) => {
         setTree(withSubs);
         setCategoryId((prev) => prev || firstLeafId(withSubs));
       })

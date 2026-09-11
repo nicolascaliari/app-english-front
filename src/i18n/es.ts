@@ -285,6 +285,8 @@ export const messagesEs: Messages = {
   'reading.extendPrev': '+ Anterior',
   'reading.extendNext': 'Siguiente +',
   'reading.shrink': 'Quitar última',
+  'reading.addToDeck': '+ Agregar a flashcards',
+  'reading.saveCard': 'Guardar carta',
   'review.empty': 'No hay cartas para repasar hoy.',
   'review.label': 'SM-2',
   'category.breadcrumb': 'Categorías',

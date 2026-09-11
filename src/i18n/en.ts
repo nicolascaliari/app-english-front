@@ -285,6 +285,8 @@ export const messagesEn: Messages = {
   'reading.extendPrev': '+ Previous',
   'reading.extendNext': 'Next +',
   'reading.shrink': 'Remove last',
+  'reading.addToDeck': '+ Add to flashcards',
+  'reading.saveCard': 'Save card',
   'review.empty': 'No cards to review today.',
   'review.label': 'SM-2',
   'category.breadcrumb': 'Categories',

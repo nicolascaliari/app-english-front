@@ -285,6 +285,8 @@ export const messagesRu: Messages = {
   'reading.extendPrev': '+ Предыдущее',
   'reading.extendNext': 'Следующее +',
   'reading.shrink': 'Убрать последнее',
+  'reading.addToDeck': '+ Добавить в карточки',
+  'reading.saveCard': 'Сохранить карточку',
   'review.empty': 'На сегодня нет карточек для повторения.',
   'review.label': 'SM-2',
   'category.breadcrumb': 'Категории',
