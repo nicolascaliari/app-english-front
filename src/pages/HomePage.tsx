@@ -83,7 +83,16 @@ export function HomePage() {
         </Link>
       )}
 
-      <h1 className="page-title">{t('home.categories')}</h1>
+      <h1 className="page-title">
+        {t('home.categories')}
+        {categories.length > 0 && (
+          <span className="page-title-count">
+            {query.trim()
+              ? `${filteredCategories.length} / ${categories.length}`
+              : categories.length}
+          </span>
+        )}
+      </h1>
 
       {categories.length === 0 ? (
         <div className="empty empty--enter">

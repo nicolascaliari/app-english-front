@@ -485,6 +485,17 @@ a {
   letter-spacing: -0.02em;
 }
 
+.page-title-count {
+  margin-left: 0.5rem;
+  padding: 0.1rem 0.55rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  font-weight: 600;
+  vertical-align: middle;
+}
+
 .page-title--with-icon {
   display: flex;
   align-items: center;

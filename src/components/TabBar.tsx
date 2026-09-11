@@ -1,4 +1,9 @@
-import { NavLink, useLocation } from 'react-router-dom';
+import {
+  useRef,
+  type MouseEvent as ReactMouseEvent,
+  type PointerEvent as ReactPointerEvent,
+} from 'react';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { useI18n } from '../i18n/I18nProvider';
 
 function ReviewIcon() {
@@ -40,6 +45,9 @@ function ProfileIcon() {
 export function TabBar() {
   const { t } = useI18n();
   const { pathname } = useLocation();
+  const navigate = useNavigate();
+  const touchStart = useRef<{ x: number; y: number } | null>(null);
+  const lastTouchNav = useRef(Number.NEGATIVE_INFINITY);
 
   const practiceActive =
     pathname.startsWith('/practice') ||
@@ -48,10 +56,34 @@ export function TabBar() {
   const decksActive =
     pathname === '/' || pathname.startsWith('/category') || pathname.startsWith('/new');
 
+  // iOS sometimes drops the click that should follow a tap — e.g. when the tap
+  // first has to stop the momentum scroll of a long decks list — so a tab
+  // could need several taps. Navigate on the touch itself, and ignore the
+  // click that may still arrive right after it.
+  const tapHandlers = (to: string) => ({
+    onPointerDown: (e: ReactPointerEvent) => {
+      touchStart.current = e.pointerType === 'touch' ? { x: e.clientX, y: e.clientY } : null;
+    },
+    onPointerUp: (e: ReactPointerEvent) => {
+      const start = touchStart.current;
+      touchStart.current = null;
+      if (!start || Math.hypot(e.clientX - start.x, e.clientY - start.y) > 10) return;
+      lastTouchNav.current = e.timeStamp;
+      navigate(to, { replace: pathname === to });
+    },
+    onPointerCancel: () => {
+      touchStart.current = null;
+    },
+    onClick: (e: ReactMouseEvent) => {
+      if (e.timeStamp - lastTouchNav.current < 800) e.preventDefault();
+    },
+  });
+
   return (
     <nav className="tabbar" aria-label={t('nav.aria')}>
       <NavLink
         to="/practice"
+        {...tapHandlers('/practice')}
         className={() => `tabbar-link${practiceActive ? ' tabbar-link--active' : ''}`}
       >
         <span className="tabbar-icon">
@@ -61,6 +93,7 @@ export function TabBar() {
       </NavLink>
       <NavLink
         to="/grammar"
+        {...tapHandlers('/grammar')}
         className={({ isActive }) => `tabbar-link${isActive ? ' tabbar-link--active' : ''}`}
       >
         <span className="tabbar-icon">
@@ -71,6 +104,7 @@ export function TabBar() {
       <NavLink
         to="/"
         end
+        {...tapHandlers('/')}
         className={() => `tabbar-link${decksActive ? ' tabbar-link--active' : ''}`}
       >
         <span className="tabbar-icon">
@@ -80,6 +114,7 @@ export function TabBar() {
       </NavLink>
       <NavLink
         to="/settings"
+        {...tapHandlers('/settings')}
         className={({ isActive }) => `tabbar-link${isActive ? ' tabbar-link--active' : ''}`}
       >
         <span className="tabbar-icon">
