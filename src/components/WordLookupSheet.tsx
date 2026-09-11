@@ -10,6 +10,13 @@ interface Props {
   result: LookupResult | null;
   locale: string;
   onClose: () => void;
+  /** Grow the selection by the neighbouring word (for phrasal verbs etc.). */
+  onExtend?: (direction: 'prev' | 'next') => void;
+  canExtendPrev?: boolean;
+  canExtendNext?: boolean;
+  /** Undo the last onExtend. */
+  onShrink?: () => void;
+  canShrink?: boolean;
 }
 
 export function WordLookupSheet({
@@ -19,6 +26,11 @@ export function WordLookupSheet({
   result,
   locale,
   onClose,
+  onExtend,
+  canExtendPrev = false,
+  canExtendNext = false,
+  onShrink,
+  canShrink = false,
 }: Props) {
   const { t } = useI18n();
   const [senseIndex, setSenseIndex] = useState(0);
@@ -73,6 +85,32 @@ export function WordLookupSheet({
             <p className="word-sheet-ipa">{selected.pronunciation}</p>
           )}
         </div>
+
+        {onExtend && (
+          <div className="word-sheet-extend">
+            <button
+              type="button"
+              className="word-sheet-sense"
+              disabled={!canExtendPrev}
+              onClick={() => onExtend('prev')}
+            >
+              {t('reading.extendPrev')}
+            </button>
+            <button
+              type="button"
+              className="word-sheet-sense"
+              disabled={!canExtendNext}
+              onClick={() => onExtend('next')}
+            >
+              {t('reading.extendNext')}
+            </button>
+            {onShrink && canShrink && (
+              <button type="button" className="word-sheet-sense" onClick={onShrink}>
+                {t('reading.shrink')}
+              </button>
+            )}
+          </div>
+        )}
 
         {loading && <p className="word-sheet-status">{t('common.loading')}</p>}
         {error && <p className="status error word-sheet-status">{error}</p>}

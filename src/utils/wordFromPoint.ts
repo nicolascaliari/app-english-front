@@ -172,15 +172,127 @@ export function clearWordHighlights(doc: Document): void {
   });
 }
 
-export function highlightWordRange(range: Range): void {
-  const doc = range.startContainer.ownerDocument;
-  if (!doc) return;
+/**
+ * One or more words, kept as character offsets into their block's
+ * textContent. Highlighting wraps text in <mark>s and clearing normalizes the
+ * DOM, which breaks stored Ranges; these offsets survive both.
+ */
+export interface WordSelection {
+  block: Element;
+  start: number;
+  end: number;
+}
+
+const BLOCK_SELECTOR =
+  'p, li, blockquote, h1, h2, h3, h4, h5, h6, dd, dt, td, th, figcaption, div';
+
+function offsetInBlock(block: Element, node: Node, offset: number): number {
+  const range = block.ownerDocument.createRange();
+  range.setStart(block, 0);
+  range.setEnd(node, offset);
+  return range.toString().length;
+}
+
+export function selectionFromRange(range: Range): WordSelection | null {
+  const container = range.startContainer;
+  const el =
+    container.nodeType === Node.ELEMENT_NODE
+      ? (container as Element)
+      : container.parentElement;
+  const block = el?.closest(BLOCK_SELECTOR) ?? el?.ownerDocument.body;
+  if (!block) return null;
+  return {
+    block,
+    start: offsetInBlock(block, range.startContainer, range.startOffset),
+    end: offsetInBlock(block, range.endContainer, range.endOffset),
+  };
+}
+
+function rangeFromSelection(sel: WordSelection): Range | null {
+  const doc = sel.block.ownerDocument;
+  const walker = doc.createTreeWalker(sel.block, NodeFilter.SHOW_TEXT);
+  const range = doc.createRange();
+  let pos = 0;
+  let startSet = false;
+  for (let node = walker.nextNode() as Text | null; node; node = walker.nextNode() as Text | null) {
+    const len = node.data.length;
+    if (!startSet && sel.start < pos + len) {
+      range.setStart(node, sel.start - pos);
+      startSet = true;
+    }
+    if (startSet && sel.end <= pos + len) {
+      range.setEnd(node, sel.end - pos);
+      return range;
+    }
+    pos += len;
+  }
+  return null;
+}
+
+export function selectionText(sel: WordSelection): string {
+  const raw = (sel.block.textContent ?? '').slice(sel.start, sel.end);
+  return normalizeLookupWord(raw.replace(/\s+/g, ' '));
+}
+
+/**
+ * The selection grown by one word before or after it. Only whitespace may sit
+ * between words, so a phrase never swallows a comma or runs into the next
+ * sentence. Returns null when there is no such word.
+ */
+export function extendSelection(
+  sel: WordSelection,
+  direction: 'prev' | 'next',
+): WordSelection | null {
+  const text = sel.block.textContent ?? '';
+  if (direction === 'next') {
+    let from = sel.end;
+    while (from < text.length && /\s/.test(text[from] ?? '')) from += 1;
+    let end = from;
+    while (end < text.length && WORD_CHAR.test(text[end] ?? '')) end += 1;
+    return from > sel.end && end > from ? { ...sel, end } : null;
+  }
+
+  let to = sel.start;
+  while (to > 0 && /\s/.test(text[to - 1] ?? '')) to -= 1;
+  let start = to;
+  while (start > 0 && WORD_CHAR.test(text[start - 1] ?? '')) start -= 1;
+  return to < sel.start && start < to ? { ...sel, start } : null;
+}
+
+export function highlightSelection(sel: WordSelection): void {
+  const doc = sel.block.ownerDocument;
   clearWordHighlights(doc);
-  try {
+  const range = rangeFromSelection(sel);
+  if (!range) return;
+
+  // Each text node's slice gets its own <mark>, so a selection that crosses
+  // inline elements ("give <i>up</i>") still highlights; surroundContents
+  // throws on those.
+  const root = range.commonAncestorContainer;
+  const nodes: Text[] = [];
+  if (root.nodeType === Node.TEXT_NODE) {
+    nodes.push(root as Text);
+  } else {
+    const walker = doc.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+    for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+      if (range.intersectsNode(node)) nodes.push(node as Text);
+    }
+  }
+
+  const segments = nodes
+    .map((node) => ({
+      node,
+      start: node === range.startContainer ? range.startOffset : 0,
+      end: node === range.endContainer ? range.endOffset : node.data.length,
+    }))
+    .filter((s) => s.end > s.start);
+
+  for (const { node, start, end } of segments) {
+    const middle = node.splitText(start);
+    middle.splitText(end - start);
     const mark = doc.createElement('mark');
     mark.className = 'reading-word-hit';
-    range.surroundContents(mark);
-  } catch {
-    // Range crossed element boundaries; skip the visual highlight.
+    middle.parentNode?.insertBefore(mark, middle);
+    mark.appendChild(middle);
   }
 }

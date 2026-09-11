@@ -3569,6 +3569,18 @@ body.category-reviewing .flashcard.flashcard--immersive .flashcard-inner {
   gap: 0.5rem;
 }
 
+.word-sheet-extend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.7rem;
+}
+
+.word-sheet-extend .word-sheet-sense:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
 .word-sheet-senses {
   display: flex;
   flex-wrap: wrap;

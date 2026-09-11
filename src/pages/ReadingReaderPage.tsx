@@ -30,9 +30,16 @@ import {
 } from '../utils/readingLibrary';
 import {
   clearWordHighlights,
-  highlightWordRange,
+  extendSelection,
+  highlightSelection,
+  selectionFromRange,
+  selectionText,
   wordAtClientPoint,
+  type WordSelection,
 } from '../utils/wordFromPoint';
+
+// Enough for phrasal verbs and short idioms ("look forward to", "get rid of").
+const MAX_PHRASE_WORDS = 6;
 
 const READER_THEME = {
   body: {
@@ -131,6 +138,9 @@ export function ReadingReaderPage() {
   const [location, setLocation] = useState<Location | null>(null);
   const [bookPages, setBookPages] = useState(0);
   const [selectedWord, setSelectedWord] = useState<string | null>(null);
+  const [selection, setSelection] = useState<WordSelection | null>(null);
+  // Selections before each "+ word", so "remove last" can step back.
+  const [selectionHistory, setSelectionHistory] = useState<WordSelection[]>([]);
   const [lookupLoading, setLookupLoading] = useState(false);
   const [lookupError, setLookupError] = useState('');
   const [lookup, setLookup] = useState<LookupResult | null>(null);
@@ -138,13 +148,18 @@ export function ReadingReaderPage() {
   const nativeLanguage = user?.nativeLanguage ?? DEFAULT_NATIVE_LANGUAGE;
   const targetLanguage = user?.targetLanguage ?? DEFAULT_TARGET_LANGUAGE;
 
-  const lookupWord = useCallback(
-    async (word: string, range: Range) => {
-      highlightWordRange(range);
+  const lookupSelection = useCallback(
+    async (sel: WordSelection) => {
+      const word = selectionText(sel);
+      if (word.length < 2) return;
+      highlightSelection(sel);
+      setSelection(sel);
       setSelectedWord(word);
       setLookupError('');
       const cached = getCachedLookup(word, nativeLanguage, targetLanguage);
       if (cached) {
+        // Drop any request still in flight so it can't overwrite this one.
+        lookupGen.current += 1;
         setLookup(cached);
         setLookupLoading(false);
         return;
@@ -167,6 +182,24 @@ export function ReadingReaderPage() {
     },
     [nativeLanguage, targetLanguage, t],
   );
+
+  const wordCount = selectedWord ? selectedWord.split(' ').length : 0;
+  const nextSelection = (direction: 'prev' | 'next') =>
+    selection && wordCount < MAX_PHRASE_WORDS ? extendSelection(selection, direction) : null;
+
+  const growSelection = (direction: 'prev' | 'next') => {
+    const next = nextSelection(direction);
+    if (!selection || !next) return;
+    setSelectionHistory((history) => [...history, selection]);
+    void lookupSelection(next);
+  };
+
+  const shrinkSelection = () => {
+    const previous = selectionHistory[selectionHistory.length - 1];
+    if (!previous) return;
+    setSelectionHistory((history) => history.slice(0, -1));
+    void lookupSelection(previous);
+  };
 
   useEffect(() => {
     let cancelled = false;
@@ -316,6 +349,8 @@ export function ReadingReaderPage() {
   const closeLookup = () => {
     lookupGen.current += 1;
     setSelectedWord(null);
+    setSelection(null);
+    setSelectionHistory([]);
     setLookup(null);
     setLookupError('');
     setLookupLoading(false);
@@ -352,8 +387,10 @@ export function ReadingReaderPage() {
 
     for (const doc of renditionDocuments(rendition)) {
       const hit = wordAtClientPoint(doc, event.clientX, event.clientY);
-      if (hit) {
-        void lookupWord(hit.word, hit.range);
+      const sel = hit && selectionFromRange(hit.range);
+      if (sel) {
+        setSelectionHistory([]);
+        void lookupSelection(sel);
         return;
       }
     }
@@ -439,6 +476,11 @@ export function ReadingReaderPage() {
           result={lookup}
           locale="en-US"
           onClose={closeLookup}
+          onExtend={growSelection}
+          canExtendPrev={nextSelection('prev') !== null}
+          canExtendNext={nextSelection('next') !== null}
+          onShrink={shrinkSelection}
+          canShrink={selectionHistory.length > 0}
         />
       )}
     </div>

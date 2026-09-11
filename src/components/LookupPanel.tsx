@@ -107,6 +107,8 @@ export function LookupPanel({ tree, defaultCategoryId }: Props) {
     setResult(null);
 
     try {
+      // The backend tries its cache, then Wiktionary + translation, and only
+      // then falls back to Gemini.
       const data = await api.lookupTerm(trimmed);
       setResult(data);
       setSelectedIndex(0);
