@@ -1314,7 +1314,7 @@ a {
   display: flex;
   flex-direction: column;
   gap: 1.25rem;
-  animation: cardEnter 0.5s var(--ease-out) both;
+  animation: cardEnterFade 0.5s var(--ease-out) both;
 }
 
 .flashcard-container--compact {
@@ -1322,16 +1322,17 @@ a {
 }
 
 .flashcard-container--exit {
-  animation: cardExit 0.28s var(--ease-out) forwards;
+  animation: cardExitFade 0.28s var(--ease-out) forwards;
 }
 
-@keyframes cardEnter {
-  from { opacity: 0; transform: translateY(24px) scale(0.96); }
-  to { opacity: 1; transform: translateY(0) scale(1); }
+/* Fade only on the container — transforms on ancestors break Safari preserve-3d */
+@keyframes cardEnterFade {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
-@keyframes cardExit {
-  to { opacity: 0; transform: translateX(40px) scale(0.95); }
+@keyframes cardExitFade {
+  to { opacity: 0; }
 }
 
 .flashcard {
@@ -1342,33 +1343,45 @@ a {
   width: 100%;
   min-height: 360px;
   color: #ffffff;
+  animation: cardEnterMove 0.5s var(--ease-out) both;
+}
+
+/* Move animation lives on .flashcard (perspective container), not on an ancestor of preserve-3d */
+@keyframes cardEnterMove {
+  from { transform: translateY(24px) scale(0.96); }
+  to { transform: translateY(0) scale(1); }
+}
+
+.flashcard-container--exit .flashcard {
+  animation: cardExitMove 0.28s var(--ease-out) forwards;
+}
+
+@keyframes cardExitMove {
+  to { transform: translateX(40px) scale(0.95); }
 }
 
 .flashcard--compact {
   min-height: 168px;
 }
 
+/* flashcard-inner: no preserve-3d needed — each face animates independently */
 .flashcard-inner {
   position: relative;
   width: 100%;
   min-height: 360px;
-  transition: transform 0.65s var(--ease-out);
-  transform-style: preserve-3d;
 }
 
 .flashcard--compact .flashcard-inner {
   min-height: 168px;
 }
 
-.flashcard.flipped .flashcard-inner {
-  transform: rotateY(180deg);
-}
+/* No transform on .flashcard-inner when flipped — faces handle it themselves */
 
+/* Each face rotates independently — no preserve-3d required (Safari safe) */
 .flashcard-front,
 .flashcard-back {
   position: absolute;
   inset: 0;
-  backface-visibility: hidden;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1377,11 +1390,40 @@ a {
   padding: 2.5rem 1.75rem;
   border: 1px solid rgba(255, 255, 255, 0.14);
   box-shadow: var(--shadow);
+  /* per-face flip animation */
+  transition: transform 0.33s ease-in;
+  transform-origin: center center;
 }
 
+/* Front face: visible, then rotates away when flipped */
 .flashcard-front {
   justify-content: flex-start;
   background: linear-gradient(155deg, #4a5588 0%, #3a4570 45%, #2f3d62 100%);
+  transform: perspective(1200px) rotateY(0deg);
+  z-index: 2;
+}
+
+.flashcard.flipped .flashcard-front {
+  transform: perspective(1200px) rotateY(-90deg);
+  transition-timing-function: ease-in;
+  pointer-events: none;
+}
+
+/* Back face: starts rotated, comes in after front hides */
+.flashcard-back {
+  background: linear-gradient(155deg, #3d6a8a 0%, #345a78 45%, #2a4a66 100%);
+  transform: perspective(1200px) rotateY(90deg);
+  transition: transform 0.33s ease-out;
+  transition-delay: 0s;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.flashcard.flipped .flashcard-back {
+  transform: perspective(1200px) rotateY(0deg);
+  transition-timing-function: ease-out;
+  transition-delay: 0.33s;
+  pointer-events: auto;
 }
 
 .flashcard--compact .flashcard-front {
@@ -1416,10 +1458,6 @@ a {
   border-radius: 8px;
 }
 
-.flashcard-back {
-  transform: rotateY(180deg);
-  background: linear-gradient(155deg, #3d6a8a 0%, #345a78 45%, #2a4a66 100%);
-}
 
 .flashcard:not(.flipped):hover .flashcard-front {
   border-color: rgba(180, 190, 255, 0.35);
