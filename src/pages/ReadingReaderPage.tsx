@@ -22,6 +22,7 @@ import {
   getReadingBook,
   getReadingBookFile,
   loadEpubConstructor,
+  saveReadingLocations,
   saveReadingProgress,
   touchReadingBook,
   type ReadingBookMeta,
@@ -51,6 +52,9 @@ const READER_THEME = {
     height: 'auto !important',
   },
 };
+
+// Characters per book-wide location, roughly one printed paperback page.
+const CHARS_PER_BOOK_PAGE = 1400;
 
 const HIGHLIGHT_CSS = `
   .reading-word-hit {
@@ -123,6 +127,7 @@ export function ReadingReaderPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [location, setLocation] = useState<Location | null>(null);
+  const [bookPages, setBookPages] = useState(0);
   const [selectedWord, setSelectedWord] = useState<string | null>(null);
   const [lookupLoading, setLookupLoading] = useState(false);
   const [lookupError, setLookupError] = useState('');
@@ -167,9 +172,31 @@ export function ReadingReaderPage() {
     let rendition: Rendition | null = null;
     let resizeObserver: ResizeObserver | null = null;
 
+    // Generating locations walks the whole book (seconds on a phone), so it
+    // runs after the first page shows and is cached with the book.
+    const loadBookPages = async (current: Book, bookMeta: ReadingBookMeta) => {
+      try {
+        const cached = bookMeta.locations;
+        if (cached?.chars === CHARS_PER_BOOK_PAGE) {
+          current.locations.load(cached.data);
+        } else {
+          await current.locations.generate(CHARS_PER_BOOK_PAGE);
+          if (cancelled) return;
+          void saveReadingLocations(bookId, {
+            chars: CHARS_PER_BOOK_PAGE,
+            data: current.locations.save(),
+          });
+        }
+        if (!cancelled) setBookPages(current.locations.length());
+      } catch {
+        // Page numbers are optional; the book still reads without them.
+      }
+    };
+
     const start = async () => {
       setLoading(true);
       setError('');
+      setBookPages(0);
       try {
         const bookMeta = await getReadingBook(bookId);
         const file = await getReadingBookFile(bookId);
@@ -233,6 +260,7 @@ export function ReadingReaderPage() {
           await withTimeout(rendition.display(), 12000, 'display');
         }
         if (cancelled) return;
+        void loadBookPages(book, bookMeta);
 
         resizeObserver = new ResizeObserver(() => {
           const node = viewerRef.current;
@@ -329,11 +357,18 @@ export function ReadingReaderPage() {
     gesture.current.active = false;
   };
 
+  // displayed.page/total only count screens inside the current chapter, so the
+  // label waits for book-wide locations instead. epubjs types this as Location,
+  // but it returns the location index (-1 when unknown).
+  const locationIndex =
+    location && bookPages > 0
+      ? (bookRef.current?.locations.locationFromCfi(location.start.cfi) as unknown as number)
+      : -1;
   const pageLabel =
-    location && location.start.displayed.total > 0
+    locationIndex >= 0
       ? t('reading.page', {
-          page: location.start.displayed.page,
-          total: location.start.displayed.total,
+          page: Math.min(locationIndex + 1, bookPages),
+          total: bookPages,
         })
       : '';
 

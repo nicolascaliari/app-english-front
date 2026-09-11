@@ -5,6 +5,12 @@ const FILE_STORE = 'files';
 
 export const MAX_EPUB_BYTES = 50 * 1024 * 1024;
 
+/** Serialized epub.js locations; `chars` is the size each one was built with. */
+export interface ReadingBookLocations {
+  chars: number;
+  data: string;
+}
+
 export interface ReadingBookMeta {
   id: string;
   title: string;
@@ -14,6 +20,7 @@ export interface ReadingBookMeta {
   lastCfi: string | null;
   size: number;
   coverDataUrl: string | null;
+  locations?: ReadingBookLocations | null;
 }
 
 function openDb(): Promise<IDBDatabase> {
@@ -90,15 +97,17 @@ export async function getReadingBookFile(id: string): Promise<Blob | undefined> 
   }
 }
 
-export async function saveReadingProgress(id: string, cfi: string): Promise<void> {
+async function updateReadingMeta(
+  id: string,
+  change: (meta: ReadingBookMeta) => void,
+): Promise<void> {
   const db = await openDb();
   try {
     const tx = db.transaction(META_STORE, 'readwrite');
     const store = tx.objectStore(META_STORE);
     const current = await reqAs(store.get(id) as IDBRequest<ReadingBookMeta | undefined>);
     if (!current) return;
-    current.lastCfi = cfi;
-    current.lastOpenedAt = Date.now();
+    change(current);
     store.put(current);
     await new Promise<void>((resolve, reject) => {
       tx.oncomplete = () => resolve();
@@ -109,22 +118,26 @@ export async function saveReadingProgress(id: string, cfi: string): Promise<void
   }
 }
 
-export async function touchReadingBook(id: string): Promise<void> {
-  const db = await openDb();
-  try {
-    const tx = db.transaction(META_STORE, 'readwrite');
-    const store = tx.objectStore(META_STORE);
-    const current = await reqAs(store.get(id) as IDBRequest<ReadingBookMeta | undefined>);
-    if (!current) return;
-    current.lastOpenedAt = Date.now();
-    store.put(current);
-    await new Promise<void>((resolve, reject) => {
-      tx.oncomplete = () => resolve();
-      tx.onerror = () => reject(tx.error ?? new Error('IndexedDB write failed'));
-    });
-  } finally {
-    db.close();
-  }
+export function saveReadingProgress(id: string, cfi: string): Promise<void> {
+  return updateReadingMeta(id, (meta) => {
+    meta.lastCfi = cfi;
+    meta.lastOpenedAt = Date.now();
+  });
+}
+
+export function touchReadingBook(id: string): Promise<void> {
+  return updateReadingMeta(id, (meta) => {
+    meta.lastOpenedAt = Date.now();
+  });
+}
+
+export function saveReadingLocations(
+  id: string,
+  locations: ReadingBookLocations,
+): Promise<void> {
+  return updateReadingMeta(id, (meta) => {
+    meta.locations = locations;
+  });
 }
 
 export async function deleteReadingBook(id: string): Promise<void> {
