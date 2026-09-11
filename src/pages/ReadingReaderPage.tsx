@@ -1,4 +1,10 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type PointerEvent as ReactPointerEvent,
+} from 'react';
 import { Link, useParams } from 'react-router-dom';
 import type { Book, Contents, Location, Rendition } from 'epubjs';
 import { LoadingSpinner } from '../components/LoadingSpinner';
@@ -23,7 +29,7 @@ import {
 import {
   clearWordHighlights,
   highlightWordRange,
-  wordFromPointerEvent,
+  wordAtClientPoint,
 } from '../utils/wordFromPoint';
 
 const READER_THEME = {
@@ -73,6 +79,14 @@ function withTimeout<T>(promise: Promise<T>, ms: number, label: string): Promise
   });
 }
 
+function renditionDocuments(rendition: Rendition | null): Document[] {
+  const contents = rendition?.getContents() as Contents | Contents[] | undefined;
+  const list = Array.isArray(contents) ? contents : contents ? [contents] : [];
+  return list
+    .map((item) => item?.document)
+    .filter((doc): doc is Document => Boolean(doc));
+}
+
 function waitForElementSize(el: HTMLElement, minHeight = 120, maxWait = 1200): Promise<void> {
   return new Promise((resolve) => {
     if (el.clientWidth > 40 && el.clientHeight >= minHeight) {
@@ -103,7 +117,7 @@ export function ReadingReaderPage() {
   const renditionRef = useRef<Rendition | null>(null);
   const lookupGen = useRef(0);
   const saveTimer = useRef<number | null>(null);
-  const wordHandlerRef = useRef<(word: string, range: Range) => void>(() => {});
+  const gesture = useRef({ x: 0, y: 0, moved: false, active: false });
 
   const [meta, setMeta] = useState<ReadingBookMeta | null>(null);
   const [loading, setLoading] = useState(true);
@@ -147,93 +161,11 @@ export function ReadingReaderPage() {
     [nativeLanguage, targetLanguage, t],
   );
 
-  wordHandlerRef.current = lookupWord;
-
   useEffect(() => {
     let cancelled = false;
     let book: Book | null = null;
     let rendition: Rendition | null = null;
     let resizeObserver: ResizeObserver | null = null;
-
-    const attachContentHooks = (current: Rendition) => {
-      current.hooks.content.register((contents: Contents) => {
-        const doc = contents.document as Document & { __readingBound?: boolean };
-        if (doc.__readingBound) return;
-        doc.__readingBound = true;
-        void contents.addStylesheetCss(HIGHLIGHT_CSS, 'reading-highlight');
-        let startX = 0;
-        let startY = 0;
-        let moved = false;
-        let multiTouch = false;
-
-        const trackStart = (x: number, y: number) => {
-          startX = x;
-          startY = y;
-          moved = false;
-        };
-        const trackMove = (x: number, y: number) => {
-          if (Math.hypot(x - startX, y - startY) > 12) moved = true;
-        };
-        const turnPage = (x: number, y: number) => {
-          const dx = x - startX;
-          const dy = y - startY;
-          if (Math.abs(dx) < 40 || Math.abs(dx) < Math.abs(dy)) return;
-          if (dx < 0) void current.next();
-          else void current.prev();
-        };
-
-        // Mobile browsers often fire pointercancel mid-swipe, so touch swipes
-        // are read from touch events; pointer events handle taps and mouse drags.
-        const onTouchStart = (event: TouchEvent) => {
-          const touch = event.touches[0];
-          multiTouch = event.touches.length > 1;
-          if (touch && !multiTouch) trackStart(touch.clientX, touch.clientY);
-        };
-        const onTouchMove = (event: TouchEvent) => {
-          const touch = event.touches[0];
-          if (!touch || multiTouch) return;
-          trackMove(touch.clientX, touch.clientY);
-          const horizontal =
-            Math.abs(touch.clientX - startX) > Math.abs(touch.clientY - startY);
-          if (horizontal && event.cancelable) event.preventDefault();
-        };
-        const onTouchEnd = (event: TouchEvent) => {
-          const touch = event.changedTouches[0];
-          if (touch && moved && !multiTouch) turnPage(touch.clientX, touch.clientY);
-        };
-
-        const onPointerDown = (event: PointerEvent) => {
-          trackStart(event.clientX, event.clientY);
-        };
-        const onPointerMove = (event: PointerEvent) => {
-          trackMove(event.clientX, event.clientY);
-        };
-        const onPointerUp = (event: PointerEvent) => {
-          if (moved || multiTouch) {
-            if (event.pointerType !== 'touch') turnPage(event.clientX, event.clientY);
-            return;
-          }
-
-          const target = event.target as Element | null;
-          if (target?.closest('a')) {
-            event.preventDefault();
-          }
-
-          const hit = wordFromPointerEvent(event, doc);
-          if (!hit) return;
-          event.preventDefault();
-          event.stopPropagation();
-          wordHandlerRef.current(hit.word, hit.range);
-        };
-
-        doc.addEventListener('touchstart', onTouchStart, { passive: true });
-        doc.addEventListener('touchmove', onTouchMove, { passive: false });
-        doc.addEventListener('touchend', onTouchEnd);
-        doc.addEventListener('pointerdown', onPointerDown);
-        doc.addEventListener('pointermove', onPointerMove);
-        doc.addEventListener('pointerup', onPointerUp);
-      });
-    };
 
     const start = async () => {
       setLoading(true);
@@ -277,7 +209,11 @@ export function ReadingReaderPage() {
         });
         renditionRef.current = rendition;
         rendition.themes.default(READER_THEME);
-        attachContentHooks(rendition);
+        // Taps and swipes are handled by .reader-touch-layer, not in here:
+        // the sandboxed book iframe gets no event listeners on iOS.
+        rendition.hooks.content.register((contents: Contents) => {
+          void contents.addStylesheetCss(HIGHLIGHT_CSS, 'reading-highlight');
+        });
 
         rendition.on('relocated', (loc: Location) => {
           setLocation(loc);
@@ -349,12 +285,48 @@ export function ReadingReaderPage() {
     setLookup(null);
     setLookupError('');
     setLookupLoading(false);
-    const contents = renditionRef.current?.getContents();
-    const docs = Array.isArray(contents) ? contents : contents ? [contents] : [];
-    docs.forEach((item) => {
-      const doc = (item as Contents)?.document;
-      if (doc) clearWordHighlights(doc);
-    });
+    renditionDocuments(renditionRef.current).forEach(clearWordHighlights);
+  };
+
+  const onLayerPointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (!event.isPrimary) return;
+    gesture.current = { x: event.clientX, y: event.clientY, moved: false, active: true };
+  };
+
+  const onLayerPointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
+    const g = gesture.current;
+    if (g.active && Math.hypot(event.clientX - g.x, event.clientY - g.y) > 12) {
+      g.moved = true;
+    }
+  };
+
+  const onLayerPointerUp = (event: ReactPointerEvent<HTMLDivElement>) => {
+    const g = gesture.current;
+    if (!g.active || !event.isPrimary) return;
+    g.active = false;
+    const rendition = renditionRef.current;
+    if (!rendition) return;
+
+    if (g.moved) {
+      const dx = event.clientX - g.x;
+      const dy = event.clientY - g.y;
+      if (Math.abs(dx) >= 40 && Math.abs(dx) >= Math.abs(dy)) {
+        void (dx < 0 ? rendition.next() : rendition.prev());
+      }
+      return;
+    }
+
+    for (const doc of renditionDocuments(rendition)) {
+      const hit = wordAtClientPoint(doc, event.clientX, event.clientY);
+      if (hit) {
+        void lookupWord(hit.word, hit.range);
+        return;
+      }
+    }
+  };
+
+  const onLayerPointerCancel = () => {
+    gesture.current.active = false;
   };
 
   const pageLabel =
@@ -389,6 +361,13 @@ export function ReadingReaderPage() {
           </div>
         )}
         <div ref={viewerRef} className="reader-viewport" />
+        <div
+          className="reader-touch-layer"
+          onPointerDown={onLayerPointerDown}
+          onPointerMove={onLayerPointerMove}
+          onPointerUp={onLayerPointerUp}
+          onPointerCancel={onLayerPointerCancel}
+        />
       </div>
 
       <div className="reader-nav">

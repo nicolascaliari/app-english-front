@@ -136,52 +136,30 @@ function rangeIsOnScreen(range: Range, iframe: HTMLIFrameElement | null): boolea
 }
 
 /**
- * Resolve a tapped word, trying several coordinate interpretations.
- * clientX/Y is right in most browsers. Some report it in the parent window, so
- * iframe-relative and target-offset points are fallbacks. offsetX/Y is last
- * because in CSS multi-column layouts (every paginated book) it is measured in
- * the unfragmented flow, so it lands on the wrong line or page for paragraphs
- * split across pages. Each candidate must land on a visible word under the
- * point it was computed from.
+ * Resolve the word under a point given in the parent window's coordinates.
+ * Taps are captured outside the book iframe because epub.js sandboxes it
+ * without allow-scripts, and WebKit (every iOS browser) never runs event
+ * listeners in such documents, not even ones the parent registered. Plain DOM
+ * calls like caretRangeFromPoint still work.
  */
-export function wordFromPointerEvent(
-  event: PointerEvent,
+export function wordAtClientPoint(
   doc: Document,
+  clientX: number,
+  clientY: number,
 ): { word: string; range: Range } | null {
-  const points: Array<{ x: number; y: number }> = [
-    { x: event.clientX, y: event.clientY },
-  ];
-
   const iframe = doc.defaultView?.frameElement as HTMLIFrameElement | null;
-  if (iframe) {
-    const rect = iframe.getBoundingClientRect();
-    points.push({
-      x: event.clientX - rect.left,
-      y: event.clientY - rect.top,
-    });
+  if (!iframe) return null;
+  const frame = iframe.getBoundingClientRect();
+  const point = { x: clientX - frame.left, y: clientY - frame.top };
+  if (point.x < 0 || point.y < 0 || point.x > frame.width || point.y > frame.height) {
+    return null;
   }
 
-  const target = event.target;
-  if (target instanceof Element) {
-    const rect = target.getBoundingClientRect();
-    points.push({
-      x: rect.left + event.offsetX,
-      y: rect.top + event.offsetY,
-    });
+  const hit = wordAtPoint(doc, point.x, point.y);
+  if (!hit || !rangeIsUnderPoint(hit.range, point) || !rangeIsOnScreen(hit.range, iframe)) {
+    return null;
   }
-
-  const seen = new Set<string>();
-  for (const point of points) {
-    const key = `${Math.round(point.x)}:${Math.round(point.y)}`;
-    if (seen.has(key)) continue;
-    seen.add(key);
-    const hit = wordAtPoint(doc, point.x, point.y);
-    if (hit && rangeIsUnderPoint(hit.range, point) && rangeIsOnScreen(hit.range, iframe)) {
-      return hit;
-    }
-  }
-
-  return null;
+  return hit;
 }
 
 export function clearWordHighlights(doc: Document): void {

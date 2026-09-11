@@ -3399,6 +3399,17 @@ body.category-reviewing .flashcard.flashcard--immersive .flashcard-inner {
   }
 }
 
+/* Takes taps and swipes above the book iframe (see wordAtClientPoint). */
+.reader-touch-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
 .reader-loading {
   position: absolute;
   inset: 0;
