@@ -64,6 +64,8 @@ a {
   overflow: hidden;
 }
 
+/* Static on purpose: animating it made every backdrop-filter above it re-blur
+   on each frame, which on iOS stalled taps (notably on the decks page). */
 .app-bg {
   position: fixed;
   inset: 0;
@@ -73,12 +75,6 @@ a {
     radial-gradient(ellipse 60% 40% at 100% 80%, rgba(15, 52, 96, 0.5), transparent),
     radial-gradient(ellipse 50% 30% at 0% 60%, rgba(52, 211, 153, 0.06), transparent),
     var(--bg);
-  animation: bgShift 12s ease-in-out infinite alternate;
-}
-
-@keyframes bgShift {
-  0% { filter: hue-rotate(0deg); }
-  100% { filter: hue-rotate(8deg); }
 }
 
 /* ── Header ── */
@@ -615,7 +611,6 @@ a {
   color: var(--text);
   border: 1px solid rgba(255, 255, 255, 0.08);
   background: var(--surface);
-  backdrop-filter: blur(12px);
   box-shadow: var(--shadow-sm);
   transition:
     transform 0.25s var(--ease-out),
@@ -671,7 +666,7 @@ a {
 .banner--due {
   border-color: rgba(52, 211, 153, 0.3);
   background: linear-gradient(135deg, rgba(52, 211, 153, 0.1), rgba(15, 52, 96, 0.5));
-  animation: slideUp 0.5s var(--ease-out) both, glowPulse 3s ease-in-out infinite;
+  animation: slideUp 0.5s var(--ease-out) both, glowPulse 3s ease-in-out 3;
 }
 
 @keyframes glowPulse {
@@ -906,7 +901,6 @@ a {
   align-items: center;
   gap: 0.85rem;
   background: var(--surface);
-  backdrop-filter: blur(10px);
   border-radius: var(--radius);
   padding: 1rem 1.15rem;
   border: 1px solid rgba(255, 255, 255, 0.06);
