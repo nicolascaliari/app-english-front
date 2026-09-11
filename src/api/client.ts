@@ -12,6 +12,7 @@ import type {
   GrammarExercisesRequest,
   GrammarExercisesResult,
   ImportPayload,
+  LookupResult,
   ImportResult,
   LoginPayload,
   RegisterPayload,
@@ -26,6 +27,7 @@ import {
   normalizeAppLanguage,
 } from '../utils/languages';
 import { normalizeDateOnly } from '../utils/date';
+import { clampPracticeLimit } from '../utils/practice';
 import { authStorage } from '../auth/authStorage';
 
 const API_URL = import.meta.env.VITE_API_URL ?? '/api';
@@ -156,6 +158,7 @@ function normalizeAuthUser(raw: AuthUser & { _id?: string }): AuthUser {
     ),
     streakCount: typeof raw.streakCount === 'number' ? raw.streakCount : 0,
     lastStreakDate: normalizeDateOnly(raw.lastStreakDate),
+    practiceLimit: clampPracticeLimit(raw.practiceLimit),
   };
 }
 
@@ -272,5 +275,11 @@ export const api = {
     request<GrammarExercisesResult>('/ai/grammar-exercises', {
       method: 'POST',
       body: JSON.stringify(data),
+    }),
+
+  lookupTerm: (query: string) =>
+    request<LookupResult>('/ai/lookup', {
+      method: 'POST',
+      body: JSON.stringify({ query }),
     }),
 };

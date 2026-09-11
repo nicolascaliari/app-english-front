@@ -1,4 +1,5 @@
 import { type FormEvent, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { api } from '../api/client';
 import { useAuth } from '../auth/AuthContext';
 import { LanguagePairFields } from '../components/LanguagePairFields';
@@ -9,16 +10,25 @@ import {
   DEFAULT_NATIVE_LANGUAGE,
   DEFAULT_TARGET_LANGUAGE,
 } from '../utils/languages';
+import {
+  clampPracticeLimit,
+  DEFAULT_PRACTICE_LIMIT,
+  PRACTICE_LIMIT_OPTIONS,
+} from '../utils/practice';
 
 export function SettingsPage() {
-  const { user, updateProfile } = useAuth();
+  const { user, updateProfile, logout } = useAuth();
   const { t, languageName, uiMode, setUiMode } = useI18n();
+  const navigate = useNavigate();
   const [name, setName] = useState(user?.name ?? '');
   const [nativeLanguage, setNativeLanguage] = useState<AppLanguage>(
     user?.nativeLanguage ?? DEFAULT_NATIVE_LANGUAGE,
   );
   const [targetLanguage, setTargetLanguage] = useState<AppLanguage>(
     user?.targetLanguage ?? DEFAULT_TARGET_LANGUAGE,
+  );
+  const [practiceLimit, setPracticeLimit] = useState(
+    clampPracticeLimit(user?.practiceLimit ?? DEFAULT_PRACTICE_LIMIT),
   );
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -36,6 +46,7 @@ export function SettingsPage() {
     setName(user.name);
     setNativeLanguage(user.nativeLanguage);
     setTargetLanguage(user.targetLanguage);
+    setPracticeLimit(clampPracticeLimit(user.practiceLimit));
   }, [user]);
 
   const handleSubmit = async (e: FormEvent) => {
@@ -50,7 +61,12 @@ export function SettingsPage() {
 
     setSaving(true);
     try {
-      await updateProfile({ name, nativeLanguage, targetLanguage });
+      await updateProfile({
+        name,
+        nativeLanguage,
+        targetLanguage,
+        practiceLimit: clampPracticeLimit(practiceLimit),
+      });
       setSuccess(t('settings.success'));
     } catch (err) {
       setError(err instanceof Error ? err.message : t('settings.error'));
@@ -164,6 +180,25 @@ export function SettingsPage() {
             <p className="field-hint">{t('settings.uiHint')}</p>
           </fieldset>
 
+          <label>
+            {t('settings.practiceLimit')}
+            <select
+              value={practiceLimit}
+              onChange={(e) => setPracticeLimit(Number(e.target.value))}
+              disabled={saving}
+            >
+              {PRACTICE_LIMIT_OPTIONS.map((n) => (
+                <option key={n} value={n}>
+                  {n}
+                </option>
+              ))}
+              {!PRACTICE_LIMIT_OPTIONS.some((n) => n === practiceLimit) && (
+                <option value={practiceLimit}>{practiceLimit}</option>
+              )}
+            </select>
+            <span className="field-hint">{t('settings.practiceLimitHint')}</span>
+          </label>
+
           {error && <p className="status error">{error}</p>}
           {success && <p className="status success">{success}</p>}
 
@@ -200,6 +235,18 @@ export function SettingsPage() {
             : t('settings.imagesBackfill')}
         </button>
       </div>
+
+      <button
+        type="button"
+        className="btn btn-secondary btn--wide"
+        style={{ marginTop: '1.25rem' }}
+        onClick={async () => {
+          await logout();
+          navigate('/login', { replace: true });
+        }}
+      >
+        {t('nav.logout')}
+      </button>
     </div>
   );
 }

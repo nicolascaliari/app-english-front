@@ -5,8 +5,9 @@ import { useAuth } from '../auth/AuthContext';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import { AiGeneratePanel } from '../components/AiGeneratePanel';
 import { ImportPanel } from '../components/ImportPanel';
+import { LookupPanel, type CategoryNode } from '../components/LookupPanel';
 import { useI18n } from '../i18n/I18nProvider';
-import type { Category, Difficulty } from '../types';
+import type { Difficulty } from '../types';
 import {
   DEFAULT_NATIVE_LANGUAGE,
   DEFAULT_TARGET_LANGUAGE,
@@ -19,11 +20,6 @@ function slugify(text: string) {
     .replace(/[\u0300-\u036f]/g, '')
     .replace(/[^a-z0-9]+/g, '-')
     .replace(/^-|-$/g, '');
-}
-
-interface CategoryNode {
-  root: Category;
-  subs: Category[];
 }
 
 function firstLeafId(tree: CategoryNode[]): string {
@@ -61,6 +57,7 @@ export function NewCardPage() {
   const [example, setExample] = useState('');
   const [pronunciation, setPronunciation] = useState('');
   const [difficulty, setDifficulty] = useState<Difficulty>('medium');
+  const [showManual, setShowManual] = useState(false);
 
   const [catName, setCatName] = useState('');
   const [catSlug, setCatSlug] = useState('');
@@ -154,34 +151,38 @@ export function NewCardPage() {
     <div>
       <h1 className="page-title">{t('new.title')}</h1>
 
-      <div className="tabs">
+      <div className="tabs" role="tablist">
         <button
           type="button"
           className={mode === 'card' ? 'tab active' : 'tab'}
           onClick={() => setMode('card')}
         >
-          {t('new.tabCard')}
+          <span className="tab-label tab-label--full">{t('new.tabCard')}</span>
+          <span className="tab-label tab-label--short">{t('new.tabCardShort')}</span>
         </button>
         <button
           type="button"
           className={mode === 'category' ? 'tab active' : 'tab'}
           onClick={() => setMode('category')}
         >
-          {t('new.tabCategory')}
+          <span className="tab-label tab-label--full">{t('new.tabCategory')}</span>
+          <span className="tab-label tab-label--short">{t('new.tabCategoryShort')}</span>
         </button>
         <button
           type="button"
           className={mode === 'import' ? 'tab active' : 'tab'}
           onClick={() => setMode('import')}
         >
-          {t('new.tabImport')}
+          <span className="tab-label tab-label--full">{t('new.tabImport')}</span>
+          <span className="tab-label tab-label--short">{t('new.tabImportShort')}</span>
         </button>
         <button
           type="button"
           className={mode === 'ai' ? 'tab active' : 'tab'}
           onClick={() => setMode('ai')}
         >
-          {t('new.tabAi')}
+          <span className="tab-label tab-label--full">{t('new.tabAi')}</span>
+          <span className="tab-label tab-label--short">{t('new.tabAiShort')}</span>
         </button>
       </div>
 
@@ -193,6 +194,16 @@ export function NewCardPage() {
         ) : mode === 'ai' ? (
           <AiGeneratePanel />
         ) : mode === 'card' ? (
+          <>
+            <LookupPanel tree={tree} defaultCategoryId={categoryId} />
+            <button
+              type="button"
+              className="lookup-manual-toggle"
+              onClick={() => setShowManual((value) => !value)}
+            >
+              {showManual ? t('lookup.manualHide') : t('lookup.manualToggle')}
+            </button>
+            {showManual && (
           <form className="form" onSubmit={handleCreateCard}>
             <label>
               {t('new.category')}
@@ -280,6 +291,8 @@ export function NewCardPage() {
               {saving ? t('common.saving') : t('new.saveCard')}
             </button>
           </form>
+            )}
+          </>
         ) : (
           <form className="form" onSubmit={handleCreateCategory}>
             <label>

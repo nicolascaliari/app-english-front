@@ -202,7 +202,7 @@ export function GrammarPracticePage() {
 
         {/* Bar de configuración discreta */}
         <div className="grammar-settings-bar">
-          <span className="settings-label">Ejercicios por sesión:</span>
+          <span className="settings-label">cantidad:</span>
           <div className="settings-options">
             {[3, 5, 8, 10, 12].map((n) => (
               <button

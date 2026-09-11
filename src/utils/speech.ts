@@ -59,3 +59,64 @@ export function speak(text: string, locale: string, options: SpeakOptions = {}):
 export function speakEnglish(text: string, options: SpeakOptions = {}): void {
   speak(text, 'en-US', options);
 }
+
+interface SpeechRecognitionLike {
+  lang: string;
+  interimResults: boolean;
+  maxAlternatives: number;
+  onresult: ((event: { results: ArrayLike<ArrayLike<{ transcript: string }>> }) => void) | null;
+  onerror: ((event: { error?: string }) => void) | null;
+  onend: (() => void) | null;
+  start(): void;
+  stop(): void;
+  abort(): void;
+}
+
+function getSpeechRecognitionCtor(): (new () => SpeechRecognitionLike) | undefined {
+  if (typeof window === 'undefined') return undefined;
+  const w = window as Window & {
+    SpeechRecognition?: new () => SpeechRecognitionLike;
+    webkitSpeechRecognition?: new () => SpeechRecognitionLike;
+  };
+  return w.SpeechRecognition ?? w.webkitSpeechRecognition;
+}
+
+export function isSpeechRecognitionSupported(): boolean {
+  return Boolean(getSpeechRecognitionCtor());
+}
+
+export function listenOnce(
+  locale: string,
+  handlers: {
+    onResult: (transcript: string) => void;
+    onError?: () => void;
+    onEnd?: () => void;
+  },
+): () => void {
+  const Ctor = getSpeechRecognitionCtor();
+  if (!Ctor) {
+    handlers.onError?.();
+    handlers.onEnd?.();
+    return () => {};
+  }
+
+  const recognition = new Ctor();
+  recognition.lang = locale;
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 1;
+  recognition.onresult = (event) => {
+    const transcript = event.results?.[0]?.[0]?.transcript ?? '';
+    handlers.onResult(transcript);
+  };
+  recognition.onerror = () => handlers.onError?.();
+  recognition.onend = () => handlers.onEnd?.();
+  recognition.start();
+
+  return () => {
+    try {
+      recognition.abort();
+    } catch {
+      recognition.stop();
+    }
+  };
+}

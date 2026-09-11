@@ -19,6 +19,7 @@ import {
   DEFAULT_TARGET_LANGUAGE,
   normalizeAppLanguage,
 } from '../utils/languages';
+import { clampPracticeLimit } from '../utils/practice';
 import { authStorage, type StoredUser } from './authStorage';
 
 interface AuthContextValue {
@@ -49,6 +50,7 @@ function toStoredUser(user: AuthUser): StoredUser {
     ),
     streakCount: user.streakCount ?? 0,
     lastStreakDate: user.lastStreakDate ?? null,
+    practiceLimit: clampPracticeLimit(user.practiceLimit),
   };
 }
 

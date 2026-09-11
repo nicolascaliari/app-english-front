@@ -5,7 +5,7 @@ import { api } from '../api/client';
 import { CardFilters } from '../components/CardFilters';
 import { FlashcardView } from '../components/FlashcardView';
 import { LoadingSpinner } from '../components/LoadingSpinner';
-import { ReviewProgress } from '../components/ReviewProgress';
+import { SessionChips } from '../components/SessionChips';
 import { SearchBar } from '../components/SearchBar';
 import { useI18n } from '../i18n/I18nProvider';
 import type { Category, Difficulty, Flashcard } from '../types';
@@ -82,6 +82,11 @@ export function CategoryPage() {
     setCardQuery('');
     setDifficultyFilter(null);
   }, [slug, subSlug]);
+
+  useEffect(() => {
+    document.body.classList.toggle('category-reviewing', isReviewing);
+    return () => document.body.classList.remove('category-reviewing');
+  }, [isReviewing]);
 
   const filteredSubcategories = useMemo(() => {
     const q = subQuery.trim().toLowerCase();
@@ -200,18 +205,15 @@ export function CategoryPage() {
     const currentCard = reviewQueue[reviewIndex];
 
     return (
-      <div>
-        <ReviewProgress
-          current={reviewIndex + 1}
-          total={reviewQueue.length}
-          label={current.name}
-        />
-        
+      <div className="review-session">
+        <SessionChips current={reviewIndex + 1} total={reviewQueue.length} />
+
         <FlashcardView
           key={currentCard._id}
           card={currentCard}
           showDifficultyPicker
           onDifficultyChange={(d) => handleDifficultyChange(currentCard._id, d)}
+          reviewing
         />
 
         <div className="review-navigation-actions">

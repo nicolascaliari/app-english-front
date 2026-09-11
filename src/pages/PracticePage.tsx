@@ -1,40 +1,62 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../api/client';
+import { useAuth } from '../auth/AuthContext';
 import { FlashcardView } from '../components/FlashcardView';
 import { LoadingSpinner } from '../components/LoadingSpinner';
-import { ReviewProgress } from '../components/ReviewProgress';
+import { SessionChips } from '../components/SessionChips';
 import { useI18n } from '../i18n/I18nProvider';
 import { useRecordStreak } from '../hooks/useRecordStreak';
 import type { Difficulty, Flashcard } from '../types';
+import {
+  clampPracticeLimit,
+  DEFAULT_PRACTICE_LIMIT,
+  PRACTICE_LIMIT_OPTIONS,
+} from '../utils/practice';
 
 export function PracticePage() {
   const { t } = useI18n();
+  const { user, updateProfile } = useAuth();
   const recordStreak = useRecordStreak();
   const sessionStarted = useRef(false);
   const streakRecorded = useRef(false);
+  const [limit, setLimit] = useState(() =>
+    clampPracticeLimit(user?.practiceLimit ?? DEFAULT_PRACTICE_LIMIT),
+  );
   const [queue, setQueue] = useState<Flashcard[]>([]);
   const [index, setIndex] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [updating, setUpdating] = useState(false);
 
-  const loadPractice = () => {
+  useEffect(() => {
+    setLimit(clampPracticeLimit(user?.practiceLimit ?? DEFAULT_PRACTICE_LIMIT));
+  }, [user?.practiceLimit]);
+
+  const loadPractice = (count = limit) => {
     sessionStarted.current = false;
     streakRecorded.current = false;
     setLoading(true);
     setError('');
     setIndex(0);
     api
-      .getPracticeFlashcards(10)
+      .getPracticeFlashcards(count)
       .then(setQueue)
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
   };
 
   useEffect(() => {
-    loadPractice();
+    loadPractice(limit);
   }, []);
+
+  const handleLimitChange = (value: number) => {
+    const next = clampPracticeLimit(value);
+    setLimit(next);
+    if (user && next !== user.practiceLimit) {
+      void updateProfile({ practiceLimit: next });
+    }
+  };
 
   const current = queue[index];
 
@@ -92,8 +114,24 @@ export function PracticePage() {
             : t('practice.done')}
         </p>
         <div className="empty-actions">
-          <button type="button" className="btn btn-primary" onClick={loadPractice}>
-            {t('practice.again')}
+          <label className="practice-limit-picker">
+            {t('practice.limitLabel')}
+            <select
+              value={limit}
+              onChange={(e) => handleLimitChange(Number(e.target.value))}
+            >
+              {PRACTICE_LIMIT_OPTIONS.map((n) => (
+                <option key={n} value={n}>
+                  {n}
+                </option>
+              ))}
+              {!PRACTICE_LIMIT_OPTIONS.some((n) => n === limit) && (
+                <option value={limit}>{limit}</option>
+              )}
+            </select>
+          </label>
+          <button type="button" className="btn btn-primary" onClick={() => loadPractice(limit)}>
+            {t('practice.again', { count: limit })}
           </button>
           <Link to="/" className="btn btn-secondary">
             {t('common.backHome')}
@@ -104,28 +142,17 @@ export function PracticePage() {
   }
 
   return (
-    <div>
-      <ReviewProgress
-        current={index + 1}
-        total={queue.length}
-        label={t('practice.label')}
-      />
+    <div className="review-session">
+      <SessionChips current={index + 1} total={queue.length} />
       <FlashcardView
         key={current._id}
         card={current}
         showDifficultyPicker
         onDifficultyChange={handleDifficultyChange}
+        onNext={handleNext}
+        nextLabel={t('practice.next')}
+        reviewing
       />
-      <div className="review-actions review-actions--enter" style={{ marginTop: '1rem' }}>
-        <button
-          type="button"
-          className="btn btn-primary btn--wide"
-          onClick={handleNext}
-          disabled={updating}
-        >
-          {t('practice.next')}
-        </button>
-      </div>
     </div>
   );
 }

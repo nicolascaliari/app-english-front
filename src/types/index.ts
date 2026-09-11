@@ -19,6 +19,7 @@ export interface AuthUser {
   targetLanguage: AppLanguage;
   streakCount: number;
   lastStreakDate: string | null;
+  practiceLimit: number;
 }
 
 export interface StreakResult {
@@ -50,6 +51,7 @@ export interface UpdateProfilePayload {
   name?: string;
   nativeLanguage?: AppLanguage;
   targetLanguage?: AppLanguage;
+  practiceLimit?: number;
 }
 
 export interface Category {
@@ -200,4 +202,23 @@ export interface GrammarExercisesRequest {
 export interface GrammarExercisesResult {
   topic: string;
   exercises: GrammarExercise[];
+}
+
+export type LookupKind = 'word' | 'phrase';
+
+export interface LookupEntry {
+  front: string;
+  back: string;
+  partOfSpeech?: string;
+  pronunciation?: string;
+  example?: string;
+  difficulty: Difficulty;
+  suggestedCategory?: string;
+  suggestedSubcategory?: string;
+}
+
+export interface LookupResult {
+  query: string;
+  kind: LookupKind;
+  entries: LookupEntry[];
 }

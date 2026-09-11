@@ -5,6 +5,10 @@ import {
   normalizeAppLanguage,
 } from '../utils/languages';
 import { normalizeDateOnly } from '../utils/date';
+import {
+  clampPracticeLimit,
+  DEFAULT_PRACTICE_LIMIT,
+} from '../utils/practice';
 
 export interface StoredUser {
   id: string;
@@ -15,6 +19,7 @@ export interface StoredUser {
   targetLanguage: AppLanguage;
   streakCount: number;
   lastStreakDate: string | null;
+  practiceLimit: number;
 }
 
 const ACCESS_KEY = 'flashcards_access_token';
@@ -37,6 +42,7 @@ function normalizeStoredUser(raw: Partial<StoredUser> & { id: string }): StoredU
     ),
     streakCount: typeof raw.streakCount === 'number' ? raw.streakCount : 0,
     lastStreakDate: normalizeDateOnly(raw.lastStreakDate),
+    practiceLimit: clampPracticeLimit(raw.practiceLimit ?? DEFAULT_PRACTICE_LIMIT),
   };
 }
 

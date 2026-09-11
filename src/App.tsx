@@ -1,6 +1,8 @@
+import { lazy, Suspense } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { AuthProvider } from './auth/AuthContext';
 import { Layout } from './components/Layout';
+import { LoadingSpinner } from './components/LoadingSpinner';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { I18nProvider } from './i18n/I18nProvider';
 import { CategoryPage } from './pages/CategoryPage';
@@ -8,10 +10,18 @@ import { GrammarPracticePage } from './pages/GrammarPracticePage';
 import { HomePage } from './pages/HomePage';
 import { LoginPage } from './pages/LoginPage';
 import { NewCardPage } from './pages/NewCardPage';
+import { PracticeHubPage } from './pages/PracticeHubPage';
 import { PracticePage } from './pages/PracticePage';
+import { ReadingLibraryPage } from './pages/ReadingLibraryPage';
 import { RegisterPage } from './pages/RegisterPage';
 import { ReviewPage } from './pages/ReviewPage';
 import { SettingsPage } from './pages/SettingsPage';
+
+const ReadingReaderPage = lazy(() =>
+  import('./pages/ReadingReaderPage').then((mod) => ({
+    default: mod.ReadingReaderPage,
+  })),
+);
 
 export default function App() {
   return (
@@ -27,7 +37,17 @@ export default function App() {
                 <Route path="category/:slug" element={<CategoryPage />} />
                 <Route path="category/:slug/:subSlug" element={<CategoryPage />} />
                 <Route path="review" element={<ReviewPage />} />
-                <Route path="practice" element={<PracticePage />} />
+                <Route path="practice" element={<PracticeHubPage />} />
+                <Route path="practice/session" element={<PracticePage />} />
+                <Route path="reading" element={<ReadingLibraryPage />} />
+                <Route
+                  path="reading/:bookId"
+                  element={
+                    <Suspense fallback={<LoadingSpinner />}>
+                      <ReadingReaderPage />
+                    </Suspense>
+                  }
+                />
                 <Route path="grammar" element={<GrammarPracticePage />} />
                 <Route path="new" element={<NewCardPage />} />
                 <Route path="settings" element={<SettingsPage />} />

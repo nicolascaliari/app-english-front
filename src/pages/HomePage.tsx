@@ -55,11 +55,15 @@ export function HomePage() {
         <span className="banner-arrow">→</span>
       </Link>
 
-      <Link to="/practice" className="banner banner--practice">
+      <Link to="/practice/session" className="banner banner--practice">
         <span className="banner-icon">🔄</span>
         <span className="banner-content">
           <span className="banner-title">{t('home.practiceTitle')}</span>
-          <span className="banner-sub">{t('home.practiceSub')}</span>
+          <span className="banner-sub">
+            {t('home.practiceSub', {
+              count: user?.practiceLimit ?? 10,
+            })}
+          </span>
         </span>
         <span className="banner-arrow">→</span>
       </Link>

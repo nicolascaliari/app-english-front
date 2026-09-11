@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { api } from '../api/client';
 import { FlashcardView } from '../components/FlashcardView';
 import { LoadingSpinner } from '../components/LoadingSpinner';
-import { ReviewProgress } from '../components/ReviewProgress';
+import { SessionChips } from '../components/SessionChips';
 import { useI18n } from '../i18n/I18nProvider';
 import { useRecordStreak } from '../hooks/useRecordStreak';
 import type { Difficulty, DueReview } from '../types';
@@ -99,8 +99,8 @@ export function ReviewPage() {
   }
 
   return (
-    <div>
-      <ReviewProgress current={index + 1} total={queue.length} label={t('review.label')} />
+    <div className="review-session">
+      <SessionChips current={index + 1} total={queue.length} />
       <FlashcardView
         key={current.flashcard._id}
         card={current.flashcard}
@@ -108,6 +108,7 @@ export function ReviewPage() {
         showDifficultyPicker
         onDifficultyChange={handleDifficultyChange}
         onResult={handleResult}
+        reviewing
       />
     </div>
   );
