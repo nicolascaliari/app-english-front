@@ -19,7 +19,8 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      injectRegister: 'inline',
+      // Registered from src/main.tsx, which also checks for new deploys.
+      injectRegister: false,
       includeAssets: ['favicon.svg'],
       manifest: {
         name: 'English Flashcards',
@@ -54,6 +55,12 @@ export default defineConfig({
       workbox: {
         // Las rutas /api requieren JWT; no cachear respuestas (evita listas vacías obsoletas).
         runtimeCaching: [],
+        // A new deploy takes over at once instead of waiting until every
+        // window of the app is closed — which, for an iOS home-screen app,
+        // almost never happens.
+        skipWaiting: true,
+        clientsClaim: true,
+        cleanupOutdatedCaches: true,
       },
     }),
   ],
