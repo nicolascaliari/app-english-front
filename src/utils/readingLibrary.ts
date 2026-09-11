@@ -47,6 +47,27 @@ function reqAs<T>(request: IDBRequest<T>): Promise<T> {
   });
 }
 
+/** Settles when a transaction commits; rejects with the real cause on error or abort. */
+function txDone(tx: IDBTransaction): Promise<void> {
+  return new Promise((resolve, reject) => {
+    tx.oncomplete = () => resolve();
+    const fail = (event: Event) => {
+      const source = event.target as IDBRequest | IDBTransaction | null;
+      reject(source?.error ?? tx.error ?? new Error('IndexedDB transaction failed'));
+    };
+    tx.onerror = fail;
+    tx.onabort = fail;
+  });
+}
+
+// New rows keep raw bytes: iOS Safari often fails to store Blobs in IndexedDB
+// ("Error preparing Blob/File data"). Older rows may still hold a Blob.
+interface StoredBookFile {
+  id: string;
+  data?: ArrayBuffer;
+  file?: Blob;
+}
+
 function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
   return new Promise((resolve, reject) => {
     const timer = window.setTimeout(() => reject(new Error('timeout')), ms);
@@ -89,8 +110,9 @@ export async function getReadingBookFile(id: string): Promise<Blob | undefined> 
   try {
     const tx = db.transaction(FILE_STORE, 'readonly');
     const row = await reqAs(
-      tx.objectStore(FILE_STORE).get(id) as IDBRequest<{ id: string; file: Blob } | undefined>,
+      tx.objectStore(FILE_STORE).get(id) as IDBRequest<StoredBookFile | undefined>,
     );
+    if (row?.data) return new Blob([row.data], { type: 'application/epub+zip' });
     return row?.file;
   } finally {
     db.close();
@@ -109,10 +131,7 @@ async function updateReadingMeta(
     if (!current) return;
     change(current);
     store.put(current);
-    await new Promise<void>((resolve, reject) => {
-      tx.oncomplete = () => resolve();
-      tx.onerror = () => reject(tx.error ?? new Error('IndexedDB write failed'));
-    });
+    await txDone(tx);
   } finally {
     db.close();
   }
@@ -146,10 +165,7 @@ export async function deleteReadingBook(id: string): Promise<void> {
     const tx = db.transaction([META_STORE, FILE_STORE], 'readwrite');
     tx.objectStore(META_STORE).delete(id);
     tx.objectStore(FILE_STORE).delete(id);
-    await new Promise<void>((resolve, reject) => {
-      tx.oncomplete = () => resolve();
-      tx.onerror = () => reject(tx.error ?? new Error('IndexedDB delete failed'));
-    });
+    await txDone(tx);
   } finally {
     db.close();
   }
@@ -214,7 +230,6 @@ export async function importEpubFile(file: File): Promise<ReadingBookMeta> {
   }
 
   const bytes = new Uint8Array(await file.arrayBuffer());
-  const fileBlob = new Blob([bytes], { type: 'application/epub+zip' });
   const ePub = await loadEpubConstructor();
   const book = ePub(bytes.buffer.slice(0));
 
@@ -254,11 +269,9 @@ export async function importEpubFile(file: File): Promise<ReadingBookMeta> {
     try {
       const tx = db.transaction([META_STORE, FILE_STORE], 'readwrite');
       tx.objectStore(META_STORE).put(meta);
-      tx.objectStore(FILE_STORE).put({ id: meta.id, file: fileBlob });
-      await new Promise<void>((resolve, reject) => {
-        tx.oncomplete = () => resolve();
-        tx.onerror = () => reject(tx.error ?? new Error('IndexedDB write failed'));
-      });
+      const stored: StoredBookFile = { id: meta.id, data: bytes.buffer };
+      tx.objectStore(FILE_STORE).put(stored);
+      await txDone(tx);
     } finally {
       db.close();
     }
