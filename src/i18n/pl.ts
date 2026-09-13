@@ -41,7 +41,8 @@ export const messagesPl: Messages = {
   'register.subtitle': 'Zacznij od własnych kategorii i fiszek',
   'register.passwordHint':
     'Co najmniej 8 znaków, z wielką i małą literą, cyfrą oraz symbolem (@$!%*?&).',
-  'register.languageHint': 'AI i fiszki używają tej pary językowej.',
+  'register.languageHint':
+    'Będziesz uczyć się angielskiego; aplikacja wyświetla się w twoim języku.',
   'register.languagesMustDiffer':
     'Język ojczysty i język, którego się uczysz, muszą się różnić.',
   'register.error': 'Nie udało się zarejestrować',
@@ -76,7 +77,7 @@ export const messagesPl: Messages = {
   'admin.you': 'Ty',
   'settings.title': 'Ustawienia',
   'settings.pairHint':
-    'Uczysz się {target} z {native}. Nowe fiszki i AI stosują tę parę; istniejące fiszki się nie zmieniają.',
+    'Uczysz się angielskiego. Aplikacja i tłumaczenia AI używają {native}.',
   'settings.uiLanguage': 'Język aplikacji',
   'settings.uiNative': 'Użyj mojego języka ojczystego ({lang})',
   'settings.uiTarget': 'Użyj języka, którego się uczę ({lang})',
@@ -237,6 +238,10 @@ export const messagesPl: Messages = {
   'error.close': 'Rozumiem',
   'error.generic': 'Coś poszło nie tak. Spróbuj ponownie za chwilę.',
   'error.resetsIn': 'Odnowi się za {time}.',
+  'languageSetup.title': 'Jaki jest twój język?',
+  'languageSetup.body':
+    'Będziesz uczyć się angielskiego, a cała aplikacja wyświetli się w wybranym języku. Możesz go później zmienić w ustawieniach.',
+  'languageSetup.confirm': 'Dalej',
   'guide.close': 'Rozumiem',
   'guide.decks.title': 'Twoje talie',
   'guide.decks.body':

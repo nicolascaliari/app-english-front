@@ -41,7 +41,8 @@ export const messagesPt: Messages = {
   'register.subtitle': 'Comece com suas próprias categorias e cartas',
   'register.passwordHint':
     'Mínimo de 8 caracteres, com maiúscula, minúscula, número e símbolo (@$!%*?&).',
-  'register.languageHint': 'A IA e os flashcards usam este par de idiomas.',
+  'register.languageHint':
+    'Você vai aprender inglês; o app aparece no seu idioma.',
   'register.languagesMustDiffer':
     'Seu idioma nativo e o que você quer aprender devem ser diferentes.',
   'register.error': 'Não foi possível cadastrar',
@@ -76,7 +77,7 @@ export const messagesPt: Messages = {
   'admin.you': 'Você',
   'settings.title': 'Configurações',
   'settings.pairHint':
-    'Você está aprendendo {target} a partir de {native}. Cartas novas e a IA seguem este par; as cartas já criadas não mudam.',
+    'Você está aprendendo inglês. O app e as traduções da IA usam {native}.',
   'settings.uiLanguage': 'Idioma do app',
   'settings.uiNative': 'Usar meu idioma nativo ({lang})',
   'settings.uiTarget': 'Usar o idioma que estou aprendendo ({lang})',
@@ -237,6 +238,10 @@ export const messagesPt: Messages = {
   'error.close': 'Entendi',
   'error.generic': 'Algo deu errado. Tente de novo em instantes.',
   'error.resetsIn': 'Renova em {time}.',
+  'languageSetup.title': 'Qual é o seu idioma?',
+  'languageSetup.body':
+    'Você vai aprender inglês, e todo o app vai aparecer no idioma que escolher. Dá para mudar depois em Configurações.',
+  'languageSetup.confirm': 'Continuar',
   'guide.close': 'Entendi',
   'guide.decks.title': 'Seus baralhos',
   'guide.decks.body':

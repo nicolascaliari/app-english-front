@@ -41,7 +41,8 @@ export const messagesRu: Messages = {
   'register.subtitle': 'Начните со своих категорий и карточек',
   'register.passwordHint':
     'Не менее 8 символов: заглавная и строчная буква, цифра и спецсимвол (@$!%*?&).',
-  'register.languageHint': 'ИИ и карточки используют эту языковую пару.',
+  'register.languageHint':
+    'Вы будете учить английский; приложение отображается на вашем языке.',
   'register.languagesMustDiffer':
     'Родной язык и язык, который вы изучаете, должны отличаться.',
   'register.error': 'Не удалось зарегистрироваться',
@@ -76,7 +77,7 @@ export const messagesRu: Messages = {
   'admin.you': 'Вы',
   'settings.title': 'Настройки',
   'settings.pairHint':
-    'Вы изучаете {target} с {native}. Новые карточки и ИИ следуют этой паре; существующие карточки не меняются.',
+    'Вы изучаете английский. Приложение и переводы ИИ используют {native}.',
   'settings.uiLanguage': 'Язык приложения',
   'settings.uiNative': 'Использовать родной язык ({lang})',
   'settings.uiTarget': 'Использовать изучаемый язык ({lang})',
@@ -237,6 +238,10 @@ export const messagesRu: Messages = {
   'error.close': 'Понятно',
   'error.generic': 'Что-то пошло не так. Попробуйте ещё раз через момент.',
   'error.resetsIn': 'Обновится через {time}.',
+  'languageSetup.title': 'Какой ваш родной язык?',
+  'languageSetup.body':
+    'Вы будете учить английский, а всё приложение будет на выбранном вами языке. Его можно изменить позже в настройках.',
+  'languageSetup.confirm': 'Продолжить',
   'guide.close': 'Понятно',
   'guide.decks.title': 'Ваши колоды',
   'guide.decks.body':

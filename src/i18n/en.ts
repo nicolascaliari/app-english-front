@@ -41,7 +41,8 @@ export const messagesEn: Messages = {
   'register.subtitle': 'Start with your own categories and cards',
   'register.passwordHint':
     'At least 8 characters, with uppercase, lowercase, a number, and a symbol (@$!%*?&).',
-  'register.languageHint': 'AI and flashcards use this language pair.',
+  'register.languageHint':
+    "You'll be learning English; the app is shown in your language.",
   'register.languagesMustDiffer':
     'Your native language and the one you are learning must be different.',
   'register.error': 'Could not register',
@@ -76,7 +77,7 @@ export const messagesEn: Messages = {
   'admin.you': 'You',
   'settings.title': 'Settings',
   'settings.pairHint':
-    'You are learning {target} from {native}. New cards and AI follow this pair; existing cards do not change.',
+    "You're learning English. The app and the AI translations use {native}.",
   'settings.uiLanguage': 'App language',
   'settings.uiNative': 'Use my native language ({lang})',
   'settings.uiTarget': "Use the language I'm learning ({lang})",
@@ -237,6 +238,10 @@ export const messagesEn: Messages = {
   'error.close': 'Got it',
   'error.generic': 'Something went wrong. Try again in a moment.',
   'error.resetsIn': 'Renews in {time}.',
+  'languageSetup.title': "What's your language?",
+  'languageSetup.body':
+    "You'll be learning English, and the whole app will be shown in the language you pick. You can change it later in Settings.",
+  'languageSetup.confirm': 'Continue',
   'guide.close': 'Got it',
   'guide.decks.title': 'Your decks',
   'guide.decks.body':

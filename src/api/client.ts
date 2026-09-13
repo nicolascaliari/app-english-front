@@ -221,6 +221,7 @@ function normalizeAuthUser(raw: AuthUser & { _id?: string }): AuthUser {
     lastStreakDate: normalizeDateOnly(raw.lastStreakDate),
     practiceLimit: clampPracticeLimit(raw.practiceLimit),
     seenGuides: Array.isArray(raw.seenGuides) ? raw.seenGuides : [],
+    needsLanguageSetup: raw.needsLanguageSetup === true,
   };
 }
 

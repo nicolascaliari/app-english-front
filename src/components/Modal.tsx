@@ -8,6 +8,11 @@ interface Props {
   onClose: () => void;
   /** Marca el diálogo como un error (borde y título en rojo). */
   tone?: 'error' | 'neutral';
+  /**
+   * Si es false, ni Escape ni el clic afuera lo cierran: solo el botón. Para
+   * pasos que el usuario no puede saltear, como elegir su idioma.
+   */
+  dismissible?: boolean;
 }
 
 /**
@@ -21,16 +26,17 @@ export function Modal({
   closeLabel,
   onClose,
   tone = 'neutral',
+  dismissible = true,
 }: Props) {
   useEffect(() => {
-    if (!open) return;
+    if (!open || !dismissible) return;
 
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') onClose();
     };
     document.addEventListener('keydown', onKeyDown);
     return () => document.removeEventListener('keydown', onKeyDown);
-  }, [open, onClose]);
+  }, [open, dismissible, onClose]);
 
   if (!open) return null;
 
@@ -39,7 +45,7 @@ export function Modal({
       className="modal-overlay"
       // Cerrar al tocar fuera, pero no cuando el clic nace dentro del diálogo.
       onClick={(e) => {
-        if (e.target === e.currentTarget) onClose();
+        if (dismissible && e.target === e.currentTarget) onClose();
       }}
     >
       <div

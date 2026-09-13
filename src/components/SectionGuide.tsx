@@ -47,7 +47,10 @@ export function SectionGuide() {
 
   const key = guideForPath(pathname);
   // Los admins no usan la app de estudio: no tiene sentido explicársela.
-  if (!user || user.role === 'admin' || !key) return null;
+  // Y mientras falte elegir el idioma, la guía saldría en el equivocado.
+  if (!user || user.role === 'admin' || user.needsLanguageSetup || !key) {
+    return null;
+  }
   if (user.seenGuides.includes(key)) return null;
 
   const guide = GUIDES[key];

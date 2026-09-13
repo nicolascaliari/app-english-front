@@ -5,13 +5,10 @@ import {
   GoogleSignInButton,
   googleAuthEnabled,
 } from '../components/GoogleSignInButton';
-import { LanguagePairFields } from '../components/LanguagePairFields';
+import { NativeLanguageSelect } from '../components/NativeLanguageSelect';
 import { useI18n } from '../i18n/I18nProvider';
 import type { AppLanguage } from '../utils/languages';
-import {
-  DEFAULT_NATIVE_LANGUAGE,
-  DEFAULT_TARGET_LANGUAGE,
-} from '../utils/languages';
+import { suggestedNativeLanguage } from '../utils/languages';
 
 export function RegisterPage() {
   const { user, register, loginWithGoogle } = useAuth();
@@ -24,15 +21,13 @@ export function RegisterPage() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [nativeLanguage, setNativeLanguage] = useState<AppLanguage>(
-    DEFAULT_NATIVE_LANGUAGE,
-  );
-  const [targetLanguage, setTargetLanguage] = useState<AppLanguage>(
-    DEFAULT_TARGET_LANGUAGE,
+  const [nativeLanguage, setNativeLanguage] = useState<AppLanguage>(() =>
+    suggestedNativeLanguage(),
   );
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
+  // El formulario se traduce en vivo al idioma que se va eligiendo.
   useEffect(() => {
     setGuestLanguage(nativeLanguage);
   }, [nativeLanguage, setGuestLanguage]);
@@ -41,29 +36,12 @@ export function RegisterPage() {
     return <Navigate to={from} replace />;
   }
 
-  const handleNativeChange = (value: AppLanguage) => {
-    setNativeLanguage(value);
-    setGuestLanguage(value);
-  };
-
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setError('');
-
-    if (nativeLanguage === targetLanguage) {
-      setError(t('register.languagesMustDiffer'));
-      return;
-    }
-
     setSubmitting(true);
     try {
-      await register({
-        name,
-        email,
-        password,
-        nativeLanguage,
-        targetLanguage,
-      });
+      await register({ name, email, password, nativeLanguage });
     } catch (err) {
       setError(err instanceof Error ? err.message : t('register.error'));
     } finally {
@@ -75,6 +53,7 @@ export function RegisterPage() {
     setError('');
     setSubmitting(true);
     try {
+      // Con Google no hay formulario: el idioma se pregunta después de entrar.
       await loginWithGoogle(credential);
     } catch (err) {
       setError(err instanceof Error ? err.message : t('login.googleError'));
@@ -127,11 +106,9 @@ export function RegisterPage() {
           </label>
           <p className="field-hint">{t('register.passwordHint')}</p>
 
-          <LanguagePairFields
-            nativeLanguage={nativeLanguage}
-            targetLanguage={targetLanguage}
-            onNativeChange={handleNativeChange}
-            onTargetChange={setTargetLanguage}
+          <NativeLanguageSelect
+            value={nativeLanguage}
+            onChange={setNativeLanguage}
             disabled={submitting}
           />
           <p className="field-hint">{t('register.languageHint')}</p>

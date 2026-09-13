@@ -42,7 +42,7 @@ export const messagesFr: Messages = {
   'register.passwordHint':
     'Au moins 8 caractères, avec majuscule, minuscule, un chiffre et un symbole (@$!%*?&).',
   'register.languageHint':
-    "L'IA et les flashcards utilisent cette paire de langues.",
+    "Vous allez apprendre l'anglais ; l'application s'affiche dans votre langue.",
   'register.languagesMustDiffer':
     'Votre langue maternelle et celle que vous apprenez doivent être différentes.',
   'register.error': "Impossible de s'inscrire",
@@ -77,7 +77,7 @@ export const messagesFr: Messages = {
   'admin.you': 'Vous',
   'settings.title': 'Paramètres',
   'settings.pairHint':
-    'Vous apprenez {target} à partir de {native}. Les nouvelles cartes et l’IA suivent cette paire ; les cartes existantes ne changent pas.',
+    "Vous apprenez l'anglais. L'application et les traductions de l'IA utilisent {native}.",
   'settings.uiLanguage': "Langue de l'application",
   'settings.uiNative': 'Utiliser ma langue maternelle ({lang})',
   'settings.uiTarget': "Utiliser la langue que j'apprends ({lang})",
@@ -241,6 +241,10 @@ export const messagesFr: Messages = {
   'error.close': 'Compris',
   'error.generic': "Une erreur s'est produite. Réessayez dans un instant.",
   'error.resetsIn': 'Se renouvelle dans {time}.',
+  'languageSetup.title': 'Quelle est votre langue ?',
+  'languageSetup.body':
+    "Vous allez apprendre l'anglais, et toute l'application s'affichera dans la langue choisie. Vous pourrez la changer plus tard dans les paramètres.",
+  'languageSetup.confirm': 'Continuer',
   'guide.close': 'Compris',
   'guide.decks.title': 'Vos paquets',
   'guide.decks.body':

@@ -41,7 +41,8 @@ export const messagesEs: Messages = {
   'register.subtitle': 'Empezá con tus propias categorías y cartas',
   'register.passwordHint':
     'Mínimo 8 caracteres, mayúscula, minúscula, número y símbolo (@$!%*?&).',
-  'register.languageHint': 'La IA y las flashcards usan este par de idiomas.',
+  'register.languageHint':
+    'Vas a aprender inglés; la app se muestra en tu idioma.',
   'register.languagesMustDiffer':
     'El idioma nativo y el que querés aprender deben ser distintos.',
   'register.error': 'No se pudo registrar',
@@ -76,7 +77,7 @@ export const messagesEs: Messages = {
   'admin.you': 'Vos',
   'settings.title': 'Configuración',
   'settings.pairHint':
-    'Aprendés {target} desde {native}. Las cartas nuevas y la IA siguen este par; las cartas ya creadas no cambian.',
+    'Estás aprendiendo inglés. La app y las traducciones de la IA usan {native}.',
   'settings.uiLanguage': 'Idioma de la app',
   'settings.uiNative': 'Usar mi idioma nativo ({lang})',
   'settings.uiTarget': 'Usar el idioma que estoy aprendiendo ({lang})',
@@ -237,6 +238,10 @@ export const messagesEs: Messages = {
   'error.close': 'Entendido',
   'error.generic': 'Algo salió mal. Probá de nuevo en un momento.',
   'error.resetsIn': 'Se renueva en {time}.',
+  'languageSetup.title': '¿Cuál es tu idioma?',
+  'languageSetup.body':
+    'Vas a aprender inglés, y toda la app se va a mostrar en el idioma que elijas. Podés cambiarlo después en Configuración.',
+  'languageSetup.confirm': 'Continuar',
   'guide.close': 'Entendido',
   'guide.decks.title': 'Tus mazos',
   'guide.decks.body':
@@ -290,7 +295,7 @@ export const messagesEs: Messages = {
   'grammar.results': '{score} de {total} correctas ({pct}%)',
   'grammar.topicLabel': 'Tema: {topic}',
   'grammar.newSession': 'Nueva sesión',
-  'grammar.next': 'Siguiente →',
+  'grammar.next': 'Siguiente',
   'grammar.seeResults': 'Ver resultados',
   'grammar.typeFill': 'Completar',
   'grammar.typeMc': 'Opción múltiple',
@@ -303,7 +308,7 @@ export const messagesEs: Messages = {
   'practice.again': 'Repasar otras {count}',
   'practice.limitLabel': 'Cantidad',
   'practice.label': 'media / difícil',
-  'practice.next': 'Siguiente →',
+  'practice.next': 'Siguiente',
   'practice.hubTitle': 'Práctica',
   'practice.hubReviewTitle': 'Repasar',
   'practice.hubReviewSub': '{count} cartas media / difícil',
@@ -339,7 +344,7 @@ export const messagesEs: Messages = {
   'reading.lookupEmpty': 'No hay definición para “{word}”.',
   'reading.senses': 'Otras acepciones',
   'reading.extendPrev': '+ Anterior',
-  'reading.extendNext': 'Siguiente +',
+  'reading.extendNext': 'Siguiente',
   'reading.shrink': 'Quitar última',
   'reading.addToDeck': '+ Agregar a flashcards',
   'reading.saveCard': 'Guardar carta',
@@ -366,11 +371,11 @@ export const messagesEs: Messages = {
   'flashcard.pin': '★ Guardar en Mis Palabras',
   'flashcard.unpin': '★ Quitar de Mis Palabras',
   'category.review': 'Repasar palabras',
-  'category.exitReview': 'Salir del repaso',
+  'category.exitReview': 'Salir',
   'category.reviewDone': '¡Has repasado todas las palabras!',
   'category.restartReview': 'Repasar de nuevo',
   'category.prev': 'Anterior',
-  'category.next': 'Siguiente →',
+  'category.next': 'Siguiente',
   'editCard.title': 'Editar carta',
   'editCard.save': 'Guardar cambios',
 };

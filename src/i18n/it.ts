@@ -42,7 +42,7 @@ export const messagesIt: Messages = {
   'register.passwordHint':
     'Almeno 8 caratteri, con maiuscola, minuscola, un numero e un simbolo (@$!%*?&).',
   'register.languageHint':
-    "L'IA e le flashcard usano questa coppia di lingue.",
+    "Imparerai l'inglese; l'app è mostrata nella tua lingua.",
   'register.languagesMustDiffer':
     'La lingua madre e quella che stai imparando devono essere diverse.',
   'register.error': 'Impossibile registrarsi',
@@ -77,7 +77,7 @@ export const messagesIt: Messages = {
   'admin.you': 'Tu',
   'settings.title': 'Impostazioni',
   'settings.pairHint':
-    'Stai imparando {target} da {native}. Le nuove carte e l’IA seguono questa coppia; le carte già create non cambiano.',
+    "Stai imparando l'inglese. L'app e le traduzioni dell'IA usano {native}.",
   'settings.uiLanguage': "Lingua dell'app",
   'settings.uiNative': 'Usa la mia lingua madre ({lang})',
   'settings.uiTarget': 'Usa la lingua che sto imparando ({lang})',
@@ -238,6 +238,10 @@ export const messagesIt: Messages = {
   'error.close': 'Ho capito',
   'error.generic': 'Qualcosa è andato storto. Riprova tra poco.',
   'error.resetsIn': 'Si rinnova tra {time}.',
+  'languageSetup.title': 'Qual è la tua lingua?',
+  'languageSetup.body':
+    "Imparerai l'inglese, e tutta l'app sarà mostrata nella lingua che scegli. Puoi cambiarla più tardi nelle impostazioni.",
+  'languageSetup.confirm': 'Continua',
   'guide.close': 'Ho capito',
   'guide.decks.title': 'I tuoi mazzi',
   'guide.decks.body':

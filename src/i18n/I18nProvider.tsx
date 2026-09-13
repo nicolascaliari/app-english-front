@@ -82,6 +82,11 @@ export function I18nProvider({ children }: { children: ReactNode }) {
 
   const language: AppLanguage = useMemo(() => {
     if (user) {
+      // Cuenta nueva que todavía no eligió idioma: se usa el que está eligiendo
+      // en el modal (o el del navegador), no el nativo por defecto.
+      if (user.needsLanguageSetup) {
+        return guestLanguage ?? detectBrowserLanguage();
+      }
       const preferred =
         uiMode === 'target' ? user.targetLanguage : user.nativeLanguage;
       return APP_LANGUAGES.includes(preferred)

@@ -2,13 +2,14 @@ import { type FormEvent, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../api/client';
 import { useAuth } from '../auth/AuthContext';
-import { LanguagePairFields } from '../components/LanguagePairFields';
+import { NativeLanguageSelect } from '../components/NativeLanguageSelect';
 import { useI18n } from '../i18n/I18nProvider';
 import type { UiMode } from '../i18n/types';
 import type { AppLanguage } from '../utils/languages';
 import {
   DEFAULT_NATIVE_LANGUAGE,
   DEFAULT_TARGET_LANGUAGE,
+  NATIVE_LANGUAGES,
 } from '../utils/languages';
 import {
   clampPracticeLimit,
@@ -23,9 +24,6 @@ export function SettingsPage() {
   const [name, setName] = useState(user?.name ?? '');
   const [nativeLanguage, setNativeLanguage] = useState<AppLanguage>(
     user?.nativeLanguage ?? DEFAULT_NATIVE_LANGUAGE,
-  );
-  const [targetLanguage, setTargetLanguage] = useState<AppLanguage>(
-    user?.targetLanguage ?? DEFAULT_TARGET_LANGUAGE,
   );
   const [practiceLimit, setPracticeLimit] = useState(
     clampPracticeLimit(user?.practiceLimit ?? DEFAULT_PRACTICE_LIMIT),
@@ -44,8 +42,12 @@ export function SettingsPage() {
   useEffect(() => {
     if (!user) return;
     setName(user.name);
-    setNativeLanguage(user.nativeLanguage);
-    setTargetLanguage(user.targetLanguage);
+    // Una cuenta vieja podría tener guardado un nativo que ya no es elegible.
+    setNativeLanguage(
+      NATIVE_LANGUAGES.includes(user.nativeLanguage)
+        ? user.nativeLanguage
+        : DEFAULT_NATIVE_LANGUAGE,
+    );
     setPracticeLimit(clampPracticeLimit(user.practiceLimit));
   }, [user]);
 
@@ -53,18 +55,11 @@ export function SettingsPage() {
     e.preventDefault();
     setError('');
     setSuccess('');
-
-    if (nativeLanguage === targetLanguage) {
-      setError(t('register.languagesMustDiffer'));
-      return;
-    }
-
     setSaving(true);
     try {
       await updateProfile({
         name,
         nativeLanguage,
-        targetLanguage,
         practiceLimit: clampPracticeLimit(practiceLimit),
       });
       setSuccess(t('settings.success'));
@@ -119,7 +114,7 @@ export function SettingsPage() {
       <div className="form-panel">
         <p className="field-hint" style={{ marginBottom: '1rem' }}>
           {t('settings.pairHint', {
-            target: languageName(targetLanguage),
+            target: languageName(DEFAULT_TARGET_LANGUAGE),
             native: languageName(nativeLanguage),
           })}
         </p>
@@ -141,14 +136,13 @@ export function SettingsPage() {
             <input type="email" value={user.email} disabled />
           </label>
 
-          <LanguagePairFields
-            nativeLanguage={nativeLanguage}
-            targetLanguage={targetLanguage}
-            onNativeChange={setNativeLanguage}
-            onTargetChange={setTargetLanguage}
+          <NativeLanguageSelect
+            value={nativeLanguage}
+            onChange={setNativeLanguage}
             disabled={saving}
           />
 
+          {/* Modo inmersión: la interfaz entera en inglés, para quien lo quiera. */}
           <fieldset className="ui-lang-fieldset">
             <legend>{t('settings.uiLanguage')}</legend>
             <label className="ui-lang-option">
@@ -173,7 +167,7 @@ export function SettingsPage() {
               />
               <span>
                 {t('settings.uiTarget', {
-                  lang: languageName(targetLanguage),
+                  lang: languageName(DEFAULT_TARGET_LANGUAGE),
                 })}
               </span>
             </label>

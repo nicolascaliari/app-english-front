@@ -54,6 +54,7 @@ function toStoredUser(user: AuthUser): StoredUser {
     lastStreakDate: user.lastStreakDate ?? null,
     practiceLimit: clampPracticeLimit(user.practiceLimit),
     seenGuides: user.seenGuides ?? [],
+    needsLanguageSetup: user.needsLanguageSetup === true,
   };
 }
 

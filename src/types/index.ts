@@ -22,6 +22,8 @@ export interface AuthUser {
   practiceLimit: number;
   /** Guías de bienvenida ya vistas, una por sección. */
   seenGuides: string[];
+  /** Cuenta nueva (Google) que todavía no eligió su idioma nativo. */
+  needsLanguageSetup: boolean;
 }
 
 /** Usuario tal como lo ve un admin en el panel de administración. */
@@ -66,14 +68,13 @@ export interface RegisterPayload {
   email: string;
   password: string;
   name: string;
+  /** El idioma a aprender es siempre inglés; esto define la interfaz. */
   nativeLanguage: AppLanguage;
-  targetLanguage: AppLanguage;
 }
 
 export interface UpdateProfilePayload {
   name?: string;
   nativeLanguage?: AppLanguage;
-  targetLanguage?: AppLanguage;
   practiceLimit?: number;
 }
 

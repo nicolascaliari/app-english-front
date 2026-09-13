@@ -4,6 +4,7 @@ import { useI18n } from '../i18n/I18nProvider';
 import { APP_LANGUAGE_FLAGS } from '../utils/languages';
 import { AnimatedPage } from './AnimatedPage';
 import { HeaderAccountMenu } from './HeaderAccountMenu';
+import { LanguageSetupModal } from './LanguageSetupModal';
 import { SectionGuide } from './SectionGuide';
 import { TabBar } from './TabBar';
 
@@ -94,6 +95,8 @@ export function Layout() {
         </AnimatedPage>
       </main>
       {!isAdmin && <TabBar />}
+      {/* Primero el idioma: las guías tienen que salir ya traducidas. */}
+      <LanguageSetupModal />
       <SectionGuide />
     </div>
   );

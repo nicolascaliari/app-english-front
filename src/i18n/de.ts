@@ -42,7 +42,7 @@ export const messagesDe: Messages = {
   'register.passwordHint':
     'Mindestens 8 Zeichen, mit Groß- und Kleinbuchstaben, einer Zahl und einem Symbol (@$!%*?&).',
   'register.languageHint':
-    'KI und Flashcards verwenden dieses Sprachpaar.',
+    'Du lernst Englisch; die App wird in deiner Sprache angezeigt.',
   'register.languagesMustDiffer':
     'Deine Muttersprache und die Sprache, die du lernst, müssen unterschiedlich sein.',
   'register.error': 'Registrierung fehlgeschlagen',
@@ -77,7 +77,7 @@ export const messagesDe: Messages = {
   'admin.you': 'Du',
   'settings.title': 'Einstellungen',
   'settings.pairHint':
-    'Du lernst {target} ausgehend von {native}. Neue Karten und die KI folgen diesem Paar; bestehende Karten ändern sich nicht.',
+    'Du lernst Englisch. Die App und die KI-Übersetzungen verwenden {native}.',
   'settings.uiLanguage': 'App-Sprache',
   'settings.uiNative': 'Meine Muttersprache verwenden ({lang})',
   'settings.uiTarget': 'Die Sprache verwenden, die ich lerne ({lang})',
@@ -242,6 +242,10 @@ export const messagesDe: Messages = {
   'error.close': 'Verstanden',
   'error.generic': 'Etwas ist schiefgelaufen. Versuche es gleich noch einmal.',
   'error.resetsIn': 'Wird in {time} zurückgesetzt.',
+  'languageSetup.title': 'Was ist deine Sprache?',
+  'languageSetup.body':
+    'Du lernst Englisch, und die ganze App wird in der Sprache angezeigt, die du wählst. Du kannst sie später in den Einstellungen ändern.',
+  'languageSetup.confirm': 'Weiter',
   'guide.close': 'Verstanden',
   'guide.decks.title': 'Deine Stapel',
   'guide.decks.body':

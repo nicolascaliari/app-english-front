@@ -21,6 +21,7 @@ export interface StoredUser {
   lastStreakDate: string | null;
   practiceLimit: number;
   seenGuides: string[];
+  needsLanguageSetup: boolean;
 }
 
 const USER_KEY = 'flashcards_user';
@@ -62,6 +63,7 @@ function normalizeStoredUser(raw: Partial<StoredUser> & { id: string }): StoredU
     lastStreakDate: normalizeDateOnly(raw.lastStreakDate),
     practiceLimit: clampPracticeLimit(raw.practiceLimit ?? DEFAULT_PRACTICE_LIMIT),
     seenGuides: Array.isArray(raw.seenGuides) ? raw.seenGuides : [],
+    needsLanguageSetup: raw.needsLanguageSetup === true,
   };
 }
 
