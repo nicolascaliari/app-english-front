@@ -231,6 +231,31 @@ export const messagesEn: Messages = {
   'ai.noData':
     'AI did not generate data. Try being more specific (category, quantity, difficulty).',
   'ai.error': 'Generation error',
+  'common.hoursShort': 'h',
+  'common.minutesShort': 'min',
+  'error.title': 'Oops',
+  'error.close': 'Got it',
+  'error.generic': 'Something went wrong. Try again in a moment.',
+  'error.resetsIn': 'Renews in {time}.',
+  'guide.close': 'Got it',
+  'guide.decks.title': 'Your decks',
+  'guide.decks.body':
+    'This is where your categories and subcategories live. Tap one to see its cards and use the + button to add more. Once the list grows, the search box filters by name.',
+  'guide.practice.title': 'Practice',
+  'guide.practice.body':
+    'Quick sessions with your medium and hard cards, picked at random. In Settings you choose how many cards each session includes.',
+  'guide.review.title': 'Spaced review',
+  'guide.review.body':
+    'Only the cards due today show up here. Get one right and it comes back later; get it wrong and it comes back soon. Reviewing every day keeps your streak alive.',
+  'guide.grammar.title': 'Grammar',
+  'guide.grammar.body':
+    'Pick a module for your level and the AI builds exercises to practice with. Every answer comes with its explanation.',
+  'guide.reading.title': 'Reading',
+  'guide.reading.body':
+    'Upload an EPUB and read it here. Tap any word to see what it means and save it as a card without leaving the book. Books stay on this device only.',
+  'guide.create.title': 'Creating cards',
+  'guide.create.body':
+    'Search for a word and it fills itself in with meaning, example and pronunciation. You can also ask the AI for a whole batch or import a spreadsheet.',
   'ai.savedTitle': 'My prompts',
   'ai.savedEmpty': "You haven't saved any prompts yet.",
   'ai.savePrompt': 'Save prompt',

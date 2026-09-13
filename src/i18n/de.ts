@@ -236,6 +236,31 @@ export const messagesDe: Messages = {
   'ai.noData':
     'Die KI hat keine Daten erzeugt. Sei spezifischer (Kategorie, Anzahl, Schwierigkeit).',
   'ai.error': 'Generierungsfehler',
+  'common.hoursShort': 'Std.',
+  'common.minutesShort': 'Min.',
+  'error.title': 'Hoppla',
+  'error.close': 'Verstanden',
+  'error.generic': 'Etwas ist schiefgelaufen. Versuche es gleich noch einmal.',
+  'error.resetsIn': 'Wird in {time} zurückgesetzt.',
+  'guide.close': 'Verstanden',
+  'guide.decks.title': 'Deine Stapel',
+  'guide.decks.body':
+    'Hier leben deine Kategorien und Unterkategorien. Tippe eine an, um ihre Karten zu sehen, und füge mit + weitere hinzu. Wenn die Liste wächst, filtert die Suche nach Namen.',
+  'guide.practice.title': 'Üben',
+  'guide.practice.body':
+    'Kurze Einheiten mit deinen mittleren und schweren Karten, zufällig ausgewählt. In den Einstellungen legst du fest, wie viele Karten pro Einheit drankommen.',
+  'guide.review.title': 'Verteiltes Wiederholen',
+  'guide.review.body':
+    'Hier erscheinen nur die Karten, die heute dran sind. Richtig beantwortet kommt eine Karte später wieder, falsch beantwortet schon bald. Tägliches Wiederholen hält deine Serie am Leben.',
+  'guide.grammar.title': 'Grammatik',
+  'guide.grammar.body':
+    'Wähle ein Modul für dein Niveau und die KI baut passende Übungen. Zu jeder Antwort gibt es die Erklärung dazu.',
+  'guide.reading.title': 'Lesen',
+  'guide.reading.body':
+    'Lade ein EPUB hoch und lies es hier. Tippe ein Wort an, um seine Bedeutung zu sehen, und speichere es als Karte, ohne das Buch zu verlassen. Die Bücher bleiben nur auf diesem Gerät.',
+  'guide.create.title': 'Karten anlegen',
+  'guide.create.body':
+    'Suche ein Wort und Bedeutung, Beispiel und Aussprache füllen sich von selbst. Du kannst auch die KI um einen ganzen Schwung bitten oder eine Tabelle importieren.',
   'ai.savedTitle': 'Meine Prompts',
   'ai.savedEmpty': 'Du hast noch keine Prompts gespeichert.',
   'ai.savePrompt': 'Prompt speichern',

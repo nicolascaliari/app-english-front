@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { api } from '../api/client';
+import { useErrorDialog } from '../components/ErrorDialogProvider';
 import { GrammarExerciseCard } from '../components/GrammarExerciseCard';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import { ReviewProgress } from '../components/ReviewProgress';
@@ -113,6 +114,7 @@ type Phase = 'setup' | 'session' | 'results';
 
 export function GrammarPracticePage() {
   const { t } = useI18n();
+  const { showError } = useErrorDialog();
   const recordStreak = useRecordStreak();
   const streakRecorded = useRef(false);
   const [phase, setPhase] = useState<Phase>('setup');
@@ -153,7 +155,7 @@ export function GrammarPracticePage() {
       setAnswered(false);
       setPhase('session');
     } catch (err) {
-      setError(err instanceof Error ? err.message : t('grammar.error'));
+      showError(err, t('grammar.error'));
     } finally {
       setGenerating(false);
     }

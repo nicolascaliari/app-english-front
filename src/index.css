@@ -2190,6 +2190,63 @@ a {
 
 
 
+/* ── Modal reutilizable ── */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(2px);
+}
+
+.modal {
+  width: min(26rem, 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  padding: 1.35rem;
+  border-radius: var(--radius-sm, 0.85rem);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: var(--surface, #16181f);
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.45);
+}
+
+.modal--error {
+  border-color: rgba(248, 113, 113, 0.35);
+}
+
+.modal-title {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.modal--error .modal-title {
+  color: #f87171;
+}
+
+.modal-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--text-muted);
+}
+
+.modal-body p {
+  margin: 0;
+}
+
+.modal-detail {
+  color: var(--text);
+  font-weight: 600;
+}
+
 /* ── Panel de administración ── */
 
 .admin-table .admin-name {

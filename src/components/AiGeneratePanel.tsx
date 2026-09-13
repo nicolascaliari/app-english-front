@@ -2,6 +2,7 @@ import { type FormEvent, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../api/client';
 import { useAuth } from '../auth/AuthContext';
+import { useErrorDialog } from './ErrorDialogProvider';
 import { useI18n } from '../i18n/I18nProvider';
 import type { ImportPayload, SavedPrompt } from '../types';
 import {
@@ -13,6 +14,7 @@ export function AiGeneratePanel() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const { t, languageName } = useI18n();
+  const { showError } = useErrorDialog();
   const targetLabel = languageName(user?.targetLanguage ?? DEFAULT_TARGET_LANGUAGE);
   const nativeLabel = languageName(user?.nativeLanguage ?? DEFAULT_NATIVE_LANGUAGE);
   const [prompt, setPrompt] = useState('');
@@ -111,7 +113,7 @@ export function AiGeneratePanel() {
         setError(t('ai.noData'));
       }
     } catch (err) {
-      setError(err instanceof Error ? err.message : t('ai.error'));
+      showError(err, t('ai.error'));
     } finally {
       setGenerating(false);
     }

@@ -235,6 +235,31 @@ export const messagesFr: Messages = {
   'ai.noData':
     'L’IA n’a pas généré de données. Essayez d’être plus précis (catégorie, quantité, difficulté).',
   'ai.error': 'Erreur de génération',
+  'common.hoursShort': 'h',
+  'common.minutesShort': 'min',
+  'error.title': 'Oups',
+  'error.close': 'Compris',
+  'error.generic': "Une erreur s'est produite. Réessayez dans un instant.",
+  'error.resetsIn': 'Se renouvelle dans {time}.',
+  'guide.close': 'Compris',
+  'guide.decks.title': 'Vos paquets',
+  'guide.decks.body':
+    "C'est ici que vivent vos catégories et sous-catégories. Touchez-en une pour voir ses cartes et utilisez le bouton + pour en ajouter. Quand la liste grandit, la recherche filtre par nom.",
+  'guide.practice.title': 'Entraînement',
+  'guide.practice.body':
+    'Des sessions rapides avec vos cartes moyennes et difficiles, tirées au hasard. Dans les paramètres, vous choisissez combien de cartes par session.',
+  'guide.review.title': 'Révision espacée',
+  'guide.review.body':
+    "Seules les cartes à revoir aujourd'hui apparaissent ici. Une bonne réponse repousse la carte ; une erreur la ramène vite. Réviser chaque jour entretient votre série.",
+  'guide.grammar.title': 'Grammaire',
+  'guide.grammar.body':
+    "Choisissez un module adapté à votre niveau et l'IA crée des exercices. Chaque réponse est accompagnée de son explication.",
+  'guide.reading.title': 'Lecture',
+  'guide.reading.body':
+    "Importez un EPUB et lisez-le ici. Touchez un mot pour voir son sens et enregistrez-le comme carte sans quitter le livre. Les livres restent sur cet appareil uniquement.",
+  'guide.create.title': 'Créer des cartes',
+  'guide.create.body':
+    "Cherchez un mot : le sens, l'exemple et la prononciation se remplissent tout seuls. Vous pouvez aussi demander un lot entier à l'IA ou importer un tableur.",
   'ai.savedTitle': 'Mes prompts',
   'ai.savedEmpty': "Vous n'avez encore enregistré aucun prompt.",
   'ai.savePrompt': 'Enregistrer le prompt',

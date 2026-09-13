@@ -16,6 +16,7 @@ import {
   type CategoryNode,
 } from '../utils/categoryTree';
 import { CategorySelect } from './CategorySelect';
+import { useErrorDialog } from './ErrorDialogProvider';
 
 interface Props {
   tree: CategoryNode[];
@@ -25,6 +26,7 @@ interface Props {
 export function LookupPanel({ tree, defaultCategoryId }: Props) {
   const { user } = useAuth();
   const { t, languageName } = useI18n();
+  const { showError } = useErrorDialog();
   const [query, setQuery] = useState('');
   const [result, setResult] = useState<LookupResult | null>(null);
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -90,7 +92,7 @@ export function LookupPanel({ tree, defaultCategoryId }: Props) {
       setSelectedIndex(0);
       if (data.entries[0]) applyEntry(data.entries[0]);
     } catch (err) {
-      setError(err instanceof Error ? err.message : t('lookup.error'));
+      showError(err, t('lookup.error'));
     } finally {
       setSearching(false);
     }
@@ -142,7 +144,7 @@ export function LookupPanel({ tree, defaultCategoryId }: Props) {
         }),
       );
     } catch (err) {
-      setError(err instanceof Error ? err.message : t('new.saveError'));
+      showError(err, t('new.saveError'));
     } finally {
       setSaving(false);
     }

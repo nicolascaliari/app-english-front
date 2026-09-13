@@ -231,6 +231,31 @@ export const messagesPl: Messages = {
   'ai.noData':
     'AI nie wygenerowało danych. Spróbuj być bardziej konkretny (kategoria, ilość, trudność).',
   'ai.error': 'Błąd generowania',
+  'common.hoursShort': 'godz.',
+  'common.minutesShort': 'min',
+  'error.title': 'Ups',
+  'error.close': 'Rozumiem',
+  'error.generic': 'Coś poszło nie tak. Spróbuj ponownie za chwilę.',
+  'error.resetsIn': 'Odnowi się za {time}.',
+  'guide.close': 'Rozumiem',
+  'guide.decks.title': 'Twoje talie',
+  'guide.decks.body':
+    'Tu mieszkają twoje kategorie i podkategorie. Dotknij jednej, aby zobaczyć jej karty, a przyciskiem + dodaj kolejne. Gdy lista urośnie, wyszukiwarka filtruje po nazwie.',
+  'guide.practice.title': 'Ćwiczenia',
+  'guide.practice.body':
+    'Szybkie sesje z twoimi średnimi i trudnymi kartami, wybranymi losowo. W ustawieniach decydujesz, ile kart wchodzi do jednej sesji.',
+  'guide.review.title': 'Powtórki w odstępach',
+  'guide.review.body':
+    'Pojawiają się tu tylko karty do powtórki na dziś. Trafisz — karta wróci później; pomylisz się — wróci szybko. Codzienne powtórki utrzymują twoją passę.',
+  'guide.grammar.title': 'Gramatyka',
+  'guide.grammar.body':
+    'Wybierz moduł na swoim poziomie, a SI ułoży ćwiczenia. Każda odpowiedź ma swoje wyjaśnienie.',
+  'guide.reading.title': 'Czytanie',
+  'guide.reading.body':
+    'Wgraj EPUB i czytaj go tutaj. Dotknij dowolnego słowa, aby zobaczyć znaczenie, i zapisz je jako kartę bez wychodzenia z książki. Książki zostają tylko na tym urządzeniu.',
+  'guide.create.title': 'Tworzenie kart',
+  'guide.create.body':
+    'Wyszukaj słowo, a znaczenie, przykład i wymowa uzupełnią się same. Możesz też poprosić SI o całą partię albo zaimportować arkusz.',
   'ai.savedTitle': 'Moje prompty',
   'ai.savedEmpty': 'Nie zapisałeś jeszcze żadnego promptu.',
   'ai.savePrompt': 'Zapisz prompt',

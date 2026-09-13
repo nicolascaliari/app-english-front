@@ -44,6 +44,37 @@ export class AuthError extends Error {
   }
 }
 
+/** Datos que acompañan a un 429 de cuota diaria de IA. */
+export interface QuotaInfo {
+  operation: string;
+  limit: number;
+  resetsInSeconds: number;
+}
+
+/**
+ * Error de la API con el contexto que hace falta para mostrarlo bien:
+ * el status y, cuando aplica, el código y los datos de la cuota. Sigue siendo
+ * un Error, así que el código que solo lee `.message` no se rompe.
+ */
+export class ApiError extends Error {
+  readonly status: number;
+  readonly code?: string;
+  readonly quota?: QuotaInfo;
+
+  constructor(
+    message: string,
+    status: number,
+    code?: string,
+    quota?: QuotaInfo,
+  ) {
+    super(message);
+    this.name = 'ApiError';
+    this.status = status;
+    this.code = code;
+    this.quota = quota;
+  }
+}
+
 type AuthFailureListener = () => void;
 const authFailureListeners = new Set<AuthFailureListener>();
 
@@ -144,20 +175,28 @@ async function request<T>(path: string, options?: RequestOptions): Promise<T> {
   }
 
   if (!res.ok) {
-    // El backend limita las requests por usuario; su mensaje crudo
-    // ("ThrottlerException: Too Many Requests") no le dice nada a nadie.
-    if (res.status === 429) {
-      throw new Error(
+    const body = await res.json().catch(() => ({}));
+    const code = typeof body.error === 'string' ? body.error : undefined;
+
+    // Dos cosas distintas responden 429: la cuota diaria de IA, que trae su
+    // propio mensaje y cuánto falta, y el throttler de ráfagas, cuyo texto
+    // crudo ("ThrottlerException: Too Many Requests") no le sirve a nadie.
+    if (res.status === 429 && code !== 'AI_DAILY_QUOTA') {
+      throw new ApiError(
         'Estás haciendo demasiadas solicitudes. Esperá un momento y volvé a intentar.',
+        429,
+        'THROTTLED',
       );
     }
 
-    const body = await res.json().catch(() => ({}));
     const message = body.message;
-    throw new Error(
+    throw new ApiError(
       Array.isArray(message)
         ? message.join(', ')
         : (message ?? `Request failed: ${res.status}`),
+      res.status,
+      code,
+      body.quota as QuotaInfo | undefined,
     );
   }
 
@@ -181,6 +220,7 @@ function normalizeAuthUser(raw: AuthUser & { _id?: string }): AuthUser {
     streakCount: typeof raw.streakCount === 'number' ? raw.streakCount : 0,
     lastStreakDate: normalizeDateOnly(raw.lastStreakDate),
     practiceLimit: clampPracticeLimit(raw.practiceLimit),
+    seenGuides: Array.isArray(raw.seenGuides) ? raw.seenGuides : [],
   };
 }
 
@@ -219,6 +259,14 @@ export const api = {
       method: 'PATCH',
       body: JSON.stringify(data),
     });
+    return normalizeAuthUser(raw);
+  },
+
+  markGuideSeen: async (guide: string): Promise<AuthUser> => {
+    const raw = await request<AuthUser & { _id?: string }>(
+      '/users/me/seen-guides',
+      { method: 'POST', body: JSON.stringify({ guide }) },
+    );
     return normalizeAuthUser(raw);
   },
 

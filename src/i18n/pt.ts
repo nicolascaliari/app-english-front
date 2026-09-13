@@ -231,6 +231,31 @@ export const messagesPt: Messages = {
   'ai.noData':
     'A IA não gerou dados. Tente ser mais específico (categoria, quantidade, dificuldade).',
   'ai.error': 'Erro ao gerar',
+  'common.hoursShort': 'h',
+  'common.minutesShort': 'min',
+  'error.title': 'Ops',
+  'error.close': 'Entendi',
+  'error.generic': 'Algo deu errado. Tente de novo em instantes.',
+  'error.resetsIn': 'Renova em {time}.',
+  'guide.close': 'Entendi',
+  'guide.decks.title': 'Seus baralhos',
+  'guide.decks.body':
+    'Aqui ficam suas categorias e subcategorias. Toque em uma para ver suas cartas e use o botão + para adicionar mais. Quando a lista crescer, a busca filtra por nome.',
+  'guide.practice.title': 'Prática',
+  'guide.practice.body':
+    'Sessões rápidas com suas cartas médias e difíceis, escolhidas ao acaso. Em Configurações você define quantas cartas entram por sessão.',
+  'guide.review.title': 'Revisão espaçada',
+  'guide.review.body':
+    'Aqui aparecem só as cartas que vencem hoje. Se acertar, a carta volta mais adiante; se errar, volta logo. Revisando todo dia você mantém a sequência.',
+  'guide.grammar.title': 'Gramática',
+  'guide.grammar.body':
+    'Escolha um módulo do seu nível e a IA monta exercícios para praticar. Cada resposta vem com a explicação.',
+  'guide.reading.title': 'Leitura',
+  'guide.reading.body':
+    'Envie um EPUB e leia aqui. Toque em qualquer palavra para ver o significado e salve como carta sem sair do livro. Os livros ficam só neste dispositivo.',
+  'guide.create.title': 'Criar cartas',
+  'guide.create.body':
+    'Busque uma palavra e ela se completa sozinha com significado, exemplo e pronúncia. Você também pode pedir um lote inteiro à IA ou importar uma planilha.',
   'ai.savedTitle': 'Meus prompts',
   'ai.savedEmpty': 'Você ainda não salvou nenhum prompt.',
   'ai.savePrompt': 'Salvar prompt',

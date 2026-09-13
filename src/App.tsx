@@ -1,6 +1,7 @@
 import { lazy, Suspense } from 'react';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { AuthProvider } from './auth/AuthContext';
+import { ErrorDialogProvider } from './components/ErrorDialogProvider';
 import { Layout } from './components/Layout';
 import { LoadingSpinner } from './components/LoadingSpinner';
 import { ProtectedRoute } from './components/ProtectedRoute';
@@ -31,6 +32,7 @@ export default function App() {
     <BrowserRouter>
       <AuthProvider>
         <I18nProvider>
+          <ErrorDialogProvider>
           <Routes>
             <Route path="/login" element={<LoginPage />} />
             <Route path="/register" element={<RegisterPage />} />
@@ -64,6 +66,7 @@ export default function App() {
               </Route>
             </Route>
           </Routes>
+          </ErrorDialogProvider>
         </I18nProvider>
       </AuthProvider>
     </BrowserRouter>

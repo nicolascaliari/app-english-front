@@ -20,6 +20,8 @@ export interface AuthUser {
   streakCount: number;
   lastStreakDate: string | null;
   practiceLimit: number;
+  /** Guías de bienvenida ya vistas, una por sección. */
+  seenGuides: string[];
 }
 
 /** Usuario tal como lo ve un admin en el panel de administración. */

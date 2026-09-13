@@ -30,6 +30,7 @@ interface AuthContextValue {
   register: (payload: RegisterPayload) => Promise<void>;
   updateProfile: (payload: UpdateProfilePayload) => Promise<void>;
   updateStreak: (streakCount: number, lastStreakDate: string) => void;
+  markGuideSeen: (guide: string) => void;
   logout: () => Promise<void>;
 }
 
@@ -52,6 +53,7 @@ function toStoredUser(user: AuthUser): StoredUser {
     streakCount: user.streakCount ?? 0,
     lastStreakDate: user.lastStreakDate ?? null,
     practiceLimit: clampPracticeLimit(user.practiceLimit),
+    seenGuides: user.seenGuides ?? [],
   };
 }
 
@@ -135,6 +137,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [],
   );
 
+  /**
+   * Marca la guía como vista al instante y avisa al backend en segundo plano:
+   * si la llamada falla, lo peor que pasa es que la guía reaparezca la próxima
+   * vez, y no tiene sentido bloquear la pantalla por eso.
+   */
+  const markGuideSeen = useCallback((guide: string) => {
+    setUser((prev) => {
+      if (!prev || prev.seenGuides.includes(guide)) return prev;
+      const next = { ...prev, seenGuides: [...prev.seenGuides, guide] };
+      authStorage.setUser(next);
+      return next;
+    });
+
+    void api.markGuideSeen(guide).catch(() => undefined);
+  }, []);
+
   const logout = useCallback(async () => {
     try {
       await api.logout();
@@ -156,6 +174,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       register,
       updateProfile,
       updateStreak,
+      markGuideSeen,
       logout,
     }),
     [
@@ -166,6 +185,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       register,
       updateProfile,
       updateStreak,
+      markGuideSeen,
       logout,
     ],
   );

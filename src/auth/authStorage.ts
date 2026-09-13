@@ -20,6 +20,7 @@ export interface StoredUser {
   streakCount: number;
   lastStreakDate: string | null;
   practiceLimit: number;
+  seenGuides: string[];
 }
 
 const USER_KEY = 'flashcards_user';
@@ -60,6 +61,7 @@ function normalizeStoredUser(raw: Partial<StoredUser> & { id: string }): StoredU
     streakCount: typeof raw.streakCount === 'number' ? raw.streakCount : 0,
     lastStreakDate: normalizeDateOnly(raw.lastStreakDate),
     practiceLimit: clampPracticeLimit(raw.practiceLimit ?? DEFAULT_PRACTICE_LIMIT),
+    seenGuides: Array.isArray(raw.seenGuides) ? raw.seenGuides : [],
   };
 }
 
