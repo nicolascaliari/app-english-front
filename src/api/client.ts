@@ -13,6 +13,7 @@ import type {
   GenerateResult,
   GrammarExercisesRequest,
   GrammarExercisesResult,
+  ImageCandidate,
   ImportPayload,
   LookupResult,
   ImportResult,
@@ -406,4 +407,9 @@ export const api = {
       method: 'POST',
       body: JSON.stringify({ query }),
     }),
+
+  searchImages: (query: string) =>
+    request<{ photos: ImageCandidate[] }>(
+      `/images/search?q=${encodeURIComponent(query)}`,
+    ),
 };

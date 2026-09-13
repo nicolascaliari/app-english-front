@@ -1,4 +1,5 @@
 import { useEffect, type ReactNode } from 'react';
+import { ModalPortal } from './ModalPortal';
 
 interface Props {
   open: boolean;
@@ -41,32 +42,34 @@ export function Modal({
   if (!open) return null;
 
   return (
-    <div
-      className="modal-overlay"
-      // Cerrar al tocar fuera, pero no cuando el clic nace dentro del diálogo.
-      onClick={(e) => {
-        if (dismissible && e.target === e.currentTarget) onClose();
-      }}
-    >
+    <ModalPortal>
       <div
-        className={`modal${tone === 'error' ? ' modal--error' : ''}`}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="modal-title"
+        className="modal-overlay"
+        // Cerrar al tocar fuera, pero no cuando el clic nace dentro del diálogo.
+        onClick={(e) => {
+          if (dismissible && e.target === e.currentTarget) onClose();
+        }}
       >
-        <h2 className="modal-title" id="modal-title">
-          {title}
-        </h2>
-        <div className="modal-body">{children}</div>
-        <button
-          type="button"
-          className="btn btn-primary btn--wide"
-          onClick={onClose}
-          autoFocus
+        <div
+          className={`modal${tone === 'error' ? ' modal--error' : ''}`}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="modal-title"
         >
-          {closeLabel}
-        </button>
+          <h2 className="modal-title" id="modal-title">
+            {title}
+          </h2>
+          <div className="modal-body">{children}</div>
+          <button
+            type="button"
+            className="btn btn-primary btn--wide"
+            onClick={onClose}
+            autoFocus
+          >
+            {closeLabel}
+          </button>
+        </div>
       </div>
-    </div>
+    </ModalPortal>
   );
 }

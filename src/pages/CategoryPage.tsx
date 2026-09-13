@@ -4,12 +4,14 @@ import { useAuth } from '../auth/AuthContext';
 import { api } from '../api/client';
 import { CardFilters } from '../components/CardFilters';
 import { FlashcardView } from '../components/FlashcardView';
+import { ImagePicker } from '../components/ImagePicker';
 import { LoadingSpinner } from '../components/LoadingSpinner';
 import { SessionChips } from '../components/SessionChips';
 import { SearchBar } from '../components/SearchBar';
 import { useI18n } from '../i18n/I18nProvider';
 import type { Category, Difficulty, Flashcard } from '../types';
 import { categoryIcon } from '../utils/categoryIcon';
+import { ModalPortal } from '../components/ModalPortal';
 
 export function CategoryPage() {
   const { slug, subSlug } = useParams<{ slug: string; subSlug?: string }>();
@@ -36,6 +38,7 @@ export function CategoryPage() {
   const [editExample, setEditExample] = useState('');
   const [editPronunciation, setEditPronunciation] = useState('');
   const [editDifficulty, setEditDifficulty] = useState<Difficulty>('medium');
+  const [editImageUrl, setEditImageUrl] = useState<string | undefined>(undefined);
   const [savingEdit, setSavingEdit] = useState(false);
   const [editError, setEditError] = useState('');
 
@@ -162,6 +165,7 @@ export function CategoryPage() {
     setEditExample(card.example ?? '');
     setEditPronunciation(card.pronunciation ?? '');
     setEditDifficulty(card.difficulty ?? 'medium');
+    setEditImageUrl(card.imageUrl || undefined);
     setEditError('');
   };
 
@@ -177,6 +181,10 @@ export function CategoryPage() {
         example: editExample.trim() || undefined,
         pronunciation: editPronunciation.trim() || undefined,
         difficulty: editDifficulty,
+        // '' borra la foto que tuviera. Va junto con imageQuery: '' para que
+        // el backfill no se la vuelva a poner después.
+        imageUrl: editImageUrl ?? '',
+        imageQuery: editImageUrl ? undefined : '',
       });
       setCards((prev) => prev.map((c) => (c._id === editingCard._id ? updated : c)));
       setReviewQueue((prev) => prev.map((c) => (c._id === editingCard._id ? updated : c)));
@@ -485,141 +493,152 @@ export function CategoryPage() {
       )}
 
       {editingCard && (
-        <div className="modal-overlay" onClick={() => setEditingCard(null)}>
-          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-            <button
-              type="button"
-              className="modal-close"
-              onClick={() => setEditingCard(null)}
-              aria-label="Cerrar"
+        <ModalPortal>
+          <div className="modal-overlay" onClick={() => setEditingCard(null)}>
+            <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+              <button
+                type="button"
+                className="modal-close"
+                onClick={() => setEditingCard(null)}
+                aria-label="Cerrar"
+              >
+                ✕
+              </button>
+              <h2 className="modal-title">{t('editCard.title')}</h2>
+              {editError && <p className="status error">{editError}</p>}
+              <form className="form" onSubmit={handleSaveEdit}>
+                <label>
+                  {t('new.front')}
+                  <input
+                    type="text"
+                    required
+                    value={editFront}
+                    onChange={(e) => setEditFront(e.target.value)}
+                  />
+                </label>
+
+                <label>
+                  {t('new.back')}
+                  <input
+                    type="text"
+                    required
+                    value={editBack}
+                    onChange={(e) => setEditBack(e.target.value)}
+                  />
+                </label>
+
+                <label>
+                  {t('new.pronunciation')}
+                  <input
+                    type="text"
+                    value={editPronunciation}
+                    onChange={(e) => setEditPronunciation(e.target.value)}
+                    placeholder={t('new.pronunciationPlaceholder')}
+                  />
+                </label>
+
+                <label>
+                  {t('new.example')}
+                  <input
+                    type="text"
+                    value={editExample}
+                    onChange={(e) => setEditExample(e.target.value)}
+                    placeholder={t('new.examplePlaceholder')}
+                  />
+                </label>
+
+                <ImagePicker
+                  suggestedQuery={editingCard.imageQuery ?? editingCard.front}
+                  value={editImageUrl}
+                  onChange={setEditImageUrl}
+                  autoSelectFirst={false}
+                />
+
+                <label>
+                  {t('common.difficulty')}
+                  <select
+                    value={editDifficulty}
+                    onChange={(e) => setEditDifficulty(e.target.value as Difficulty)}
+                  >
+                    <option value="easy">{t('difficulty.easy')}</option>
+                    <option value="medium">{t('difficulty.medium')}</option>
+                    <option value="hard">{t('difficulty.hard')}</option>
+                  </select>
+                </label>
+
+                <div className="modal-actions">
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    onClick={() => setEditingCard(null)}
+                    disabled={savingEdit}
+                  >
+                    {t('common.back')}
+                  </button>
+                  <button
+                    type="submit"
+                    className="btn btn-primary"
+                    disabled={savingEdit}
+                  >
+                    {savingEdit ? t('common.saving') : t('editCard.save')}
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        </ModalPortal>
+      )}
+
+      {deckToDelete && (
+        <ModalPortal>
+          <div
+            className="modal-overlay"
+            role="dialog"
+            aria-modal="true"
+            onClick={() => !isDeletingDeck && setDeckToDelete(null)}
+          >
+            <div
+              className="modal-content delete-deck-modal"
+              onClick={(e) => e.stopPropagation()}
             >
-              ✕
-            </button>
-            <h2 className="modal-title">{t('editCard.title')}</h2>
-            {editError && <p className="status error">{editError}</p>}
-            <form className="form" onSubmit={handleSaveEdit}>
-              <label>
-                {t('new.front')}
-                <input
-                  type="text"
-                  required
-                  value={editFront}
-                  onChange={(e) => setEditFront(e.target.value)}
-                />
-              </label>
-
-              <label>
-                {t('new.back')}
-                <input
-                  type="text"
-                  required
-                  value={editBack}
-                  onChange={(e) => setEditBack(e.target.value)}
-                />
-              </label>
-
-              <label>
-                {t('new.pronunciation')}
-                <input
-                  type="text"
-                  value={editPronunciation}
-                  onChange={(e) => setEditPronunciation(e.target.value)}
-                  placeholder={t('new.pronunciationPlaceholder')}
-                />
-              </label>
-
-              <label>
-                {t('new.example')}
-                <input
-                  type="text"
-                  value={editExample}
-                  onChange={(e) => setEditExample(e.target.value)}
-                  placeholder={t('new.examplePlaceholder')}
-                />
-              </label>
-
-              <label>
-                {t('common.difficulty')}
-                <select
-                  value={editDifficulty}
-                  onChange={(e) => setEditDifficulty(e.target.value as Difficulty)}
-                >
-                  <option value="easy">{t('difficulty.easy')}</option>
-                  <option value="medium">{t('difficulty.medium')}</option>
-                  <option value="hard">{t('difficulty.hard')}</option>
-                </select>
-              </label>
-
+              <button
+                type="button"
+                className="modal-close"
+                onClick={() => setDeckToDelete(null)}
+                disabled={isDeletingDeck}
+                aria-label={t('common.cancel')}
+              >
+                ✕
+              </button>
+              <div className="delete-deck-modal-header">
+                <span className="delete-deck-modal-icon">⚠️</span>
+                <h2 className="modal-title">{t('category.deleteDeckConfirmTitle')}</h2>
+              </div>
+              <p className="delete-deck-modal-desc">
+                {t('category.deleteDeckConfirmDesc', { name: deckToDelete.name })}
+              </p>
+              {deleteDeckError && <p className="status error">{deleteDeckError}</p>}
               <div className="modal-actions">
                 <button
                   type="button"
                   className="btn btn-secondary"
-                  onClick={() => setEditingCard(null)}
-                  disabled={savingEdit}
+                  onClick={() => setDeckToDelete(null)}
+                  disabled={isDeletingDeck}
                 >
-                  {t('common.back')}
+                  {t('common.cancel')}
                 </button>
                 <button
-                  type="submit"
-                  className="btn btn-primary"
-                  disabled={savingEdit}
+                  type="button"
+                  className="btn btn-danger"
+                  onClick={handleConfirmDeleteDeck}
+                  disabled={isDeletingDeck}
                 >
-                  {savingEdit ? t('common.saving') : t('editCard.save')}
+                  {isDeletingDeck ? t('category.deletingDeck') : t('category.deleteDeckBtn')}
                 </button>
               </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {deckToDelete && (
-        <div
-          className="modal-overlay"
-          role="dialog"
-          aria-modal="true"
-          onClick={() => !isDeletingDeck && setDeckToDelete(null)}
-        >
-          <div
-            className="modal-content delete-deck-modal"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <button
-              type="button"
-              className="modal-close"
-              onClick={() => setDeckToDelete(null)}
-              disabled={isDeletingDeck}
-              aria-label={t('common.cancel')}
-            >
-              ✕
-            </button>
-            <div className="delete-deck-modal-header">
-              <span className="delete-deck-modal-icon">⚠️</span>
-              <h2 className="modal-title">{t('category.deleteDeckConfirmTitle')}</h2>
-            </div>
-            <p className="delete-deck-modal-desc">
-              {t('category.deleteDeckConfirmDesc', { name: deckToDelete.name })}
-            </p>
-            {deleteDeckError && <p className="status error">{deleteDeckError}</p>}
-            <div className="modal-actions">
-              <button
-                type="button"
-                className="btn btn-secondary"
-                onClick={() => setDeckToDelete(null)}
-                disabled={isDeletingDeck}
-              >
-                {t('common.cancel')}
-              </button>
-              <button
-                type="button"
-                className="btn btn-danger"
-                onClick={handleConfirmDeleteDeck}
-                disabled={isDeletingDeck}
-              >
-                {isDeletingDeck ? t('category.deletingDeck') : t('category.deleteDeckBtn')}
-              </button>
             </div>
           </div>
-        </div>
+        </ModalPortal>
       )}
     </div>
   );

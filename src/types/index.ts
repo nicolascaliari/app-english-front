@@ -96,6 +96,7 @@ export interface Flashcard {
   example?: string;
   pronunciation?: string;
   imageUrl?: string;
+  imageQuery?: string;
   tags: string[];
   difficulty: Difficulty;
   pinned?: boolean;
@@ -125,6 +126,12 @@ export interface CreateFlashcardPayload {
   example?: string;
   pronunciation?: string;
   imageUrl?: string;
+  /**
+   * Escena (en inglés) con la que el backend busca la foto.
+   * String vacío = sin foto a propósito; ausente = que decida el backend.
+   * No lo pises con `|| undefined`: se perdería la diferencia.
+   */
+  imageQuery?: string;
   tags?: string[];
   difficulty?: Difficulty;
 }
@@ -138,6 +145,8 @@ export interface UpdateFlashcardPayload {
   tags?: string[];
   categoryId?: string;
   imageUrl?: string;
+  /** '' marca la tarjeta como "sin foto a propósito" (el backfill la saltea). */
+  imageQuery?: string;
   pinned?: boolean;
 }
 
@@ -171,6 +180,7 @@ export interface ImportFlashcardPayload {
   example?: string;
   pronunciation?: string;
   imageUrl?: string;
+  imageQuery?: string;
   difficulty?: Difficulty;
 }
 
@@ -250,6 +260,14 @@ export interface GrammarExercisesResult {
   exercises: GrammarExercise[];
 }
 
+/** Foto candidata del selector de imágenes. */
+export interface ImageCandidate {
+  url: string;
+  thumbUrl: string;
+  alt: string;
+  photographer: string;
+}
+
 export type LookupKind = 'word' | 'phrase';
 
 export interface LookupEntry {
@@ -261,6 +279,7 @@ export interface LookupEntry {
   difficulty: Difficulty;
   suggestedCategory?: string;
   suggestedSubcategory?: string;
+  imageQuery?: string;
 }
 
 export interface LookupResult {

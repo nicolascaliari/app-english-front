@@ -7,6 +7,7 @@ import { SearchBar } from '../components/SearchBar';
 import { useI18n } from '../i18n/I18nProvider';
 import type { Category } from '../types';
 import { categoryIcon } from '../utils/categoryIcon';
+import { ModalPortal } from '../components/ModalPortal';
 
 export function HomePage() {
   const { user, loading: authLoading } = useAuth();
@@ -186,53 +187,55 @@ export function HomePage() {
       )}
 
       {deckToDelete && (
-        <div
-          className="modal-overlay"
-          role="dialog"
-          aria-modal="true"
-          onClick={() => !isDeletingDeck && setDeckToDelete(null)}
-        >
+        <ModalPortal>
           <div
-            className="modal-content delete-deck-modal"
-            onClick={(e) => e.stopPropagation()}
+            className="modal-overlay"
+            role="dialog"
+            aria-modal="true"
+            onClick={() => !isDeletingDeck && setDeckToDelete(null)}
           >
-            <button
-              type="button"
-              className="modal-close"
-              onClick={() => setDeckToDelete(null)}
-              disabled={isDeletingDeck}
-              aria-label={t('common.cancel')}
+            <div
+              className="modal-content delete-deck-modal"
+              onClick={(e) => e.stopPropagation()}
             >
-              ✕
-            </button>
-            <div className="delete-deck-modal-header">
-              <span className="delete-deck-modal-icon">⚠️</span>
-              <h2 className="modal-title">{t('category.deleteDeckConfirmTitle')}</h2>
-            </div>
-            <p className="delete-deck-modal-desc">
-              {t('category.deleteDeckConfirmDesc', { name: deckToDelete.name })}
-            </p>
-            {deleteError && <p className="status error">{deleteError}</p>}
-            <div className="modal-actions">
               <button
                 type="button"
-                className="btn btn-secondary"
+                className="modal-close"
                 onClick={() => setDeckToDelete(null)}
                 disabled={isDeletingDeck}
+                aria-label={t('common.cancel')}
               >
-                {t('common.cancel')}
+                ✕
               </button>
-              <button
-                type="button"
-                className="btn btn-danger"
-                onClick={handleDeleteDeck}
-                disabled={isDeletingDeck}
-              >
-                {isDeletingDeck ? t('category.deletingDeck') : t('category.deleteDeckBtn')}
-              </button>
+              <div className="delete-deck-modal-header">
+                <span className="delete-deck-modal-icon">⚠️</span>
+                <h2 className="modal-title">{t('category.deleteDeckConfirmTitle')}</h2>
+              </div>
+              <p className="delete-deck-modal-desc">
+                {t('category.deleteDeckConfirmDesc', { name: deckToDelete.name })}
+              </p>
+              {deleteError && <p className="status error">{deleteError}</p>}
+              <div className="modal-actions">
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  onClick={() => setDeckToDelete(null)}
+                  disabled={isDeletingDeck}
+                >
+                  {t('common.cancel')}
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-danger"
+                  onClick={handleDeleteDeck}
+                  disabled={isDeletingDeck}
+                >
+                  {isDeletingDeck ? t('category.deletingDeck') : t('category.deleteDeckBtn')}
+                </button>
+              </div>
             </div>
           </div>
-        </div>
+        </ModalPortal>
       )}
     </div>
   );

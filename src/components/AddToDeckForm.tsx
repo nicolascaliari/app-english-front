@@ -13,6 +13,7 @@ import {
   type CategoryNode,
 } from '../utils/categoryTree';
 import { CategorySelect } from './CategorySelect';
+import { ImagePicker } from './ImagePicker';
 
 // Readers tend to file a whole chapter's words into the same deck.
 const LAST_CATEGORY_KEY = 'english-app-reading-last-category';
@@ -64,6 +65,8 @@ export function AddToDeckForm({ entry, kind }: Props) {
     const cached = cachedCategoryTree(ownerId);
     return cached ? pickCategory(cached, entry) : '';
   });
+  // undefined = sin imagen. El selector la preselecciona apenas carga.
+  const [imageUrl, setImageUrl] = useState<string | undefined>(undefined);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -104,6 +107,11 @@ export function AddToDeckForm({ entry, kind }: Props) {
         example: entry.example || undefined,
         pronunciation: entry.pronunciation || undefined,
         difficulty: entry.difficulty,
+        imageUrl,
+        // La elección del usuario manda, así que el backend no tiene que
+        // buscar nada: se guarda la escena solo para que el backfill sepa
+        // que esta tarjeta ya fue resuelta y no vuelva a tocarla.
+        imageQuery: imageUrl ? (entry.imageQuery ?? '') : '',
         tags: [kind, entry.partOfSpeech].filter((tag): tag is string => Boolean(tag)),
       });
       saveLastCategory(categoryId);
@@ -134,6 +142,12 @@ export function AddToDeckForm({ entry, kind }: Props) {
           !error && <span className="field-hint">{t('common.loading')}</span>
         )}
       </label>
+
+      <ImagePicker
+        suggestedQuery={entry.imageQuery ?? entry.front}
+        value={imageUrl}
+        onChange={setImageUrl}
+      />
 
       {error && <p className="status error">{error}</p>}
 
