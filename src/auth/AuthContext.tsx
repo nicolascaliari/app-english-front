@@ -7,7 +7,7 @@ import {
   useState,
   type ReactNode,
 } from 'react';
-import { api, AuthError, onAuthFailure } from '../api/client';
+import { api, AuthError, onAuthFailure, restoreSession } from '../api/client';
 import type {
   AuthUser,
   LoginPayload,
@@ -26,6 +26,7 @@ interface AuthContextValue {
   user: StoredUser | null;
   loading: boolean;
   login: (payload: LoginPayload) => Promise<void>;
+  loginWithGoogle: (credential: string) => Promise<void>;
   register: (payload: RegisterPayload) => Promise<void>;
   updateProfile: (payload: UpdateProfilePayload) => Promise<void>;
   updateStreak: (streakCount: number, lastStreakDate: string) => void;
@@ -58,28 +59,34 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<StoredUser | null>(() => authStorage.getUser());
   const [loading, setLoading] = useState(true);
 
+  // Al abrir la app no hay access token (vive en memoria y se pierde al
+  // recargar): se canjea la cookie httpOnly por uno nuevo antes de nada.
   useEffect(() => {
-    const token = authStorage.getAccessToken();
-    if (!token) {
-      setLoading(false);
-      return;
-    }
+    let cancelled = false;
 
-    api
-      .getMe()
-      .then((me) => {
-        const stored = toStoredUser(me);
-        setUser(stored);
-        const refresh = authStorage.getRefreshToken();
-        if (refresh) {
-          authStorage.setSession(token, refresh, stored);
+    const bootstrap = async () => {
+      try {
+        if (!authStorage.getAccessToken() && !(await restoreSession())) {
+          throw new Error('sin sesión');
         }
-      })
-      .catch(() => {
+        const me = await api.getMe();
+        if (cancelled) return;
+        const stored = toStoredUser(me);
+        authStorage.setUser(stored);
+        setUser(stored);
+      } catch {
+        if (cancelled) return;
         authStorage.clear();
         setUser(null);
-      })
-      .finally(() => setLoading(false));
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    };
+
+    void bootstrap();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   useEffect(() => {
@@ -91,14 +98,21 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const login = useCallback(async (payload: LoginPayload) => {
     const res = await api.login(payload);
     const stored = toStoredUser(res.user);
-    authStorage.setSession(res.accessToken, res.refreshToken, stored);
+    authStorage.setSession(res.accessToken, stored);
+    setUser(stored);
+  }, []);
+
+  const loginWithGoogle = useCallback(async (credential: string) => {
+    const res = await api.loginWithGoogle(credential);
+    const stored = toStoredUser(res.user);
+    authStorage.setSession(res.accessToken, stored);
     setUser(stored);
   }, []);
 
   const register = useCallback(async (payload: RegisterPayload) => {
     const res = await api.register(payload);
     const stored = toStoredUser(res.user);
-    authStorage.setSession(res.accessToken, res.refreshToken, stored);
+    authStorage.setSession(res.accessToken, stored);
     setUser(stored);
   }, []);
 
@@ -134,8 +148,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const value = useMemo(
-    () => ({ user, loading, login, register, updateProfile, updateStreak, logout }),
-    [user, loading, login, register, updateProfile, updateStreak, logout],
+    () => ({
+      user,
+      loading,
+      login,
+      loginWithGoogle,
+      register,
+      updateProfile,
+      updateStreak,
+      logout,
+    }),
+    [
+      user,
+      loading,
+      login,
+      loginWithGoogle,
+      register,
+      updateProfile,
+      updateStreak,
+      logout,
+    ],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

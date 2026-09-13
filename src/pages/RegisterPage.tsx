@@ -1,6 +1,10 @@
 import { type FormEvent, useEffect, useState } from 'react';
 import { Link, Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
+import {
+  GoogleSignInButton,
+  googleAuthEnabled,
+} from '../components/GoogleSignInButton';
 import { LanguagePairFields } from '../components/LanguagePairFields';
 import { useI18n } from '../i18n/I18nProvider';
 import type { AppLanguage } from '../utils/languages';
@@ -10,7 +14,7 @@ import {
 } from '../utils/languages';
 
 export function RegisterPage() {
-  const { user, register } = useAuth();
+  const { user, register, loginWithGoogle } = useAuth();
   const { t, setGuestLanguage } = useI18n();
   const location = useLocation();
   const from =
@@ -62,6 +66,18 @@ export function RegisterPage() {
       });
     } catch (err) {
       setError(err instanceof Error ? err.message : t('register.error'));
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleGoogleCredential = async (credential: string) => {
+    setError('');
+    setSubmitting(true);
+    try {
+      await loginWithGoogle(credential);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t('login.googleError'));
     } finally {
       setSubmitting(false);
     }
@@ -126,6 +142,19 @@ export function RegisterPage() {
             {submitting ? t('register.submitting') : t('register.submit')}
           </button>
         </form>
+
+        {googleAuthEnabled && (
+          <>
+            <div className="auth-divider">
+              <span>{t('login.or')}</span>
+            </div>
+            <GoogleSignInButton
+              text="signup_with"
+              onCredential={(credential) => void handleGoogleCredential(credential)}
+              onError={() => setError(t('login.googleError'))}
+            />
+          </>
+        )}
 
         <p className="auth-footer">
           {t('register.hasAccount')}{' '}

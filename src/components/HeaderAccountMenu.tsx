@@ -60,14 +60,26 @@ export function HeaderAccountMenu() {
       {open && (
         <div className="header-dropdown" role="menu">
           <p className="header-dropdown__user">{user.name}</p>
-          <Link
-            to="/settings"
-            className="header-dropdown__item"
-            role="menuitem"
-            onClick={() => setOpen(false)}
-          >
-            {t('nav.settings')}
-          </Link>
+          {user.role !== 'admin' && (
+            <Link
+              to="/settings"
+              className="header-dropdown__item"
+              role="menuitem"
+              onClick={() => setOpen(false)}
+            >
+              {t('nav.settings')}
+            </Link>
+          )}
+          {user.role === 'admin' && (
+            <Link
+              to="/admin"
+              className="header-dropdown__item"
+              role="menuitem"
+              onClick={() => setOpen(false)}
+            >
+              {t('nav.admin')}
+            </Link>
+          )}
           <button
             type="button"
             className="header-dropdown__item header-dropdown__item--danger"

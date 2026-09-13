@@ -16,6 +16,25 @@ export function HomePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [query, setQuery] = useState('');
+  const [deckToDelete, setDeckToDelete] = useState<Category | null>(null);
+  const [isDeletingDeck, setIsDeletingDeck] = useState(false);
+  const [deleteError, setDeleteError] = useState('');
+
+  const handleDeleteDeck = async () => {
+    if (!deckToDelete) return;
+    setIsDeletingDeck(true);
+    setDeleteError('');
+    try {
+      await api.deleteCategory(deckToDelete._id);
+      setCategories((prev) => prev.filter((c) => c._id !== deckToDelete._id));
+      api.getDueReviews().then((due) => setDueCount(due.length)).catch(() => {});
+      setDeckToDelete(null);
+    } catch (err) {
+      setDeleteError(err instanceof Error ? err.message : 'Error deleting deck');
+    } finally {
+      setIsDeletingDeck(false);
+    }
+  };
 
   const filteredCategories = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -128,6 +147,35 @@ export function HomePage() {
                   >
                     <span className="category-icon">{categoryIcon(cat.icon, cat.slug)}</span>
                     <span className="category-name">{cat.name}</span>
+                    <button
+                      type="button"
+                      className="category-delete-btn"
+                      title={t('category.deleteDeck')}
+                      aria-label={t('category.deleteDeck')}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setDeleteError('');
+                        setDeckToDelete(cat);
+                      }}
+                    >
+                      <svg
+                        className="category-delete-icon"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="2"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        aria-hidden="true"
+                      >
+                        <path d="M3 6h18" />
+                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" />
+                        <path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                        <line x1="10" y1="11" x2="10" y2="17" />
+                        <line x1="14" y1="11" x2="14" y2="17" />
+                      </svg>
+                    </button>
                     <span className="category-arrow">→</span>
                   </Link>
                 </li>
@@ -136,6 +184,57 @@ export function HomePage() {
           )}
         </>
       )}
+
+      {deckToDelete && (
+        <div
+          className="modal-overlay"
+          role="dialog"
+          aria-modal="true"
+          onClick={() => !isDeletingDeck && setDeckToDelete(null)}
+        >
+          <div
+            className="modal-content delete-deck-modal"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              type="button"
+              className="modal-close"
+              onClick={() => setDeckToDelete(null)}
+              disabled={isDeletingDeck}
+              aria-label={t('common.cancel')}
+            >
+              ✕
+            </button>
+            <div className="delete-deck-modal-header">
+              <span className="delete-deck-modal-icon">⚠️</span>
+              <h2 className="modal-title">{t('category.deleteDeckConfirmTitle')}</h2>
+            </div>
+            <p className="delete-deck-modal-desc">
+              {t('category.deleteDeckConfirmDesc', { name: deckToDelete.name })}
+            </p>
+            {deleteError && <p className="status error">{deleteError}</p>}
+            <div className="modal-actions">
+              <button
+                type="button"
+                className="btn btn-secondary"
+                onClick={() => setDeckToDelete(null)}
+                disabled={isDeletingDeck}
+              >
+                {t('common.cancel')}
+              </button>
+              <button
+                type="button"
+                className="btn btn-danger"
+                onClick={handleDeleteDeck}
+                disabled={isDeletingDeck}
+              >
+                {isDeletingDeck ? t('category.deletingDeck') : t('category.deleteDeckBtn')}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
+

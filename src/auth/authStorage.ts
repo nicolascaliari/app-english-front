@@ -22,9 +22,26 @@ export interface StoredUser {
   practiceLimit: number;
 }
 
-const ACCESS_KEY = 'flashcards_access_token';
-const REFRESH_KEY = 'flashcards_refresh_token';
 const USER_KEY = 'flashcards_user';
+
+// Claves del esquema anterior, cuando los tokens vivían en localStorage.
+// Se limpian al cargar para que no queden sesiones viejas dando vueltas.
+const LEGACY_ACCESS_KEY = 'flashcards_access_token';
+const LEGACY_REFRESH_KEY = 'flashcards_refresh_token';
+
+/**
+ * El access token vive SOLO en memoria: nunca en localStorage, donde un XSS
+ * podría leerlo. Se pierde al recargar la página, y se recupera llamando a
+ * /auth/refresh, que viaja con la cookie httpOnly del refresh token.
+ */
+let accessToken: string | null = null;
+
+try {
+  localStorage.removeItem(LEGACY_ACCESS_KEY);
+  localStorage.removeItem(LEGACY_REFRESH_KEY);
+} catch {
+  // Modo privado o storage bloqueado: no hay nada que limpiar.
+}
 
 function normalizeStoredUser(raw: Partial<StoredUser> & { id: string }): StoredUser {
   return {
@@ -48,17 +65,18 @@ function normalizeStoredUser(raw: Partial<StoredUser> & { id: string }): StoredU
 
 export const authStorage = {
   getAccessToken(): string | null {
-    return localStorage.getItem(ACCESS_KEY);
+    return accessToken;
   },
 
-  getRefreshToken(): string | null {
-    return localStorage.getItem(REFRESH_KEY);
+  setAccessToken(token: string | null): void {
+    accessToken = token;
   },
 
+  /** El usuario sí se guarda: permite pintar la UI sin esperar al refresh. */
   getUser(): StoredUser | null {
-    const raw = localStorage.getItem(USER_KEY);
-    if (!raw) return null;
     try {
+      const raw = localStorage.getItem(USER_KEY);
+      if (!raw) return null;
       const parsed = JSON.parse(raw) as Partial<StoredUser> & { id?: string };
       if (!parsed.id) return null;
       return normalizeStoredUser({ ...parsed, id: parsed.id });
@@ -67,28 +85,25 @@ export const authStorage = {
     }
   },
 
-  setSession(
-    accessToken: string,
-    refreshToken: string,
-    user: StoredUser,
-  ): void {
-    localStorage.setItem(ACCESS_KEY, accessToken);
-    localStorage.setItem(REFRESH_KEY, refreshToken);
-    localStorage.setItem(USER_KEY, JSON.stringify(normalizeStoredUser(user)));
-  },
-
   setUser(user: StoredUser): void {
-    localStorage.setItem(USER_KEY, JSON.stringify(normalizeStoredUser(user)));
+    try {
+      localStorage.setItem(USER_KEY, JSON.stringify(normalizeStoredUser(user)));
+    } catch {
+      // Sin storage la sesión sigue andando: solo se pierde el pintado optimista.
+    }
   },
 
-  setTokens(accessToken: string, refreshToken: string): void {
-    localStorage.setItem(ACCESS_KEY, accessToken);
-    localStorage.setItem(REFRESH_KEY, refreshToken);
+  setSession(token: string, user: StoredUser): void {
+    accessToken = token;
+    this.setUser(user);
   },
 
   clear(): void {
-    localStorage.removeItem(ACCESS_KEY);
-    localStorage.removeItem(REFRESH_KEY);
-    localStorage.removeItem(USER_KEY);
+    accessToken = null;
+    try {
+      localStorage.removeItem(USER_KEY);
+    } catch {
+      // Nada que limpiar.
+    }
   },
 };

@@ -1,9 +1,9 @@
-import { type FormEvent, useState } from 'react';
+import { type FormEvent, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../api/client';
 import { useAuth } from '../auth/AuthContext';
 import { useI18n } from '../i18n/I18nProvider';
-import type { ImportPayload } from '../types';
+import type { ImportPayload, SavedPrompt } from '../types';
 import {
   DEFAULT_NATIVE_LANGUAGE,
   DEFAULT_TARGET_LANGUAGE,
@@ -23,11 +23,70 @@ export function AiGeneratePanel() {
   const [importing, setImporting] = useState(false);
   const [error, setError] = useState('');
   const [result, setResult] = useState<string | null>(null);
+  const [savedPrompts, setSavedPrompts] = useState<SavedPrompt[]>([]);
+  const [showSaveForm, setShowSaveForm] = useState(false);
+  const [promptTitle, setPromptTitle] = useState('');
+  const [savingPrompt, setSavingPrompt] = useState(false);
 
   const examplePrompts = [t('ai.example1'), t('ai.example2'), t('ai.example3')];
 
   const hasCategories = (generated?.categories?.length ?? 0) > 0;
   const hasFlashcards = (generated?.flashcards?.length ?? 0) > 0;
+
+  // Los prompts guardados son opcionales: si fallan, el panel sigue andando.
+  useEffect(() => {
+    let active = true;
+    api
+      .getSavedPrompts()
+      .then((prompts) => {
+        if (active) setSavedPrompts(prompts);
+      })
+      .catch(() => undefined);
+    return () => {
+      active = false;
+    };
+  }, []);
+
+  const handleUseSavedPrompt = (saved: SavedPrompt) => {
+    setPrompt(saved.text);
+    setError('');
+    // El contador solo ordena la lista; si falla no afecta la generación.
+    void api.markSavedPromptUsed(saved._id).catch(() => undefined);
+  };
+
+  const handleSavePrompt = async (e: FormEvent) => {
+    e.preventDefault();
+    const text = prompt.trim();
+    const title = promptTitle.trim();
+    if (text.length < 3 || !title) return;
+
+    setSavingPrompt(true);
+    setError('');
+    setResult(null);
+
+    try {
+      const saved = await api.createSavedPrompt({ title, text });
+      setSavedPrompts((prompts) => [saved, ...prompts]);
+      setPromptTitle('');
+      setShowSaveForm(false);
+      setResult(t('ai.savedOk'));
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t('ai.savedError'));
+    } finally {
+      setSavingPrompt(false);
+    }
+  };
+
+  const handleDeletePrompt = async (id: string) => {
+    const previous = savedPrompts;
+    setSavedPrompts((prompts) => prompts.filter((p) => p._id !== id));
+    try {
+      await api.deleteSavedPrompt(id);
+    } catch (err) {
+      setSavedPrompts(previous);
+      setError(err instanceof Error ? err.message : t('ai.savedError'));
+    }
+  };
 
   const handleGenerate = async (e: FormEvent) => {
     e.preventDefault();
@@ -133,14 +192,91 @@ export function AiGeneratePanel() {
           ))}
         </div>
 
-        <button
-          type="submit"
-          className="btn btn-primary"
-          disabled={generating || prompt.trim().length < 3}
-        >
-          {generating ? t('ai.generating') : t('ai.generate')}
-        </button>
+        <div className="ai-saved-prompts">
+          <span className="ai-example-label">{t('ai.savedTitle')}</span>
+          {savedPrompts.length === 0 ? (
+            <span className="ai-example-label">{t('ai.savedEmpty')}</span>
+          ) : (
+            <div className="ai-saved-list">
+              {savedPrompts.map((saved) => (
+                <span key={saved._id} className="ai-saved-chip">
+                  <button
+                    type="button"
+                    className="ai-saved-chip-load"
+                    title={saved.text}
+                    disabled={generating}
+                    onClick={() => handleUseSavedPrompt(saved)}
+                  >
+                    {saved.title}
+                  </button>
+                  <button
+                    type="button"
+                    className="ai-saved-chip-delete"
+                    title={t('ai.deletePrompt')}
+                    aria-label={t('ai.deletePrompt')}
+                    disabled={generating}
+                    onClick={() => void handleDeletePrompt(saved._id)}
+                  >
+                    ×
+                  </button>
+                </span>
+              ))}
+            </div>
+          )}
+        </div>
+
+        <div className="ai-form-actions">
+          <button
+            type="submit"
+            className="btn btn-primary"
+            disabled={generating || prompt.trim().length < 3}
+          >
+            {generating ? t('ai.generating') : t('ai.generate')}
+          </button>
+          {!showSaveForm && (
+            <button
+              type="button"
+              className="btn"
+              disabled={generating || prompt.trim().length < 3}
+              onClick={() => setShowSaveForm(true)}
+            >
+              {t('ai.savePrompt')}
+            </button>
+          )}
+        </div>
       </form>
+
+      {showSaveForm && (
+        <form className="ai-save-form" onSubmit={handleSavePrompt}>
+          <input
+            type="text"
+            value={promptTitle}
+            onChange={(e) => setPromptTitle(e.target.value)}
+            placeholder={t('ai.savedNamePlaceholder')}
+            aria-label={t('ai.savedName')}
+            maxLength={80}
+            disabled={savingPrompt}
+          />
+          <button
+            type="submit"
+            className="btn btn-primary"
+            disabled={savingPrompt || !promptTitle.trim() || prompt.trim().length < 3}
+          >
+            {savingPrompt ? t('common.saving') : t('ai.saveConfirm')}
+          </button>
+          <button
+            type="button"
+            className="btn"
+            disabled={savingPrompt}
+            onClick={() => {
+              setShowSaveForm(false);
+              setPromptTitle('');
+            }}
+          >
+            {t('common.cancel')}
+          </button>
+        </form>
+      )}
 
       {generated && (hasCategories || hasFlashcards) && (
         <div className="import-preview">

@@ -3,6 +3,7 @@ import { useAuth } from '../auth/AuthContext';
 import { useI18n } from '../i18n/I18nProvider';
 import { APP_LANGUAGE_FLAGS } from '../utils/languages';
 import { AnimatedPage } from './AnimatedPage';
+import { HeaderAccountMenu } from './HeaderAccountMenu';
 import { TabBar } from './TabBar';
 
 export function Layout() {
@@ -10,6 +11,9 @@ export function Layout() {
   const { t, uiMode, setUiMode } = useI18n();
   const navigate = useNavigate();
   const { pathname } = useLocation();
+
+  // Un admin no ve nada de la app de estudio: ni tabs, ni racha, ni "+".
+  const isAdmin = user?.role === 'admin';
 
   const reading = pathname.startsWith('/reading/');
   const immersive =
@@ -30,14 +34,14 @@ export function Layout() {
       <div className="app-bg" aria-hidden="true" />
       <header className="header">
         <div className="header-start">
-          <Link to="/" className="logo">
+          <Link to={isAdmin ? '/admin' : '/'} className="logo">
             <span className="logo-mark" aria-hidden="true">
               🃏
             </span>
             <span className="logo-text">{t('brand.name')}</span>
           </Link>
 
-          {user && (
+          {user && !isAdmin && (
             <div className="header-badges">
               <button
                 type="button"
@@ -65,17 +69,20 @@ export function Layout() {
         </div>
 
         <div className="header-actions">
-          <button
-            type="button"
-            className="header-icon-btn header-icon-btn--cta"
-            onClick={() => navigate('/new')}
-            aria-label={t('nav.newAria')}
-            title={t('nav.new')}
-          >
-            <span className="header-icon-btn__glyph" aria-hidden="true">
-              +
-            </span>
-          </button>
+          {!isAdmin && (
+            <button
+              type="button"
+              className="header-icon-btn header-icon-btn--cta"
+              onClick={() => navigate('/new')}
+              aria-label={t('nav.newAria')}
+              title={t('nav.new')}
+            >
+              <span className="header-icon-btn__glyph" aria-hidden="true">
+                +
+              </span>
+            </button>
+          )}
+          <HeaderAccountMenu />
         </div>
       </header>
       <main
@@ -85,7 +92,7 @@ export function Layout() {
           <Outlet />
         </AnimatedPage>
       </main>
-      <TabBar />
+      {!isAdmin && <TabBar />}
     </div>
   );
 }

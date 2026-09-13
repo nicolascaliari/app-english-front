@@ -1,4 +1,6 @@
 import type {
+  AdminUser,
+  UpdateUserPayload,
   AuthResponse,
   AuthUser,
   BackfillImagesResult,
@@ -17,6 +19,9 @@ import type {
   LoginPayload,
   RegisterPayload,
   Review,
+  SavedPrompt,
+  CreateSavedPromptPayload,
+  UpdateSavedPromptPayload,
   StreakResult,
   UpdateFlashcardPayload,
   UpdateProfilePayload,
@@ -60,23 +65,22 @@ function handleAuthFailure(): never {
 
 let refreshPromise: Promise<boolean> | null = null;
 
+/**
+ * Pide un access token nuevo. No manda ningún token: el refresh viaja solo,
+ * en la cookie httpOnly, por eso `credentials: 'include'` es obligatorio.
+ */
 async function tryRefresh(): Promise<boolean> {
-  const refreshToken = authStorage.getRefreshToken();
-  if (!refreshToken) return false;
-
   if (!refreshPromise) {
     refreshPromise = (async () => {
       try {
         const res = await fetch(`${API_URL}/auth/refresh`, {
           method: 'POST',
-          headers: {
-            Authorization: `Bearer ${refreshToken}`,
-            'Content-Type': 'application/json',
-          },
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
         });
         if (!res.ok) return false;
-        const data = (await res.json()) as Pick<AuthResponse, 'accessToken' | 'refreshToken'>;
-        authStorage.setTokens(data.accessToken, data.refreshToken);
+        const data = (await res.json()) as Pick<AuthResponse, 'accessToken'>;
+        authStorage.setAccessToken(data.accessToken);
         return true;
       } catch {
         return false;
@@ -87,6 +91,14 @@ async function tryRefresh(): Promise<boolean> {
   }
 
   return refreshPromise;
+}
+
+/**
+ * Recupera la sesión al abrir la app: el access token vive en memoria y se
+ * pierde al recargar, así que se cambia la cookie por uno nuevo.
+ */
+export function restoreSession(): Promise<boolean> {
+  return tryRefresh();
 }
 
 type RequestOptions = RequestInit & {
@@ -110,6 +122,8 @@ async function request<T>(path: string, options?: RequestOptions): Promise<T> {
   const res = await fetch(`${API_URL}${path}`, {
     ...options,
     headers,
+    // Necesario para que viaje la cookie httpOnly del refresh token.
+    credentials: 'include',
     cache: 'no-store',
   });
 
@@ -130,6 +144,14 @@ async function request<T>(path: string, options?: RequestOptions): Promise<T> {
   }
 
   if (!res.ok) {
+    // El backend limita las requests por usuario; su mensaje crudo
+    // ("ThrottlerException: Too Many Requests") no le dice nada a nadie.
+    if (res.status === 429) {
+      throw new Error(
+        'Estás haciendo demasiadas solicitudes. Esperá un momento y volvé a intentar.',
+      );
+    }
+
     const body = await res.json().catch(() => ({}));
     const message = body.message;
     throw new Error(
@@ -177,6 +199,13 @@ export const api = {
       skipAuth: true,
     }),
 
+  loginWithGoogle: (credential: string) =>
+    request<AuthResponse>('/auth/google', {
+      method: 'POST',
+      body: JSON.stringify({ credential }),
+      skipAuth: true,
+    }),
+
   logout: () =>
     request<{ loggedOut: true }>('/auth/logout', { method: 'POST' }),
 
@@ -199,6 +228,16 @@ export const api = {
       body: JSON.stringify(data ?? {}),
     }),
 
+  // --- Administración (solo rol admin) ---
+
+  getUsers: () => request<AdminUser[]>('/users'),
+
+  updateUser: (id: string, data: UpdateUserPayload) =>
+    request<AdminUser>(`/users/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    }),
+
   getCategories: () => request<Category[]>('/categories'),
 
   getCategory: (slug: string) => request<Category>(`/categories/${slug}`),
@@ -207,6 +246,17 @@ export const api = {
     request<Category>('/categories', {
       method: 'POST',
       body: JSON.stringify(data),
+    }),
+
+  deleteCategory: (id: string) =>
+    request<{
+      deleted: boolean;
+      categoryId: string;
+      deletedCategoriesCount: number;
+      deletedCardsCount: number;
+      deletedReviewsCount: number;
+    }>(`/categories/${id}`, {
+      method: 'DELETE',
     }),
 
   getSubcategories: (slug: string) =>
@@ -251,6 +301,9 @@ export const api = {
   getPracticeFlashcards: (limit = 10) =>
     request<Flashcard[]>(`/flashcards/practice?limit=${limit}`),
 
+  getPinnedFlashcards: () =>
+    request<Flashcard[]>('/flashcards/pinned'),
+
   getDueReviews: () => request<DueReview[]>('/reviews/due'),
 
   submitReview: (flashcardId: string, correct: boolean) =>
@@ -275,6 +328,28 @@ export const api = {
     request<GrammarExercisesResult>('/ai/grammar-exercises', {
       method: 'POST',
       body: JSON.stringify(data),
+    }),
+
+  getSavedPrompts: () => request<SavedPrompt[]>('/prompts'),
+
+  createSavedPrompt: (data: CreateSavedPromptPayload) =>
+    request<SavedPrompt>('/prompts', {
+      method: 'POST',
+      body: JSON.stringify(data),
+    }),
+
+  updateSavedPrompt: (id: string, data: UpdateSavedPromptPayload) =>
+    request<SavedPrompt>(`/prompts/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(data),
+    }),
+
+  markSavedPromptUsed: (id: string) =>
+    request<SavedPrompt>(`/prompts/${id}/use`, { method: 'POST' }),
+
+  deleteSavedPrompt: (id: string) =>
+    request<{ deleted: boolean; promptId: string }>(`/prompts/${id}`, {
+      method: 'DELETE',
     }),
 
   lookupTerm: (query: string) =>

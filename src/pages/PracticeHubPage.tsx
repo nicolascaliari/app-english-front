@@ -32,6 +32,15 @@ export function PracticeHubPage() {
         </span>
         <span className="banner-arrow">→</span>
       </Link>
+
+      <Link to="/practice/pinned" className="banner banner--pinned">
+        <span className="banner-icon">⭐</span>
+        <span className="banner-content">
+          <span className="banner-title">{t('practice.hubPinnedTitle')}</span>
+          <span className="banner-sub">{t('practice.hubPinnedSub')}</span>
+        </span>
+        <span className="banner-arrow">→</span>
+      </Link>
     </div>
   );
 }

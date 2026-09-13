@@ -24,6 +24,7 @@ interface Props {
   compact?: boolean;
   onDelete?: () => void;
   onEdit?: () => void;
+  onTogglePin?: () => void;
   onNext?: () => void;
   nextLabel?: string;
   reviewing?: boolean;
@@ -48,6 +49,7 @@ export function FlashcardView({
   compact = false,
   onDelete,
   onEdit,
+  onTogglePin,
   onNext,
   nextLabel,
   reviewing = false,
@@ -162,6 +164,20 @@ export function FlashcardView({
           aria-label={t('flashcard.edit')}
         >
           ✎
+        </button>
+      )}
+      {compact && onTogglePin && (
+        <button
+          type="button"
+          className={`flashcard-pin${card.pinned ? ' flashcard-pin--active' : ''}`}
+          onClick={(e) => {
+            e.stopPropagation();
+            onTogglePin();
+          }}
+          aria-label={card.pinned ? t('flashcard.unpin') : t('flashcard.pin')}
+          title={card.pinned ? t('flashcard.unpin') : t('flashcard.pin')}
+        >
+          {card.pinned ? '★' : '☆'}
         </button>
       )}
       {compact && onDelete && (

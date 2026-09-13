@@ -1,10 +1,14 @@
 import { type FormEvent, useState } from 'react';
 import { Link, Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
+import {
+  GoogleSignInButton,
+  googleAuthEnabled,
+} from '../components/GoogleSignInButton';
 import { useI18n } from '../i18n/I18nProvider';
 
 export function LoginPage() {
-  const { user, login } = useAuth();
+  const { user, login, loginWithGoogle } = useAuth();
   const { t } = useI18n();
   const location = useLocation();
   const from =
@@ -28,6 +32,18 @@ export function LoginPage() {
       await login({ email, password });
     } catch (err) {
       setError(err instanceof Error ? err.message : t('login.error'));
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleGoogleCredential = async (credential: string) => {
+    setError('');
+    setSubmitting(true);
+    try {
+      await loginWithGoogle(credential);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t('login.googleError'));
     } finally {
       setSubmitting(false);
     }
@@ -70,6 +86,19 @@ export function LoginPage() {
             {submitting ? t('login.submitting') : t('login.submit')}
           </button>
         </form>
+
+        {googleAuthEnabled && (
+          <>
+            <div className="auth-divider">
+              <span>{t('login.or')}</span>
+            </div>
+            <GoogleSignInButton
+              text="signin_with"
+              onCredential={(credential) => void handleGoogleCredential(credential)}
+              onError={() => setError(t('login.googleError'))}
+            />
+          </>
+        )}
 
         <p className="auth-footer">
           {t('login.noAccount')}{' '}

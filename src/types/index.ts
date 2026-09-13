@@ -22,15 +22,36 @@ export interface AuthUser {
   practiceLimit: number;
 }
 
+/** Usuario tal como lo ve un admin en el panel de administración. */
+export interface AdminUser {
+  _id: string;
+  id?: string;
+  email: string;
+  name: string;
+  role: string;
+  isActive: boolean;
+  streakCount: number;
+  createdAt: string;
+}
+
+export interface UpdateUserPayload {
+  name?: string;
+  role?: string;
+  isActive?: boolean;
+}
+
 export interface StreakResult {
   streakCount: number;
   lastStreakDate: string;
   extended: boolean;
 }
 
+/**
+ * El refresh token NO viene en el cuerpo: el backend lo manda en una cookie
+ * httpOnly que el JavaScript de la página no puede leer.
+ */
 export interface AuthResponse {
   accessToken: string;
-  refreshToken: string;
   user: AuthUser;
 }
 
@@ -74,6 +95,7 @@ export interface Flashcard {
   imageUrl?: string;
   tags: string[];
   difficulty: Difficulty;
+  pinned?: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -113,6 +135,7 @@ export interface UpdateFlashcardPayload {
   tags?: string[];
   categoryId?: string;
   imageUrl?: string;
+  pinned?: boolean;
 }
 
 export interface CreateCategoryPayload {
@@ -163,6 +186,26 @@ export interface BackfillImagesResult {
   updated: number;
   notFound: number;
   remaining: number;
+}
+
+export interface SavedPrompt {
+  _id: string;
+  title: string;
+  text: string;
+  usageCount: number;
+  lastUsedAt?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateSavedPromptPayload {
+  title: string;
+  text: string;
+}
+
+export interface UpdateSavedPromptPayload {
+  title?: string;
+  text?: string;
 }
 
 export interface GenerateResult {
