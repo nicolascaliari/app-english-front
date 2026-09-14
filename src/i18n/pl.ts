@@ -326,6 +326,9 @@ export const messagesPl: Messages = {
   'practice.hubPinnedSub': 'Słowa, które wybrałeś, każdego dnia',
   'practice.pinnedEmpty': 'Nie oznaczyłeś jeszcze żadnego słowa. Użyj przycisku ★ na dowolnej karcie.',
   'practice.pinnedDone': 'Powtórzyłeś wszystkie swoje słowa!',
+  'practice.pinnedLearned': '✓ Już umiem',
+  'practice.pinnedList': 'Pokaż listę',
+  'practice.pinnedLearnedCount': 'Słowa: {count}',
   'reading.title': 'Czytanie',
   'reading.intro':
     'Książki zostają na tym urządzeniu. Dotknij słowa, aby zobaczyć znaczenie, przykład i usłyszeć amerykańską wymowę.',

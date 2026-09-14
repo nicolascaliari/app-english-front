@@ -99,7 +99,7 @@ export function TabBar() {
         <span className="tabbar-icon">
           <ExploreIcon />
         </span>
-        <span className="tabbar-label">{t('nav.explore')}</span>
+        <span className="tabbar-label">{t('nav.grammar')}</span>
       </NavLink>
       <NavLink
         to="/"

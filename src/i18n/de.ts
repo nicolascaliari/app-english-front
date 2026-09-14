@@ -330,6 +330,9 @@ export const messagesDe: Messages = {
   'practice.hubPinnedSub': 'Die Wörter, die du ausgewählt hast, jeden Tag',
   'practice.pinnedEmpty': 'Du hast noch kein Wort markiert. Nutze den ★-Knopf an jeder Karte.',
   'practice.pinnedDone': 'Du hast alle deine Wörter wiederholt!',
+  'practice.pinnedLearned': '✓ Kann ich schon',
+  'practice.pinnedList': 'Liste anzeigen',
+  'practice.pinnedLearnedCount': '{count} Wörter',
   'reading.title': 'Lesen',
   'reading.intro':
     'Bücher bleiben auf diesem Gerät. Tippe ein Wort an, um Bedeutung, Beispiel und amerikanische Aussprache zu sehen.',

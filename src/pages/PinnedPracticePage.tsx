@@ -14,6 +14,7 @@ export function PinnedPracticePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [finished, setFinished] = useState(false);
+  const [showList, setShowList] = useState(false);
 
   useEffect(() => {
     api
@@ -38,11 +39,10 @@ export function PinnedPracticePage() {
     }
   };
 
-  const handleTogglePin = async () => {
-    const current = queue[index];
-    if (!current) return;
+  // Quita la palabra de Mis Palabras (la marca como aprendida)
+  const removeCard = async (id: string) => {
     try {
-      const updated = await api.updateFlashcard(current._id, { pinned: false });
+      const updated = await api.updateFlashcard(id, { pinned: false });
       setQueue((prev) => {
         const next = prev.filter((c) => c._id !== updated._id);
         setIndex((i) => (i >= next.length && next.length > 0 ? next.length - 1 : i));
@@ -53,10 +53,55 @@ export function PinnedPracticePage() {
     }
   };
 
+  const handleTogglePin = () => {
+    const current = queue[index];
+    if (current) void removeCard(current._id);
+  };
+
   if (loading) return <LoadingSpinner />;
   if (error) return <p className="status error">{error}</p>;
 
   const current = queue[index];
+
+  if (showList && queue.length > 0) {
+    return (
+      <div className="pinned-list-page">
+        <p className="pinned-list-count">
+          {t('practice.pinnedLearnedCount', { count: queue.length })}
+        </p>
+        <ul className="pinned-list">
+          {queue.map((card, i) => (
+            <li key={card._id} className="pinned-list-item">
+              <button
+                type="button"
+                className="pinned-list-word"
+                onClick={() => {
+                  setIndex(i);
+                  setFinished(false);
+                  setShowList(false);
+                }}
+              >
+                <span className="pinned-list-front">{card.front}</span>
+                <span className="pinned-list-back">{card.back}</span>
+              </button>
+              <button
+                type="button"
+                className="btn btn-correct pinned-list-learned"
+                onClick={() => void removeCard(card._id)}
+              >
+                {t('practice.pinnedLearned')}
+              </button>
+            </li>
+          ))}
+        </ul>
+        <div className="empty-actions">
+          <button type="button" className="btn btn-secondary" onClick={() => setShowList(false)}>
+            {t('common.back')}
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   if (!current || finished) {
     return (
@@ -64,6 +109,11 @@ export function PinnedPracticePage() {
         <span className="empty-icon">⭐</span>
         <p>{queue.length === 0 ? t('practice.pinnedEmpty') : t('practice.pinnedDone')}</p>
         <div className="empty-actions">
+          {queue.length > 0 && (
+            <button type="button" className="btn btn-secondary" onClick={() => setShowList(true)}>
+              {t('practice.pinnedList')}
+            </button>
+          )}
           {queue.length > 0 && (
             <button
               type="button"
@@ -96,6 +146,15 @@ export function PinnedPracticePage() {
         onTogglePin={handleTogglePin}
         reviewing
       />
+
+      <div className="pinned-session-actions">
+        <button type="button" className="btn btn-correct" onClick={handleTogglePin}>
+          {t('practice.pinnedLearned')}
+        </button>
+        <button type="button" className="btn btn-secondary" onClick={() => setShowList(true)}>
+          {t('practice.pinnedList')}
+        </button>
+      </div>
 
       <div className="review-navigation-actions">
         <button

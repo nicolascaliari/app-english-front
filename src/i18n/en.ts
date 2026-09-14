@@ -326,6 +326,9 @@ export const messagesEn: Messages = {
   'practice.hubPinnedSub': 'The words you chose, every day',
   'practice.pinnedEmpty': 'You haven’t starred any words yet. Use the ★ button on any card.',
   'practice.pinnedDone': 'You’ve reviewed all your starred words!',
+  'practice.pinnedLearned': '✓ I learned it',
+  'practice.pinnedList': 'See list',
+  'practice.pinnedLearnedCount': '{count} words',
   'reading.title': 'Reading',
   'reading.intro':
     'Books stay on this device. Tap a word to see its meaning, an example, and American English pronunciation.',

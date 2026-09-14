@@ -3159,6 +3159,72 @@ a {
   flex: 1;
 }
 
+/* ── Mis Palabras: aprendidas / lista ── */
+.pinned-session-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.pinned-session-actions .btn {
+  flex: 1;
+}
+
+.pinned-list-count {
+  color: var(--text-muted);
+  margin: 0 0 0.75rem;
+}
+
+.pinned-list {
+  list-style: none;
+  margin: 0 0 1.25rem;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.pinned-list-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0.75rem;
+  border-radius: 12px;
+  background: var(--surface);
+  border: 1px solid var(--white-06);
+}
+
+.pinned-list-word {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--text);
+  text-align: left;
+  cursor: pointer;
+}
+
+.pinned-list-front {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.pinned-list-back {
+  color: var(--text-muted);
+  font-size: 0.9em;
+  overflow-wrap: anywhere;
+}
+
+.pinned-list-learned {
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
 .review-category-btn {
   display: flex;
   align-items: center;

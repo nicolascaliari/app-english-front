@@ -329,6 +329,9 @@ export const messagesFr: Messages = {
   'practice.hubPinnedSub': 'Les mots que vous avez choisis, chaque jour',
   'practice.pinnedEmpty': "Vous n’avez encore marqué aucun mot. Utilisez le bouton ★ sur n’importe quelle carte.",
   'practice.pinnedDone': 'Vous avez révisé tous vos mots !',
+  'practice.pinnedLearned': '✓ Je la connais',
+  'practice.pinnedList': 'Voir la liste',
+  'practice.pinnedLearnedCount': '{count} mots',
   'reading.title': 'Lecture',
   'reading.intro':
     'Les livres restent sur cet appareil. Touchez un mot pour voir le sens, un exemple et l’entendre en anglais américain.',

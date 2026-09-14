@@ -326,6 +326,9 @@ export const messagesRu: Messages = {
   'practice.hubPinnedSub': 'Слова, которые вы выбрали, каждый день',
   'practice.pinnedEmpty': 'Вы ещё не отметили ни одного слова. Используйте кнопку ★ на любой карточке.',
   'practice.pinnedDone': 'Вы повторили все свои слова!',
+  'practice.pinnedLearned': '✓ Я его выучил',
+  'practice.pinnedList': 'Показать список',
+  'practice.pinnedLearnedCount': 'Слов: {count}',
   'reading.title': 'Чтение',
   'reading.intro':
     'Книги хранятся на этом устройстве. Нажмите на слово, чтобы увидеть значение, пример и американское произношение.',
