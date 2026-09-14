@@ -107,6 +107,7 @@ export const messagesIt: Messages = {
   'home.dueOther': '{count} carte in sospeso',
   'home.dueSub': 'Ripetizione spaziata (SM-2)',
   'home.categories': 'Categorie',
+  'home.reorderHint': 'Tieni premuto un mazzo e trascinalo per riordinarlo',
   'home.empty': 'Non ci sono ancora categorie.',
   'home.createFirst': 'Crea la tua prima carta',
   'home.searchCategories': 'Cerca categorie…',
@@ -251,6 +252,9 @@ export const messagesIt: Messages = {
     "Imparerai l'inglese, e tutta l'app sarà mostrata nella lingua che scegli. Puoi cambiarla più tardi nelle impostazioni.",
   'languageSetup.confirm': 'Continua',
   'guide.close': 'Ho capito',
+  'guide.welcome.title': 'Listen up',
+  'guide.welcome.body':
+    'Listen to me, son of a bitch. Don’t skip the guide, because otherwise you’re not going to understand a damn thing. I know you’re a lazy ass.',
   'guide.decks.title': 'I tuoi mazzi',
   'guide.decks.body':
     'Qui vivono le tue categorie e sottocategorie. Toccane una per vedere le sue carte e usa il pulsante + per aggiungerne altre. Quando la lista cresce, la ricerca filtra per nome.',

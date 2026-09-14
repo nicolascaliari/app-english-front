@@ -107,6 +107,7 @@ export const messagesDe: Messages = {
   'home.dueOther': '{count} Karten fällig',
   'home.dueSub': 'Spaced Repetition (SM-2)',
   'home.categories': 'Kategorien',
+  'home.reorderHint': 'Halte einen Stapel gedrückt und ziehe ihn, um die Reihenfolge zu ändern',
   'home.empty': 'Noch keine Kategorien.',
   'home.createFirst': 'Erste Karte erstellen',
   'home.searchCategories': 'Kategorien suchen…',
@@ -255,6 +256,9 @@ export const messagesDe: Messages = {
     'Du lernst Englisch, und die ganze App wird in der Sprache angezeigt, die du wählst. Du kannst sie später in den Einstellungen ändern.',
   'languageSetup.confirm': 'Weiter',
   'guide.close': 'Verstanden',
+  'guide.welcome.title': 'Listen up',
+  'guide.welcome.body':
+    'Listen to me, son of a bitch. Don’t skip the guide, because otherwise you’re not going to understand a damn thing. I know you’re a lazy ass.',
   'guide.decks.title': 'Deine Stapel',
   'guide.decks.body':
     'Hier leben deine Kategorien und Unterkategorien. Tippe eine an, um ihre Karten zu sehen, und füge mit + weitere hinzu. Wenn die Liste wächst, filtert die Suche nach Namen.',

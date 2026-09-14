@@ -1,10 +1,10 @@
 import { useLocation } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
-import { useI18n } from '../i18n/I18nProvider';
+import { messagesEn } from '../i18n/en';
 import type { MessageKey } from '../i18n/types';
 import { Modal } from './Modal';
 
-type GuideKey = 'decks' | 'practice' | 'review' | 'grammar' | 'reading' | 'create';
+type GuideKey = 'welcome' | 'decks' | 'practice' | 'review' | 'grammar' | 'reading' | 'create';
 
 interface Guide {
   titleKey: MessageKey;
@@ -12,6 +12,7 @@ interface Guide {
 }
 
 const GUIDES: Record<GuideKey, Guide> = {
+  welcome: { titleKey: 'guide.welcome.title', bodyKey: 'guide.welcome.body' },
   decks: { titleKey: 'guide.decks.title', bodyKey: 'guide.decks.body' },
   practice: { titleKey: 'guide.practice.title', bodyKey: 'guide.practice.body' },
   review: { titleKey: 'guide.review.title', bodyKey: 'guide.review.body' },
@@ -42,27 +43,29 @@ function guideForPath(pathname: string): GuideKey | null {
  */
 export function SectionGuide() {
   const { user, markGuideSeen } = useAuth();
-  const { t } = useI18n();
   const { pathname } = useLocation();
 
-  const key = guideForPath(pathname);
+  const sectionKey = guideForPath(pathname);
   // Los admins no usan la app de estudio: no tiene sentido explicársela.
-  // Y mientras falte elegir el idioma, la guía saldría en el equivocado.
-  if (!user || user.role === 'admin' || user.needsLanguageSetup || !key) {
+  // Y mientras falte elegir el idioma, no se tapa ese modal con otro.
+  if (!user || user.role === 'admin' || user.needsLanguageSetup || !sectionKey) {
     return null;
   }
+  // La bienvenida va antes que cualquier guía de sección; al cerrarla aparece la de la sección.
+  const key: GuideKey = user.seenGuides.includes('welcome') ? sectionKey : 'welcome';
   if (user.seenGuides.includes(key)) return null;
 
   const guide = GUIDES[key];
 
+  // Las guías se muestran siempre en inglés, sin importar el idioma de la interfaz.
   return (
     <Modal
       open
-      title={t(guide.titleKey)}
-      closeLabel={t('guide.close')}
+      title={messagesEn[guide.titleKey]}
+      closeLabel={messagesEn['guide.close']}
       onClose={() => markGuideSeen(key)}
     >
-      <p>{t(guide.bodyKey)}</p>
+      <p>{messagesEn[guide.bodyKey]}</p>
     </Modal>
   );
 }

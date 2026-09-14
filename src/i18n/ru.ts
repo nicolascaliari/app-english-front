@@ -107,6 +107,7 @@ export const messagesRu: Messages = {
   'home.dueOther': '{count} карточек к повторению',
   'home.dueSub': 'Интервальное повторение (SM-2)',
   'home.categories': 'Категории',
+  'home.reorderHint': 'Удерживайте колоду и перетащите, чтобы изменить порядок',
   'home.empty': 'Категорий пока нет.',
   'home.createFirst': 'Создайте первую карточку',
   'home.searchCategories': 'Поиск категорий…',
@@ -251,6 +252,9 @@ export const messagesRu: Messages = {
     'Вы будете учить английский, а всё приложение будет на выбранном вами языке. Его можно изменить позже в настройках.',
   'languageSetup.confirm': 'Продолжить',
   'guide.close': 'Понятно',
+  'guide.welcome.title': 'Listen up',
+  'guide.welcome.body':
+    'Listen to me, son of a bitch. Don’t skip the guide, because otherwise you’re not going to understand a damn thing. I know you’re a lazy ass.',
   'guide.decks.title': 'Ваши колоды',
   'guide.decks.body':
     'Здесь живут ваши категории и подкатегории. Нажмите на любую, чтобы увидеть карточки, а кнопкой + добавляйте новые. Когда список вырастет, поиск отфильтрует по названию.',

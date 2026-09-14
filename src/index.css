@@ -889,6 +889,36 @@ a {
   transform: scale(0.98);
 }
 
+/* ── Reordenar mazos (mantener presionado y arrastrar) ── */
+.category-list li {
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.category-list--static li {
+  animation: none;
+}
+
+.category-list li.is-dragging {
+  position: relative;
+  z-index: 2;
+}
+
+.category-list li.is-dragging .category-card {
+  transform: scale(1.03);
+  background: var(--surface-solid);
+  border-color: rgba(var(--accent-rgb), 0.5);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.35);
+  cursor: grabbing;
+}
+
+.category-reorder-hint {
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  margin: 0 0 0.6rem;
+}
+
 .category-icon {
   font-size: 1.25rem;
   line-height: 1;

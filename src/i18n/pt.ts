@@ -107,6 +107,7 @@ export const messagesPt: Messages = {
   'home.dueOther': '{count} cartas pendentes',
   'home.dueSub': 'Repetição espaçada (SM-2)',
   'home.categories': 'Categorias',
+  'home.reorderHint': 'Mantenha um baralho pressionado e arraste para reordenar',
   'home.empty': 'Ainda não há categorias.',
   'home.createFirst': 'Criar sua primeira carta',
   'home.searchCategories': 'Buscar categorias…',
@@ -251,6 +252,9 @@ export const messagesPt: Messages = {
     'Você vai aprender inglês, e todo o app vai aparecer no idioma que escolher. Dá para mudar depois em Configurações.',
   'languageSetup.confirm': 'Continuar',
   'guide.close': 'Entendi',
+  'guide.welcome.title': 'Listen up',
+  'guide.welcome.body':
+    'Listen to me, son of a bitch. Don’t skip the guide, because otherwise you’re not going to understand a damn thing. I know you’re a lazy ass.',
   'guide.decks.title': 'Seus baralhos',
   'guide.decks.body':
     'Aqui ficam suas categorias e subcategorias. Toque em uma para ver suas cartas e use o botão + para adicionar mais. Quando a lista crescer, a busca filtra por nome.',

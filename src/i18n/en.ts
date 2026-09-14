@@ -107,6 +107,7 @@ export const messagesEn: Messages = {
   'home.dueOther': '{count} cards due',
   'home.dueSub': 'Spaced repetition (SM-2)',
   'home.categories': 'Categories',
+  'home.reorderHint': 'Press and hold a deck, then drag it to reorder',
   'home.empty': 'No categories yet.',
   'home.createFirst': 'Create your first card',
   'home.searchCategories': 'Search categories…',
@@ -251,6 +252,9 @@ export const messagesEn: Messages = {
     "You'll be learning English, and the whole app will be shown in the language you pick. You can change it later in Settings.",
   'languageSetup.confirm': 'Continue',
   'guide.close': 'Got it',
+  'guide.welcome.title': 'Listen up',
+  'guide.welcome.body':
+    'Listen to me, son of a bitch. Don’t skip the guide, because otherwise you’re not going to understand a damn thing. I know you’re a lazy ass.',
   'guide.decks.title': 'Your decks',
   'guide.decks.body':
     'This is where your categories and subcategories live. Tap one to see its cards and use the + button to add more. Once the list grows, the search box filters by name.',

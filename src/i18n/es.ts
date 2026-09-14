@@ -107,6 +107,7 @@ export const messagesEs: Messages = {
   'home.dueOther': '{count} cartas pendientes',
   'home.dueSub': 'Repetición espaciada (SM-2)',
   'home.categories': 'Categorías',
+  'home.reorderHint': 'Mantené presionado un mazo y arrastralo para ordenarlo',
   'home.empty': 'No hay categorías todavía.',
   'home.createFirst': 'Crear tu primera carta',
   'home.searchCategories': 'Buscar categorías…',
@@ -251,6 +252,9 @@ export const messagesEs: Messages = {
     'Vas a aprender inglés, y toda la app se va a mostrar en el idioma que elijas. Podés cambiarlo después en Configuración.',
   'languageSetup.confirm': 'Continuar',
   'guide.close': 'Entendido',
+  'guide.welcome.title': 'Listen up',
+  'guide.welcome.body':
+    'Listen to me, son of a bitch. Don’t skip the guide, because otherwise you’re not going to understand a damn thing. I know you’re a lazy ass.',
   'guide.decks.title': 'Tus mazos',
   'guide.decks.body':
     'Acá viven tus categorías y subcategorías. Tocá una para ver sus cartas y usá el botón + para agregar más. Cuando la lista crezca, el buscador filtra por nombre.',

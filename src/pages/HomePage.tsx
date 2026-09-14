@@ -8,6 +8,7 @@ import { useI18n } from '../i18n/I18nProvider';
 import type { Category } from '../types';
 import { categoryIcon } from '../utils/categoryIcon';
 import { ModalPortal } from '../components/ModalPortal';
+import { useLongPressReorder } from '../hooks/useLongPressReorder';
 
 export function HomePage() {
   const { user, loading: authLoading } = useAuth();
@@ -42,6 +43,18 @@ export function HomePage() {
     if (!q) return categories;
     return categories.filter((c) => c.name.toLowerCase().includes(q));
   }, [categories, query]);
+
+  // Con un filtro activo no se reordena: la lista visible no es la completa.
+  const canReorder = !query.trim() && categories.length > 1;
+  const reorder = useLongPressReorder({
+    items: categories,
+    getId: (c) => c._id,
+    enabled: canReorder,
+    onChange: setCategories,
+    onCommit: (next, previous) => {
+      api.reorderCategories(next.map((c) => c._id)).catch(() => setCategories(previous));
+    },
+  });
 
   useEffect(() => {
     if (authLoading || !user) {
@@ -130,17 +143,28 @@ export function HomePage() {
             placeholder={t('home.searchCategories')}
           />
 
+          {canReorder && <p className="category-reorder-hint">{t('home.reorderHint')}</p>}
+
           {filteredCategories.length === 0 ? (
             <div className="empty empty--enter">
               <span className="empty-icon">🔍</span>
               <p>{t('home.noResults', { query })}</p>
             </div>
           ) : (
-            <ul className="category-list">
+            <ul
+              ref={reorder.listRef}
+              className={`category-list${reorder.hasDragged ? ' category-list--static' : ''}`}
+            >
               {filteredCategories.map((cat, i) => (
-                <li key={cat._id} style={{ '--i': i } as CSSProperties}>
+                <li
+                  key={cat._id}
+                  style={{ '--i': i } as CSSProperties}
+                  className={reorder.draggingId === cat._id ? 'is-dragging' : undefined}
+                  {...reorder.itemProps(cat._id)}
+                >
                   <Link
                     to={`/category/${cat.slug}`}
+                    draggable={false}
                     className="category-card"
                     style={
                       cat.color ? { '--cat-color': cat.color } as CSSProperties : undefined

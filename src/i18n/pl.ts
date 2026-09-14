@@ -107,6 +107,7 @@ export const messagesPl: Messages = {
   'home.dueOther': '{count} fiszek do powtórki',
   'home.dueSub': 'Powtórki rozłożone w czasie (SM-2)',
   'home.categories': 'Kategorie',
+  'home.reorderHint': 'Przytrzymaj talię i przeciągnij, aby zmienić kolejność',
   'home.empty': 'Brak kategorii.',
   'home.createFirst': 'Utwórz pierwszą fiszkę',
   'home.searchCategories': 'Szukaj kategorii…',
@@ -251,6 +252,9 @@ export const messagesPl: Messages = {
     'Będziesz uczyć się angielskiego, a cała aplikacja wyświetli się w wybranym języku. Możesz go później zmienić w ustawieniach.',
   'languageSetup.confirm': 'Dalej',
   'guide.close': 'Rozumiem',
+  'guide.welcome.title': 'Listen up',
+  'guide.welcome.body':
+    'Listen to me, son of a bitch. Don’t skip the guide, because otherwise you’re not going to understand a damn thing. I know you’re a lazy ass.',
   'guide.decks.title': 'Twoje talie',
   'guide.decks.body':
     'Tu mieszkają twoje kategorie i podkategorie. Dotknij jednej, aby zobaczyć jej karty, a przyciskiem + dodaj kolejne. Gdy lista urośnie, wyszukiwarka filtruje po nazwie.',

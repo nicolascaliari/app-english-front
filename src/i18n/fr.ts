@@ -107,6 +107,7 @@ export const messagesFr: Messages = {
   'home.dueOther': '{count} cartes à réviser',
   'home.dueSub': 'Répétition espacée (SM-2)',
   'home.categories': 'Catégories',
+  'home.reorderHint': 'Maintenez un paquet appuyé et faites-le glisser pour le déplacer',
   'home.empty': 'Aucune catégorie pour le moment.',
   'home.createFirst': 'Créer votre première carte',
   'home.searchCategories': 'Rechercher des catégories…',
@@ -254,6 +255,9 @@ export const messagesFr: Messages = {
     "Vous allez apprendre l'anglais, et toute l'application s'affichera dans la langue choisie. Vous pourrez la changer plus tard dans les paramètres.",
   'languageSetup.confirm': 'Continuer',
   'guide.close': 'Compris',
+  'guide.welcome.title': 'Listen up',
+  'guide.welcome.body':
+    'Listen to me, son of a bitch. Don’t skip the guide, because otherwise you’re not going to understand a damn thing. I know you’re a lazy ass.',
   'guide.decks.title': 'Vos paquets',
   'guide.decks.body':
     "C'est ici que vivent vos catégories et sous-catégories. Touchez-en une pour voir ses cartes et utilisez le bouton + pour en ajouter. Quand la liste grandit, la recherche filtre par nom.",

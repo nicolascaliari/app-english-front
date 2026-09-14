@@ -309,6 +309,12 @@ export const api = {
       method: 'DELETE',
     }),
 
+  reorderCategories: (ids: string[]) =>
+    request<{ updated: number }>('/categories/reorder', {
+      method: 'PATCH',
+      body: JSON.stringify({ ids }),
+    }),
+
   getSubcategories: (slug: string) =>
     request<Category[]>(`/categories/${slug}/subcategories`),
 
