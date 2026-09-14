@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { api } from '../api/client';
 import { FlashcardView } from '../components/FlashcardView';
 import { LoadingSpinner } from '../components/LoadingSpinner';
-import { SessionChips } from '../components/SessionChips';
 import { useI18n } from '../i18n/I18nProvider';
 import type { Difficulty, Flashcard } from '../types';
 
@@ -135,15 +134,14 @@ export function PinnedPracticePage() {
   }
 
   return (
-    <div className="review-session">
-      <SessionChips current={index + 1} total={queue.length} />
-
+    <div className="review-session review-session--pinned">
       <FlashcardView
         key={current._id}
         card={current}
         showDifficultyPicker
         onDifficultyChange={handleDifficultyChange}
         onTogglePin={handleTogglePin}
+        progress={`${index + 1}/${queue.length}`}
         reviewing
       />
 

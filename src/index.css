@@ -3455,6 +3455,24 @@ body.category-reviewing .main .page-enter {
   min-height: 420px;
 }
 
+/* Mis Palabras no es inmersiva (navbar visible): en celular la imagen se
+   recorta un poco para que los botones de abajo entren sin scrollear. */
+@media (max-width: 767px) {
+  .review-session--pinned .flashcard.flashcard--immersive,
+  .review-session--pinned .flashcard.flashcard--immersive .flashcard-inner {
+    min-height: 340px;
+  }
+
+  /* El espacio que libera la imagen más baja se reparte entre los bloques. */
+  .review-session--pinned .pinned-session-actions {
+    margin-top: 1.5rem;
+  }
+
+  .review-session--pinned .review-navigation-actions {
+    margin-top: 1.75rem;
+  }
+}
+
 .app--immersive .flashcard.flashcard--immersive,
 body.category-reviewing .flashcard.flashcard--immersive {
   flex: 1;
@@ -3573,6 +3591,24 @@ body.category-reviewing .flashcard.flashcard--immersive .flashcard-inner {
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: rgba(255, 255, 255, 0.92);
+}
+
+.flashcard-progress {
+  margin-left: auto;
+  padding: 0.24rem 0.65rem;
+  border-radius: 999px;
+  border: 1px solid var(--white-28);
+  background: rgba(0, 0, 0, 0.35);
+  backdrop-filter: blur(8px);
+  font-size: 0.75rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: #fff;
+}
+
+/* Con contador, la etiqueta de estado va pegada a él a la derecha. */
+.flashcard-progress + .flashcard-status {
+  margin-left: 0;
 }
 
 .flashcard-quiz {

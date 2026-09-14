@@ -28,6 +28,8 @@ interface Props {
   onNext?: () => void;
   nextLabel?: string;
   reviewing?: boolean;
+  /** Contador de la sesión (ej. "1/10"), dibujado sobre la imagen. */
+  progress?: string;
 }
 
 const DIFFICULTIES: Difficulty[] = ['easy', 'medium', 'hard'];
@@ -53,6 +55,7 @@ export function FlashcardView({
   onNext,
   nextLabel,
   reviewing = false,
+  progress,
 }: Props) {
   const { user } = useAuth();
   const { t, languageName } = useI18n();
@@ -233,6 +236,7 @@ export function FlashcardView({
                     <GearIcon />
                   </button>
                 )}
+                {progress && <span className="flashcard-progress">{progress}</span>}
                 {reviewing && (
                   <span className="flashcard-status">{t('flashcard.reviewing')}</span>
                 )}
@@ -359,6 +363,11 @@ export function FlashcardView({
           </div>
           <div className="flashcard-back">
             {immersive && <CardScene imageUrl={card.imageUrl} />}
+            {immersive && progress && (
+              <div className="flashcard-chrome">
+                <span className="flashcard-progress">{progress}</span>
+              </div>
+            )}
             <p className="label">{nativeLabel}</p>
             <h2>{card.back}</h2>
             {card.example && (
