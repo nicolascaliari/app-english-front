@@ -253,27 +253,10 @@ export const messagesPl: Messages = {
     'Będziesz uczyć się angielskiego, a cała aplikacja wyświetli się w wybranym języku. Możesz go później zmienić w ustawieniach.',
   'languageSetup.confirm': 'Dalej',
   'guide.close': 'Rozumiem',
-  'guide.welcome.title': 'Listen up',
-  'guide.welcome.body':
-    'Listen to me, son of a bitch. Don’t skip the guide, because otherwise you’re not going to understand a damn thing. I know you’re a lazy ass.',
-  'guide.decks.title': 'Twoje talie',
-  'guide.decks.body':
-    'Tu mieszkają twoje kategorie i podkategorie. Dotknij jednej, aby zobaczyć jej karty, a przyciskiem + dodaj kolejne. Gdy lista urośnie, wyszukiwarka filtruje po nazwie.',
-  'guide.practice.title': 'Ćwiczenia',
-  'guide.practice.body':
-    'Szybkie sesje z twoimi średnimi i trudnymi kartami, wybranymi losowo. W ustawieniach decydujesz, ile kart wchodzi do jednej sesji.',
-  'guide.review.title': 'Powtórki w odstępach',
-  'guide.review.body':
-    'Pojawiają się tu tylko karty do powtórki na dziś. Trafisz — karta wróci później; pomylisz się — wróci szybko. Codzienne powtórki utrzymują twoją passę.',
-  'guide.grammar.title': 'Gramatyka',
-  'guide.grammar.body':
-    'Wybierz moduł na swoim poziomie, a SI ułoży ćwiczenia. Każda odpowiedź ma swoje wyjaśnienie.',
-  'guide.reading.title': 'Czytanie',
-  'guide.reading.body':
-    'Wgraj EPUB i czytaj go tutaj. Dotknij dowolnego słowa, aby zobaczyć znaczenie, i zapisz je jako kartę bez wychodzenia z książki. Książki zostają tylko na tym urządzeniu.',
-  'guide.create.title': 'Tworzenie kart',
-  'guide.create.body':
-    'Wyszukaj słowo, a znaczenie, przykład i wymowa uzupełnią się same. Możesz też poprosić SI o całą partię albo zaimportować arkusz.',
+  'tour.next': 'Dalej',
+  'tour.done': 'Rozumiem',
+  'tour.skip': 'Pomiń',
+  'tour.progress': '{current} z {total}',
   'ai.savedTitle': 'Moje prompty',
   'ai.savedEmpty': 'Nie zapisałeś jeszcze żadnego promptu.',
   'ai.savePrompt': 'Zapisz prompt',

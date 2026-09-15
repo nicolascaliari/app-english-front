@@ -83,6 +83,7 @@ export function TabBar() {
     <nav className="tabbar" aria-label={t('nav.aria')}>
       <NavLink
         to="/practice"
+        data-tour="tab-practice"
         {...tapHandlers('/practice')}
         className={() => `tabbar-link${practiceActive ? ' tabbar-link--active' : ''}`}
       >
@@ -93,6 +94,7 @@ export function TabBar() {
       </NavLink>
       <NavLink
         to="/grammar"
+        data-tour="tab-grammar"
         {...tapHandlers('/grammar')}
         className={({ isActive }) => `tabbar-link${isActive ? ' tabbar-link--active' : ''}`}
       >
@@ -104,6 +106,7 @@ export function TabBar() {
       <NavLink
         to="/"
         end
+        data-tour="tab-decks"
         {...tapHandlers('/')}
         className={() => `tabbar-link${decksActive ? ' tabbar-link--active' : ''}`}
       >
@@ -114,6 +117,7 @@ export function TabBar() {
       </NavLink>
       <NavLink
         to="/settings"
+        data-tour="tab-profile"
         {...tapHandlers('/settings')}
         className={({ isActive }) => `tabbar-link${isActive ? ' tabbar-link--active' : ''}`}
       >

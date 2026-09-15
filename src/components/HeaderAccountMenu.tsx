@@ -42,7 +42,7 @@ export function HeaderAccountMenu() {
   };
 
   return (
-    <div className="header-account" ref={rootRef}>
+    <div className="header-account" ref={rootRef} data-tour="account">
       <button
         type="button"
         className={`header-icon-btn${open ? ' header-icon-btn--active' : ''}`}

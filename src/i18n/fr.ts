@@ -256,27 +256,10 @@ export const messagesFr: Messages = {
     "Vous allez apprendre l'anglais, et toute l'application s'affichera dans la langue choisie. Vous pourrez la changer plus tard dans les paramètres.",
   'languageSetup.confirm': 'Continuer',
   'guide.close': 'Compris',
-  'guide.welcome.title': 'Listen up',
-  'guide.welcome.body':
-    'Listen to me, son of a bitch. Don’t skip the guide, because otherwise you’re not going to understand a damn thing. I know you’re a lazy ass.',
-  'guide.decks.title': 'Vos paquets',
-  'guide.decks.body':
-    "C'est ici que vivent vos catégories et sous-catégories. Touchez-en une pour voir ses cartes et utilisez le bouton + pour en ajouter. Quand la liste grandit, la recherche filtre par nom.",
-  'guide.practice.title': 'Entraînement',
-  'guide.practice.body':
-    'Des sessions rapides avec vos cartes moyennes et difficiles, tirées au hasard. Dans les paramètres, vous choisissez combien de cartes par session.',
-  'guide.review.title': 'Révision espacée',
-  'guide.review.body':
-    "Seules les cartes à revoir aujourd'hui apparaissent ici. Une bonne réponse repousse la carte ; une erreur la ramène vite. Réviser chaque jour entretient votre série.",
-  'guide.grammar.title': 'Grammaire',
-  'guide.grammar.body':
-    "Choisissez un module adapté à votre niveau et l'IA crée des exercices. Chaque réponse est accompagnée de son explication.",
-  'guide.reading.title': 'Lecture',
-  'guide.reading.body':
-    "Importez un EPUB et lisez-le ici. Touchez un mot pour voir son sens et enregistrez-le comme carte sans quitter le livre. Les livres restent sur cet appareil uniquement.",
-  'guide.create.title': 'Créer des cartes',
-  'guide.create.body':
-    "Cherchez un mot : le sens, l'exemple et la prononciation se remplissent tout seuls. Vous pouvez aussi demander un lot entier à l'IA ou importer un tableur.",
+  'tour.next': 'Suivant',
+  'tour.done': 'Compris',
+  'tour.skip': 'Passer',
+  'tour.progress': '{current} sur {total}',
   'ai.savedTitle': 'Mes prompts',
   'ai.savedEmpty': "Vous n'avez encore enregistré aucun prompt.",
   'ai.savePrompt': 'Enregistrer le prompt',

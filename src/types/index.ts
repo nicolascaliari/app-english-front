@@ -231,6 +231,21 @@ export type GrammarExerciseType = 'fill_blank' | 'multiple_choice';
 /** Texto por idioma, tal como viene de la colección parameters. */
 export type LocalizedText = Partial<Record<AppLanguage, string>>;
 
+/**
+ * Cartel de guía: GET /parameters/guides. El backend ya devuelve solo los
+ * habilitados y ordenados.
+ */
+export interface Guide {
+  id: string;
+  /** Ruta exacta que lo dispara. Sin ruta ni anclaje, es la bienvenida. */
+  route?: string;
+  /** Elemento de la interfaz que ilumina el tour. Sin anclaje, es un modal. */
+  anchor?: string;
+  order: number;
+  title: LocalizedText;
+  body: LocalizedText;
+}
+
 export interface GrammarTopic {
   id: string;
   icon: string;

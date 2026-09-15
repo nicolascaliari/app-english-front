@@ -253,27 +253,10 @@ export const messagesIt: Messages = {
     "Imparerai l'inglese, e tutta l'app sarà mostrata nella lingua che scegli. Puoi cambiarla più tardi nelle impostazioni.",
   'languageSetup.confirm': 'Continua',
   'guide.close': 'Ho capito',
-  'guide.welcome.title': 'Listen up',
-  'guide.welcome.body':
-    'Listen to me, son of a bitch. Don’t skip the guide, because otherwise you’re not going to understand a damn thing. I know you’re a lazy ass.',
-  'guide.decks.title': 'I tuoi mazzi',
-  'guide.decks.body':
-    'Qui vivono le tue categorie e sottocategorie. Toccane una per vedere le sue carte e usa il pulsante + per aggiungerne altre. Quando la lista cresce, la ricerca filtra per nome.',
-  'guide.practice.title': 'Pratica',
-  'guide.practice.body':
-    'Sessioni veloci con le tue carte medie e difficili, scelte a caso. Nelle impostazioni decidi quante carte entrano in ogni sessione.',
-  'guide.review.title': 'Ripasso a intervalli',
-  'guide.review.body':
-    'Qui compaiono solo le carte da ripassare oggi. Se indovini, la carta torna più avanti; se sbagli, torna presto. Ripassando ogni giorno mantieni la serie.',
-  'guide.grammar.title': 'Grammatica',
-  'guide.grammar.body':
-    "Scegli un modulo per il tuo livello e l'IA prepara gli esercizi. Ogni risposta arriva con la sua spiegazione.",
-  'guide.reading.title': 'Lettura',
-  'guide.reading.body':
-    'Carica un EPUB e leggilo qui. Tocca una parola per vederne il significato e salvala come carta senza uscire dal libro. I libri restano solo su questo dispositivo.',
-  'guide.create.title': 'Creare carte',
-  'guide.create.body':
-    "Cerca una parola e si compila da sola con significato, esempio e pronuncia. Puoi anche chiedere un lotto intero all'IA o importare un foglio di calcolo.",
+  'tour.next': 'Avanti',
+  'tour.done': 'Ho capito',
+  'tour.skip': 'Salta',
+  'tour.progress': '{current} di {total}',
   'ai.savedTitle': 'I miei prompt',
   'ai.savedEmpty': 'Non hai ancora salvato nessun prompt.',
   'ai.savePrompt': 'Salva prompt',

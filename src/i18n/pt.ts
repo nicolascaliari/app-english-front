@@ -253,27 +253,10 @@ export const messagesPt: Messages = {
     'Você vai aprender inglês, e todo o app vai aparecer no idioma que escolher. Dá para mudar depois em Configurações.',
   'languageSetup.confirm': 'Continuar',
   'guide.close': 'Entendi',
-  'guide.welcome.title': 'Listen up',
-  'guide.welcome.body':
-    'Listen to me, son of a bitch. Don’t skip the guide, because otherwise you’re not going to understand a damn thing. I know you’re a lazy ass.',
-  'guide.decks.title': 'Seus baralhos',
-  'guide.decks.body':
-    'Aqui ficam suas categorias e subcategorias. Toque em uma para ver suas cartas e use o botão + para adicionar mais. Quando a lista crescer, a busca filtra por nome.',
-  'guide.practice.title': 'Prática',
-  'guide.practice.body':
-    'Sessões rápidas com suas cartas médias e difíceis, escolhidas ao acaso. Em Configurações você define quantas cartas entram por sessão.',
-  'guide.review.title': 'Revisão espaçada',
-  'guide.review.body':
-    'Aqui aparecem só as cartas que vencem hoje. Se acertar, a carta volta mais adiante; se errar, volta logo. Revisando todo dia você mantém a sequência.',
-  'guide.grammar.title': 'Gramática',
-  'guide.grammar.body':
-    'Escolha um módulo do seu nível e a IA monta exercícios para praticar. Cada resposta vem com a explicação.',
-  'guide.reading.title': 'Leitura',
-  'guide.reading.body':
-    'Envie um EPUB e leia aqui. Toque em qualquer palavra para ver o significado e salve como carta sem sair do livro. Os livros ficam só neste dispositivo.',
-  'guide.create.title': 'Criar cartas',
-  'guide.create.body':
-    'Busque uma palavra e ela se completa sozinha com significado, exemplo e pronúncia. Você também pode pedir um lote inteiro à IA ou importar uma planilha.',
+  'tour.next': 'Seguinte',
+  'tour.done': 'Entendi',
+  'tour.skip': 'Saltar',
+  'tour.progress': '{current} de {total}',
   'ai.savedTitle': 'Meus prompts',
   'ai.savedEmpty': 'Você ainda não salvou nenhum prompt.',
   'ai.savePrompt': 'Salvar prompt',

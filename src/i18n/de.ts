@@ -257,27 +257,10 @@ export const messagesDe: Messages = {
     'Du lernst Englisch, und die ganze App wird in der Sprache angezeigt, die du wählst. Du kannst sie später in den Einstellungen ändern.',
   'languageSetup.confirm': 'Weiter',
   'guide.close': 'Verstanden',
-  'guide.welcome.title': 'Listen up',
-  'guide.welcome.body':
-    'Listen to me, son of a bitch. Don’t skip the guide, because otherwise you’re not going to understand a damn thing. I know you’re a lazy ass.',
-  'guide.decks.title': 'Deine Stapel',
-  'guide.decks.body':
-    'Hier leben deine Kategorien und Unterkategorien. Tippe eine an, um ihre Karten zu sehen, und füge mit + weitere hinzu. Wenn die Liste wächst, filtert die Suche nach Namen.',
-  'guide.practice.title': 'Üben',
-  'guide.practice.body':
-    'Kurze Einheiten mit deinen mittleren und schweren Karten, zufällig ausgewählt. In den Einstellungen legst du fest, wie viele Karten pro Einheit drankommen.',
-  'guide.review.title': 'Verteiltes Wiederholen',
-  'guide.review.body':
-    'Hier erscheinen nur die Karten, die heute dran sind. Richtig beantwortet kommt eine Karte später wieder, falsch beantwortet schon bald. Tägliches Wiederholen hält deine Serie am Leben.',
-  'guide.grammar.title': 'Grammatik',
-  'guide.grammar.body':
-    'Wähle ein Modul für dein Niveau und die KI baut passende Übungen. Zu jeder Antwort gibt es die Erklärung dazu.',
-  'guide.reading.title': 'Lesen',
-  'guide.reading.body':
-    'Lade ein EPUB hoch und lies es hier. Tippe ein Wort an, um seine Bedeutung zu sehen, und speichere es als Karte, ohne das Buch zu verlassen. Die Bücher bleiben nur auf diesem Gerät.',
-  'guide.create.title': 'Karten anlegen',
-  'guide.create.body':
-    'Suche ein Wort und Bedeutung, Beispiel und Aussprache füllen sich von selbst. Du kannst auch die KI um einen ganzen Schwung bitten oder eine Tabelle importieren.',
+  'tour.next': 'Weiter',
+  'tour.done': 'Verstanden',
+  'tour.skip': 'Überspringen',
+  'tour.progress': '{current} von {total}',
   'ai.savedTitle': 'Meine Prompts',
   'ai.savedEmpty': 'Du hast noch keine Prompts gespeichert.',
   'ai.savePrompt': 'Prompt speichern',

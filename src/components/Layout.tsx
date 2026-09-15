@@ -4,6 +4,7 @@ import { useI18n } from '../i18n/I18nProvider';
 import { APP_LANGUAGE_FLAGS } from '../utils/languages';
 import { AnimatedPage } from './AnimatedPage';
 import { HeaderAccountMenu } from './HeaderAccountMenu';
+import { GuidedTour } from './GuidedTour';
 import { LanguageSetupModal } from './LanguageSetupModal';
 import { SectionGuide } from './SectionGuide';
 import { TabBar } from './TabBar';
@@ -56,6 +57,7 @@ export function Layout() {
               </button>
               <div
                 className="header-streak"
+                data-tour="streak"
                 title={t('nav.streak', { count: user.streakCount })}
                 aria-label={t('nav.streak', { count: user.streakCount })}
               >
@@ -73,6 +75,7 @@ export function Layout() {
             <button
               type="button"
               className="header-icon-btn header-icon-btn--cta"
+              data-tour="new-card"
               onClick={() => navigate('/new')}
               aria-label={t('nav.newAria')}
               title={t('nav.new')}
@@ -96,6 +99,7 @@ export function Layout() {
       {/* Primero el idioma: las guías tienen que salir ya traducidas. */}
       <LanguageSetupModal />
       <SectionGuide />
+      <GuidedTour />
     </div>
   );
 }

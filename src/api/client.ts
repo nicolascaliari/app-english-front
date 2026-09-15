@@ -14,6 +14,7 @@ import type {
   GrammarExercisesRequest,
   GrammarExercisesResult,
   GrammarSyllabus,
+  Guide,
   ImageCandidate,
   ImportPayload,
   LookupResult,
@@ -382,6 +383,8 @@ export const api = {
     }),
 
   getGrammarSyllabus: () => request<GrammarSyllabus>('/parameters/grammar'),
+
+  getGuides: () => request<Guide[]>('/parameters/guides'),
 
   generateGrammarExercises: (data: GrammarExercisesRequest) =>
     request<GrammarExercisesResult>('/ai/grammar-exercises', {
