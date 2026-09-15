@@ -1,4 +1,5 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" rx="14" fill="#15120f"/><path d="M28 30 C20 28 12 24 7 19 C14 19 23 23 30 27 Z" fill="#fb7a5c"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="5 4.5 48 48" role="img" aria-label="Lorico">
+<path d="M28 30 C20 28 12 24 7 19 C14 19 23 23 30 27 Z" fill="#fb7a5c"/>
 <path d="M28 27 C21 23 15 17 12 11 C19 13 26 19 31 25 Z" fill="#fb7a5c"/>
 <path d="M30 25 C26 19 23 13 23 8 C28 11 32 18 34 24 Z" fill="#fb7a5c"/>
 <circle cx="26" cy="34" r="14.5" fill="#f5a524"/>
@@ -6,4 +7,5 @@
 <path d="M36 25 C45 25 52 29 51.5 34 C51 39.5 48 44.5 44 46 C45.8 41.5 45.2 37 42 34.4 C40 32.6 38 31.8 36 31.6 Z" fill="#fb7a5c"/>
 <circle cx="31" cy="29" r="4.8" fill="#fdf1de"/>
 <circle cx="31.4" cy="29.4" r="2.6" fill="#15120f"/>
-<circle cx="32.4" cy="28.4" r="0.9" fill="#ffffff"/></svg>
+<circle cx="32.4" cy="28.4" r="0.9" fill="#ffffff"/>
+</svg>

@@ -74,6 +74,7 @@ export type MessageKey =
   | 'register.hasAccount'
   | 'register.login'
   | 'languages.native'
+  | 'languages.ui'
   | 'languages.target'
   | 'lang.en'
   | 'lang.es'

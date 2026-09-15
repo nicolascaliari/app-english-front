@@ -1,7 +1,7 @@
 import type { Messages } from './types';
 
 export const messagesPt: Messages = {
-  'brand.name': 'Flashcards',
+  'brand.name': 'Lorico',
   'nav.aria': 'Principal',
   'nav.review': 'Revisar',
   'nav.grammar': 'Gramática',
@@ -51,6 +51,7 @@ export const messagesPt: Messages = {
   'register.hasAccount': 'Já tem uma conta?',
   'register.login': 'Entrar',
   'languages.native': 'Seu idioma nativo',
+  'languages.ui': 'Idioma da interface',
   'languages.target': 'Idioma que você quer aprender',
   'lang.en': 'Inglês',
   'lang.es': 'Espanhol',

@@ -5,6 +5,7 @@ import {
   GoogleSignInButton,
   googleAuthEnabled,
 } from '../components/GoogleSignInButton';
+import { UiLanguagePicker } from '../components/UiLanguagePicker';
 import { useI18n } from '../i18n/I18nProvider';
 
 export function LoginPage() {
@@ -52,8 +53,9 @@ export function LoginPage() {
   return (
     <div className="auth-page">
       <div className="auth-card form-panel">
+        <UiLanguagePicker />
         <div className="auth-brand">
-          <span className="logo-mark" aria-hidden="true">🃏</span>
+          <img src="/logo-mark.svg" className="logo-mark" alt="" aria-hidden="true" />
           <h1 className="auth-title">{t('login.title')}</h1>
           <p className="auth-subtitle">{t('login.subtitle')}</p>
         </div>

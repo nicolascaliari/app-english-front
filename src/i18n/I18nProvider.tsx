@@ -12,6 +12,7 @@ import type { AppLanguage } from '../utils/languages';
 import {
   APP_LANGUAGES,
   DEFAULT_NATIVE_LANGUAGE,
+  GUEST_UI_LANGUAGE,
   isAppLanguage,
 } from '../utils/languages';
 import { catalog } from './catalog';
@@ -93,7 +94,9 @@ export function I18nProvider({ children }: { children: ReactNode }) {
         ? preferred
         : user.nativeLanguage;
     }
-    return guestLanguage ?? detectBrowserLanguage();
+    // Sin sesión no adivinamos por navegador: se muestra inglés hasta que el
+    // visitante elija otro idioma en el login.
+    return guestLanguage ?? GUEST_UI_LANGUAGE;
   }, [user, uiMode, guestLanguage]);
 
   useEffect(() => {

@@ -21,13 +21,13 @@ export default defineConfig({
       registerType: 'autoUpdate',
       // Registered from src/main.tsx, which also checks for new deploys.
       injectRegister: false,
-      includeAssets: ['favicon.svg'],
+      includeAssets: ['favicon.svg', 'logo-mark.svg', 'apple-touch-icon.png'],
       manifest: {
-        name: 'English Flashcards',
-        short_name: 'Flashcards',
-        description: 'Personal English flashcards with spaced repetition',
-        theme_color: '#1a1a2e',
-        background_color: '#1a1a2e',
+        name: 'Lorico',
+        short_name: 'Lorico',
+        description: 'Flashcards, lectura y práctica para aprender inglés',
+        theme_color: '#15120f',
+        background_color: '#15120f',
         display: 'standalone',
         orientation: 'portrait',
         start_url: '/',
@@ -45,7 +45,7 @@ export default defineConfig({
             purpose: 'any',
           },
           {
-            src: 'pwa-512x512.png',
+            src: 'pwa-maskable-512.png',
             sizes: '512x512',
             type: 'image/png',
             purpose: 'maskable',

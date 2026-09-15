@@ -35,6 +35,12 @@ export const APP_LANGUAGE_LOCALE: Record<AppLanguage, string> = {
 };
 
 export const DEFAULT_NATIVE_LANGUAGE: AppLanguage = 'es';
+/**
+ * Idioma de la interfaz mientras no hay sesión. Es inglés a propósito: de un
+ * visitante no sabemos nada, y el inglés es lo único que todos los que usan
+ * esta app tienen en común. Se cambia a mano desde el login.
+ */
+export const GUEST_UI_LANGUAGE: AppLanguage = 'en';
 /** La app enseña solo inglés. */
 export const DEFAULT_TARGET_LANGUAGE: AppLanguage = 'en';
 

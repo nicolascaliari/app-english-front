@@ -1,7 +1,7 @@
 import type { Messages } from './types';
 
 export const messagesEn: Messages = {
-  'brand.name': 'Flashcards',
+  'brand.name': 'Lorico',
   'nav.aria': 'Main',
   'nav.review': 'Review',
   'nav.grammar': 'Grammar',
@@ -51,6 +51,7 @@ export const messagesEn: Messages = {
   'register.hasAccount': 'Already have an account?',
   'register.login': 'Log in',
   'languages.native': 'Your native language',
+  'languages.ui': 'Interface language',
   'languages.target': 'Language you want to learn',
   'lang.en': 'English',
   'lang.es': 'Spanish',

@@ -37,9 +37,7 @@ export function Layout() {
       <header className="header">
         <div className="header-start">
           <Link to={isAdmin ? '/admin' : '/'} className="logo">
-            <span className="logo-mark" aria-hidden="true">
-              🃏
-            </span>
+            <img src="/logo-mark.svg" className="logo-mark" alt="" aria-hidden="true" />
             <span className="logo-text">{t('brand.name')}</span>
           </Link>
 

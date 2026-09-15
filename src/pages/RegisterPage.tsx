@@ -1,4 +1,4 @@
-import { type FormEvent, useEffect, useState } from 'react';
+import { type FormEvent, useState } from 'react';
 import { Link, Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
 import {
@@ -8,11 +8,11 @@ import {
 import { NativeLanguageSelect } from '../components/NativeLanguageSelect';
 import { useI18n } from '../i18n/I18nProvider';
 import type { AppLanguage } from '../utils/languages';
-import { suggestedNativeLanguage } from '../utils/languages';
+import { NATIVE_LANGUAGES, suggestedNativeLanguage } from '../utils/languages';
 
 export function RegisterPage() {
   const { user, register, loginWithGoogle } = useAuth();
-  const { t, setGuestLanguage } = useI18n();
+  const { t, language, setGuestLanguage } = useI18n();
   const location = useLocation();
   const from =
     (location.state as { from?: { pathname: string } } | null)?.from?.pathname ??
@@ -21,16 +21,19 @@ export function RegisterPage() {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  // Si ya eligió idioma en el login, el registro arranca con ese.
   const [nativeLanguage, setNativeLanguage] = useState<AppLanguage>(() =>
-    suggestedNativeLanguage(),
+    NATIVE_LANGUAGES.includes(language) ? language : suggestedNativeLanguage(),
   );
   const [error, setError] = useState('');
   const [submitting, setSubmitting] = useState(false);
 
-  // El formulario se traduce en vivo al idioma que se va eligiendo.
-  useEffect(() => {
-    setGuestLanguage(nativeLanguage);
-  }, [nativeLanguage, setGuestLanguage]);
+  // El formulario se traduce en vivo al idioma que se va eligiendo. Se hace en
+  // el handler y no en un efecto para no pisar la elección hecha en el login.
+  const handleNativeLanguageChange = (lang: AppLanguage) => {
+    setNativeLanguage(lang);
+    setGuestLanguage(lang);
+  };
 
   if (user) {
     return <Navigate to={from} replace />;
@@ -66,7 +69,7 @@ export function RegisterPage() {
     <div className="auth-page">
       <div className="auth-card form-panel">
         <div className="auth-brand">
-          <span className="logo-mark" aria-hidden="true">🃏</span>
+          <img src="/logo-mark.svg" className="logo-mark" alt="" aria-hidden="true" />
           <h1 className="auth-title">{t('register.title')}</h1>
           <p className="auth-subtitle">{t('register.subtitle')}</p>
         </div>
@@ -108,7 +111,7 @@ export function RegisterPage() {
 
           <NativeLanguageSelect
             value={nativeLanguage}
-            onChange={setNativeLanguage}
+            onChange={handleNativeLanguageChange}
             disabled={submitting}
           />
           <p className="field-hint">{t('register.languageHint')}</p>
