@@ -13,6 +13,7 @@ import type {
   GenerateResult,
   GrammarExercisesRequest,
   GrammarExercisesResult,
+  GrammarSyllabus,
   ImageCandidate,
   ImportPayload,
   LookupResult,
@@ -379,6 +380,8 @@ export const api = {
       method: 'POST',
       body: JSON.stringify({ prompt }),
     }),
+
+  getGrammarSyllabus: () => request<GrammarSyllabus>('/parameters/grammar'),
 
   generateGrammarExercises: (data: GrammarExercisesRequest) =>
     request<GrammarExercisesResult>('/ai/grammar-exercises', {
