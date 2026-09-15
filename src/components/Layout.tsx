@@ -5,6 +5,7 @@ import { APP_LANGUAGE_FLAGS } from '../utils/languages';
 import { AnimatedPage } from './AnimatedPage';
 import { HeaderAccountMenu } from './HeaderAccountMenu';
 import { GuidedTour } from './GuidedTour';
+import { LanguageChoicePrompt } from './LanguageChoicePrompt';
 import { LanguageSetupModal } from './LanguageSetupModal';
 import { SectionGuide } from './SectionGuide';
 import { TabBar } from './TabBar';
@@ -98,6 +99,9 @@ export function Layout() {
       {!isAdmin && <TabBar />}
       {/* Primero el idioma: las guías tienen que salir ya traducidas. */}
       <LanguageSetupModal />
+      {/* Antes que las guías: no tiene sentido leer la bienvenida en un
+          idioma que estás por cambiar. */}
+      <LanguageChoicePrompt />
       <SectionGuide />
       <GuidedTour />
     </div>

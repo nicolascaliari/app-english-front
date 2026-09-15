@@ -3,6 +3,7 @@ import { useLocation } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
 import { useI18n } from '../i18n/I18nProvider';
 import { pendingTourSteps, useGuides } from '../utils/guides';
+import { pendingLanguageChoice } from '../utils/languageChoice';
 import { localize } from '../utils/localizedText';
 import { ModalPortal } from './ModalPortal';
 
@@ -35,11 +36,14 @@ interface Spot {
  */
 export function GuidedTour() {
   const { user, markGuideSeen } = useAuth();
-  const { t, language } = useI18n();
+  const { t, language, guestLanguage, uiMode } = useI18n();
   const { pathname } = useLocation();
 
   const active =
-    Boolean(user) && user?.role !== 'admin' && !user?.needsLanguageSetup;
+    Boolean(user) &&
+    user?.role !== 'admin' &&
+    !user?.needsLanguageSetup &&
+    !pendingLanguageChoice(user ?? null, guestLanguage, uiMode);
   const guides = useGuides(active);
   const [spot, setSpot] = useState<Spot | null>(null);
 

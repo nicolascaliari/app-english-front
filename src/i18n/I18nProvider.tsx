@@ -25,11 +25,19 @@ type Vars = Record<string, string | number>;
 
 interface I18nContextValue {
   language: AppLanguage;
+  /** El idioma elegido antes de entrar, si se eligió alguno. */
+  guestLanguage: AppLanguage | null;
   uiMode: UiMode;
   setUiMode: (mode: UiMode) => void;
   /** Temporary override (e.g. while picking native language on register). */
   setGuestLanguage: (lang: AppLanguage | null) => void;
   t: (key: MessageKey, vars?: Vars) => string;
+  /**
+   * Traduce en un idioma puntual, sin importar el de la interfaz. Es para
+   * hablarle a alguien en el idioma que acaba de pedir, cuando la interfaz
+   * todavía está en otro.
+   */
+  translateIn: (language: AppLanguage, key: MessageKey, vars?: Vars) => string;
   languageName: (code: AppLanguage) => string;
 }
 
@@ -112,6 +120,14 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     [language],
   );
 
+  const translateIn = useCallback(
+    (target: AppLanguage, key: MessageKey, vars?: Vars) => {
+      const table = catalog[target] ?? catalog.en;
+      return interpolate(table[key] ?? catalog.en[key] ?? key, vars);
+    },
+    [],
+  );
+
   const languageName = useCallback(
     (code: AppLanguage) => t(`lang.${code}` as MessageKey),
     [t],
@@ -120,13 +136,24 @@ export function I18nProvider({ children }: { children: ReactNode }) {
   const value = useMemo(
     () => ({
       language,
+      guestLanguage,
       uiMode,
       setUiMode,
       setGuestLanguage,
       t,
+      translateIn,
       languageName,
     }),
-    [language, uiMode, setUiMode, setGuestLanguage, t, languageName],
+    [
+      language,
+      guestLanguage,
+      uiMode,
+      setUiMode,
+      setGuestLanguage,
+      t,
+      translateIn,
+      languageName,
+    ],
   );
 
   return <I18nContext.Provider value={value}>{children}</I18nContext.Provider>;
